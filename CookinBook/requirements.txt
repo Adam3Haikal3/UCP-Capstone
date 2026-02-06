@@ -1,0 +1,4 @@
+# CookinBook Django Project Dependencies
+# Install with: pip install -r requirements.txt
+
+Django>=5.0.6,<6.0

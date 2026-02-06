@@ -1,0 +1,52 @@
+.profile-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+}
+
+/* Profile card */
+.profile-card {
+    max-width: 400px;
+    background-color: var(--color-background);
+    padding: 40px 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+/* Greeting title */
+.profile-title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--color-text);
+}
+
+/* Description */
+.profile-description {
+    font-size: 1.2rem;
+    color: var(--color-text-light);
+    margin-bottom: 30px;
+}
+
+/* Logout button */
+.logout-btn {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    width: 100%;
+}
+
+.logout-btn:hover {
+    transform: scale(1.05);
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+}

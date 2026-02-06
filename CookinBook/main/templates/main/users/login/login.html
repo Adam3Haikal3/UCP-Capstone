@@ -1,0 +1,53 @@
+{% extends 'main/base/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<head>
+  {% load static %}
+
+  <!-- Login Custom CSS Stylesheet -->
+  <link rel="stylesheet" href="{% static 'login.css' %}">
+</head>
+
+<div class="login-page">
+  <!-- Left side: site info (hidden on mobile) -->
+  <div class="site-info d-none d-lg-flex">
+      <h1 class="site-name">Site Name</h1>
+      <p class="site-description">Welcome to our site! Please log in to continue.</p>
+  </div>
+
+  <!-- Right side: login card (centered on mobile) -->
+  <div class="login-card">
+      <h2 class="login-title">Login</h2>
+      <form method="POST" class="login-form">
+          {% csrf_token %}
+          
+          {% if form.non_field_errors %}
+              <div class="form-errors">
+                  {{ form.non_field_errors }}
+              </div>
+          {% endif %}
+
+          <div class="form-group">
+              {{ form.username.label_tag }}
+              {{ form.username }}
+              {{ form.username.errors }}
+          </div>
+
+          <div class="form-group">
+              {{ form.password.label_tag }}
+              {{ form.password }}
+              {{ form.password.errors }}
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+      </form>
+
+      <p class="signup-link">
+          Don't have an account? <a href="{% url 'signup' %}">Sign up</a>
+      </p>
+  </div>
+</div>
+{% endblock %}

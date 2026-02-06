@@ -1,0 +1,138 @@
+.signup-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    gap: 50px;
+    flex-wrap: wrap;
+    font-family: var(--font-family);
+}
+
+.site-info {
+    flex: 1 1 40%; /* 40% of width */
+    max-width: 400px;
+    text-align: left;
+}
+
+.site-name {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--color-text);
+    text-align: center;
+}
+
+.site-description {
+    font-size: 1.2rem;
+    color: var(--color-text);
+    text-align: center;
+}
+
+.signup-card {
+    flex: 1 1 40%; /* 40% of width */
+    max-width: 400px;
+    background-color: var(--color-background);
+    padding: 40px 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+/* Signup title */
+.signup-title {
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    color: var(--color-text);
+}
+
+/* Form groups */
+.signup-form .form-group {
+    margin-bottom: 10px;
+}
+
+.signup-form input {
+    width: 100%;
+    padding: 5px 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.signup-form input:focus {
+    border-color: var(--color-primary);
+}
+
+/* Submit button */
+.signup-form button {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+.signup-form button:hover {
+    transform: scale(1.05);
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+/* Login link */
+.login-link {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.login-link a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Form errors */
+.form-errors {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+/* Desktop: show both site info and signup card */
+@media (min-width: 992px) {
+    .site-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+/* Mobile: hide site info, center signup card */
+@media (max-width: 991px) {
+    .signup-page {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .site-info {
+        display: none !important;
+    }
+
+    .signup-card {
+        max-width: 90%;
+        width: 100%;
+        text-align: center;
+        flex: 0 0 auto;
+        margin: auto 0;
+    }
+}
