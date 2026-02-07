@@ -1,0 +1,66 @@
+{% extends 'main/base/base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+
+<head>
+  {% load static %}
+
+  <!-- Signup Custom CSS Stylesheet -->
+  <link rel="stylesheet" href="{% static 'signup.css' %}">
+</head>
+
+<div class="signup-page">
+  <!-- Left side: site info (hidden on mobile) -->
+  <div class="site-info d-none d-lg-flex">
+      <h1 class="site-name">Site Name</h1>
+      <p class="site-description">Welcome! Please create an account to get started.</p>
+  </div>
+
+  <!-- Right side: signup card (centered on mobile) -->
+  <div class="signup-card">
+      <h2 class="signup-title">Sign Up</h2>
+      <form method="POST" class="signup-form">
+          {% csrf_token %}
+          
+          {% if form.non_field_errors %}
+              <div class="form-errors">
+                  {{ form.non_field_errors }}
+              </div>
+          {% endif %}
+
+          <div class="form-group">
+              {{ form.username.label_tag }}
+              {{ form.username }}
+              {{ form.username.errors }}
+          </div>
+
+          <div class="form-group">
+              {{ form.email.label_tag }}
+              {{ form.email }}
+              {{ form.email.errors }}
+          </div>
+
+          <div class="form-group">
+              {{ form.password1.label_tag }}
+              {{ form.password1 }}
+              {{ form.password1.errors }}
+          </div>
+
+          <div class="form-group">
+              {{ form.password2.label_tag }}
+              {{ form.password2 }}
+              {{ form.password2.errors }}
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+      </form>
+
+      <p class="login-link">
+          Already have an account? <a href="{% url 'login' %}">Log in</a>
+      </p>
+  </div>
+</div>
+
+{% endblock %}

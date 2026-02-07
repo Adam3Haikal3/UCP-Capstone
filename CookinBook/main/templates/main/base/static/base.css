@@ -1,0 +1,179 @@
+/* Default styling for the navbar */
+.navbar-styling {
+    position: fixed !important;
+    background-color: var(--color-background);
+    width: 100%;
+    height: var(--navbar-height);
+    z-index: 1000;
+}
+
+/* Hamburger icon styling */
+.custom-toggler {
+    border: 2px solid var(--color-text);
+    border-radius: 4px;
+    padding: 6px 10px;
+}
+
+.custom-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Desktop */
+@media (min-width: 992px) { /* Bootstrap lg */
+    .navbar-collapse {
+        display: flex !important;
+        justify-content: space-between;
+    }
+    
+    .navbar-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+    }
+
+    .navbar-right {
+        margin-left: auto;
+        display: flex;
+    }
+    
+    .navbar-toggler {
+        display: none;
+    }
+}
+
+/* Mobile */
+@media (max-width: 991px) {
+    .navbar-styling {
+        height: auto;
+        min-height: var(--navbar-height);
+    }
+    
+    .navbar-toggler {
+        display: block;
+        margin-left: auto;
+    }
+    
+    .navbar-collapse {
+        background-color: var(--color-background);
+        padding: 15px 0;
+    }
+    
+    /* Start with menu hidden on mobile */
+    .navbar-collapse:not(.show) {
+        display: none;
+    }
+    
+    .navbar-center,
+    .navbar-right {
+        position: static;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        margin: 10px 0;
+        width: 100%;
+    }
+
+    .navbar-nav > .nav-item > .nav-link {
+        padding: 10px 0;
+        text-align: center;
+        width: 100%;
+    }
+    
+    /* Hide logo on mobile, adjust brand positioning */
+    .navbar-logo {
+        display: none;
+    }
+    
+    .navbar-brand-container {
+        margin-left: 0 !important;
+        padding-left: 15px;
+    }
+    
+    .navbar-brand-link {
+        padding-left: 0 !important;
+        margin-left: 0;
+    }
+    
+    .navbar-brand {
+        font-size: calc(var(--font-size-nav) * 0.9);
+    }
+}
+
+/* General navbar link styles */
+.navbar-nav > .nav-item > .nav-link {
+    color: var(--color-text);
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: var(--font-size-nav);
+    margin: 0 10px;
+    font-family: var(--font-family);
+    display: inline-block;
+    transition: transform var(--transition-speed) ease;
+}
+
+/* Scale on hover */
+.navbar-nav > .nav-item > .nav-link:hover {
+    transform: scale(1.1);
+}
+
+/* Navbar logo */
+.navbar-logo {
+    position: absolute;
+    left: 1.5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Brand link */
+.navbar-brand-link {
+    text-decoration: none;
+    display: inline-block;
+    padding-left: 75px;
+}
+
+.navbar-brand {
+    color: var(--color-text) !important;
+    font-size: var(--font-size-nav);
+    font-family: var(--font-family);
+    transition: transform var(--transition-speed) ease;
+}
+
+/* Login and signup buttons */
+.nav-item.login-btn .nav-link {
+    border: none;
+    line-height: 1;
+}
+
+/* Signup button */
+.nav-item.signup-btn .nav-link {
+    color: var(--color-text-light) !important;
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius);
+    border: none;
+    line-height: 1;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s ease;
+}
+
+/* Signup button hover */
+.nav-item.signup-btn .nav-link:hover {
+    transform: scale(1.1);
+}
+
+/* Main content below navbar */
+.main {
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}

@@ -1,0 +1,21 @@
+:root {
+    /* Colors */
+    --color-primary: #101010;
+    --color-background: #ffffff;
+    --color-text: #101010;
+    --color-text-light: #ffffff;
+    --color-shadow: rgba(0, 0, 0, 0.2);
+
+    /* Fonts */
+    --font-family: 'Playfair Display', serif;
+
+    /* Font sizes */
+    --font-size-header: 70px;
+    --font-size-base: 16px;
+    --font-size-nav: 21px;
+
+    /* Layout */
+    --navbar-height: 8%;
+    --border-radius: 10px;
+    --transition-speed: 0.3s;
+}

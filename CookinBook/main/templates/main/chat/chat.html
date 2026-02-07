@@ -1,0 +1,36 @@
+{% extends 'main/base/base.html' %}
+
+{% block title %}
+Chat
+{% endblock %}
+
+{% block content %}
+  
+<head>
+  {% load static %}
+
+  <!-- Home Main Custom CSS Stylesheet -->
+  <link rel="stylesheet" href="{% static 'chat.css' %}">
+
+</head>
+
+<body>
+  
+ <!-- Introductory Content -->
+  <div class="introduction-content">
+    <div class="introduction-header-wrapper">
+      <div class="introduction-header">
+        Here's a Title,<br>Continued Title!
+      </div>
+      <div class="introduction-body">
+        Introduction Body
+      </div>
+      <div class="text-center">
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-lg rounded-pill get-started-btn">Get Started</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+{% endblock %}
