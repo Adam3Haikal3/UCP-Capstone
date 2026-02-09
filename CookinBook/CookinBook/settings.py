@@ -133,6 +133,3 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Gemini Configuration
-GEMINI_API_KEY = "AIzaSyC9PVm5F-2Q23BMtGzk8nFOWjRN1MvnXO0"
