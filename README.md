@@ -10,11 +10,13 @@ python manage.py runserver
 ## How to test the mock gemini wrapper:
 cd into CookinBook
 1. type into shell one-by-one:
-    python manage.py shell
-    from gemini_wrapper.client import CookinBookBot 
-    bot = CookinBookBot()
+
+    - python manage.py shell
+    - from gemini_wrapper.client import CookinBookBot 
+    - bot = CookinBookBot()
 
 2. paste this whole loop in the shell (so you don't need to always type print(bot.send_message("..."))): 
+    
     while True:
         user_input = input("You: ")
         if user_input.lower() == "quit":
