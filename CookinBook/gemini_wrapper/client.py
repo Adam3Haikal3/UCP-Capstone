@@ -4,6 +4,7 @@ from django.conf import settings
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
 
+
 # Elasticsearch part
 def search_recipes(query: str):
     """
@@ -13,10 +14,30 @@ def search_recipes(query: str):
     # Mock Logic (using taco as an example)
     if "taco" in query.lower():
         return [
-            {"id": "rec_01", "title": "Street Style Tacos", "ingredients": ["Mini Corn Tortillas", "Carne Asada", "Onion", "Cilantro"]},
-            {"id": "rec_02", "title": "Vegetarian Tacos", "ingredients": ["Corn Tortillas", "Black Beans", "Avocado", "Salsa"]}
+            {
+                "id": "rec_01",
+                "title": "Street Style Tacos",
+                "ingredients": [
+                    "Mini Corn Tortillas",
+                    "Carne Asada",
+                    "Onion",
+                    "Cilantro",
+                ],
+            },
+            {
+                "id": "rec_02",
+                "title": "Vegetarian Tacos",
+                "ingredients": ["Corn Tortillas", "Black Beans", "Avocado", "Salsa"],
+            },
         ]
-    return [{"id": "rec_99", "title": f"Generic {query} Dish", "ingredients": [f"Fresh {query}", "Salt", "Olive Oil"]}]
+    return [
+        {
+            "id": "rec_99",
+            "title": f"Generic {query} Dish",
+            "ingredients": [f"Fresh {query}", "Salt", "Olive Oil"],
+        }
+    ]
+
 
 # UCP part
 def execute_purchase(items: list[str]):
@@ -25,12 +46,14 @@ def execute_purchase(items: list[str]):
     """
     print(f"\n[Wrapper Log] Connecting to Google UCP to buy: {items}...")
     return {
-        "status": "success", 
+        "status": "success",
         "transaction_id": "TX-UCP-77821",
-        "message": "Payment processed via UCP."
+        "message": "Payment processed via UCP.",
     }
 
+
 # --- THE MAIN WRAPPER CLASS ---
+
 
 class CookinBookBot:
     def __init__(self):
@@ -43,7 +66,7 @@ class CookinBookBot:
         3. If the user confirms, call 'execute_purchase'.
         4. Be brief and friendly.
         """
-        
+
         # 2. Initialize the client using the key from settings.py
         try:
             self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
@@ -58,20 +81,22 @@ class CookinBookBot:
                 system_instruction=self.system_prompt,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
                     disable=False
-                )
-            )
+                ),
+            ),
         )
-        
+
         # Simple cart memory (reset every time the class is instantiated)
-        self.cart = [] 
+        self.cart = []
 
     def send_message(self, user_text):
         """
         Sends a message to the bot and returns the text response.
         """
-        cart_status = f"Current Cart: {self.cart}" if self.cart else "Current Cart: Empty"
+        cart_status = (
+            f"Current Cart: {self.cart}" if self.cart else "Current Cart: Empty"
+        )
         full_prompt = f"[System Info: {cart_status}]\nUser says: {user_text}"
-        
+
         try:
             response = self.chat.send_message(full_prompt)
             return response.text
