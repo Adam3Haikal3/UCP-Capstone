@@ -11,8 +11,12 @@ from django.views.decorators.http import require_POST
 # Create your views here.
 def chat_view(request):
     return render(request, "main/chat/chat.html")
+
+
 def home_view(request):
     return render(request, "main/home/home.html")
+
+
 @require_POST
 def chat_send(request):
     try:
@@ -24,10 +28,9 @@ def chat_send(request):
     if not user_message:
         return JsonResponse({"error": "Message is empty"}, status=400)
 
-    #replace later with AI call, recipe search, database lookup
+    # replace later with AI call, recipe search, database lookup
     reply = f"You said: {user_message}"
     return JsonResponse({"reply": reply})
-
 
 
 def history_view(request):

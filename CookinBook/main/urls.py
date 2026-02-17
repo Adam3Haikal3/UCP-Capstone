@@ -5,7 +5,7 @@ from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path("", views.home_view, name="home"),
-  # Redirect to chat page on startup
+    # Redirect to chat page on startup
     path("chat/", views.chat_view, name="chat"),
     path("chat/send/", views.chat_send, name="chat_send"),
     path("history/", views.history_view, name="history"),
