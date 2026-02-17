@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,79 +14,234 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Recipe',
+            name="Recipe",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('elasticsearch_id', models.CharField(max_length=100, unique=True)),
-                ('title', models.CharField(max_length=255)),
-                ('ingredients', models.JSONField(blank=True, default=list)),
-                ('instructions', models.TextField(blank=True, default='')),
-                ('cook_time', models.CharField(blank=True, default='', max_length=50)),
-                ('servings', models.PositiveIntegerField(blank=True, null=True)),
-                ('cached_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("elasticsearch_id", models.CharField(max_length=100, unique=True)),
+                ("title", models.CharField(max_length=255)),
+                ("ingredients", models.JSONField(blank=True, default=list)),
+                ("instructions", models.TextField(blank=True, default="")),
+                ("cook_time", models.CharField(blank=True, default="", max_length=50)),
+                ("servings", models.PositiveIntegerField(blank=True, null=True)),
+                ("cached_at", models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.CreateModel(
-            name='ChatConversation',
+            name="ChatConversation",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(blank=True, default='New Chat', max_length=255)),
-                ('started_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='conversations', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "title",
+                    models.CharField(blank=True, default="New Chat", max_length=255),
+                ),
+                ("started_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="conversations",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ChatMessage',
+            name="ChatMessage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sender', models.CharField(choices=[('B', 'Bot'), ('U', 'User')], max_length=1)),
-                ('content', models.TextField()),
-                ('sent_at', models.DateTimeField(auto_now_add=True)),
-                ('conversation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to='main.chatconversation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "sender",
+                    models.CharField(
+                        choices=[("B", "Bot"), ("U", "User")], max_length=1
+                    ),
+                ),
+                ("content", models.TextField()),
+                ("sent_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "conversation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messages",
+                        to="main.chatconversation",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['sent_at'],
+                "ordering": ["sent_at"],
             },
         ),
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('birth_date', models.DateField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("birth_date", models.DateField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ShoppingListSession',
+            name="ShoppingListSession",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('total_cost', models.DecimalField(decimal_places=2, default=0.0, max_digits=10)),
-                ('status', models.CharField(choices=[('NS', 'Not Started'), ('IP', 'In Progress'), ('C', 'Completed')], default='NS', max_length=2)),
-                ('order_status', models.CharField(blank=True, choices=[('P', 'Pending'), ('OF', 'Order Finalized'), ('D', 'Delivered')], default='P', max_length=2)),
-                ('delivery_method', models.CharField(blank=True, choices=[('P', 'Pickup'), ('D', 'Delivery')], default='', max_length=1)),
-                ('ucp_transaction_id', models.CharField(blank=True, default='', max_length=100)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('completed_at', models.DateTimeField(blank=True, null=True)),
-                ('conversation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='shopping_sessions', to='main.chatconversation')),
-                ('recipes', models.ManyToManyField(blank=True, related_name='shopping_sessions', to='main.recipe')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='shopping_sessions', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "total_cost",
+                    models.DecimalField(decimal_places=2, default=0.0, max_digits=10),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("NS", "Not Started"),
+                            ("IP", "In Progress"),
+                            ("C", "Completed"),
+                        ],
+                        default="NS",
+                        max_length=2,
+                    ),
+                ),
+                (
+                    "order_status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("P", "Pending"),
+                            ("OF", "Order Finalized"),
+                            ("D", "Delivered"),
+                        ],
+                        default="P",
+                        max_length=2,
+                    ),
+                ),
+                (
+                    "delivery_method",
+                    models.CharField(
+                        blank=True,
+                        choices=[("P", "Pickup"), ("D", "Delivery")],
+                        default="",
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "ucp_transaction_id",
+                    models.CharField(blank=True, default="", max_length=100),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("completed_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "conversation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="shopping_sessions",
+                        to="main.chatconversation",
+                    ),
+                ),
+                (
+                    "recipes",
+                    models.ManyToManyField(
+                        blank=True, related_name="shopping_sessions", to="main.recipe"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="shopping_sessions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ShoppingListItem',
+            name="ShoppingListItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ingredient_name', models.CharField(max_length=100)),
-                ('quantity', models.DecimalField(decimal_places=2, default=1, max_digits=10)),
-                ('unit', models.CharField(max_length=30)),
-                ('price', models.DecimalField(decimal_places=2, default=0.0, max_digits=10)),
-                ('retailer', models.CharField(blank=True, default='', max_length=100)),
-                ('is_available', models.BooleanField(default=True)),
-                ('purchased_at', models.DateTimeField(blank=True, null=True)),
-                ('recipe', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='shopping_items', to='main.recipe')),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='main.shoppinglistsession')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("ingredient_name", models.CharField(max_length=100)),
+                (
+                    "quantity",
+                    models.DecimalField(decimal_places=2, default=1, max_digits=10),
+                ),
+                ("unit", models.CharField(max_length=30)),
+                (
+                    "price",
+                    models.DecimalField(decimal_places=2, default=0.0, max_digits=10),
+                ),
+                ("retailer", models.CharField(blank=True, default="", max_length=100)),
+                ("is_available", models.BooleanField(default=True)),
+                ("purchased_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "recipe",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="shopping_items",
+                        to="main.recipe",
+                    ),
+                ),
+                (
+                    "session",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="items",
+                        to="main.shoppinglistsession",
+                    ),
+                ),
             ],
         ),
     ]
