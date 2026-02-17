@@ -122,6 +122,7 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     os.path.join(BASE_DIR, "main", "templates", "main", "base", "static"),
+    os.path.join(BASE_DIR, "main", "templates", "main", "home", "static"),
     os.path.join(BASE_DIR, "main", "templates", "main", "chat", "static"),
     os.path.join(BASE_DIR, "main", "templates", "main", "history", "static"),
     os.path.join(BASE_DIR, "main", "templates", "main", "users", "login", "static"),
