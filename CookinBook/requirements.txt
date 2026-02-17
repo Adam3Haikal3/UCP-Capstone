@@ -2,3 +2,9 @@
 # Install with: pip install -r requirements.txt
 
 Django>=5.0.6,<6.0
+
+# For gemini integration
+google-genai
+
+# For loading environment variables from .env file
+python-dotenv
