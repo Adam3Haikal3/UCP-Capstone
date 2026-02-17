@@ -1,36 +1,83 @@
 {% extends 'main/base/base.html' %}
+{% load static %}
 
-{% block title %}
-Chat
-{% endblock %}
+{% block title %}Chat{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'chat.css' %}">
+<!--main chat layout container: centers chat interface and mimics ChatGPT-style layout.-->
+<div class="chatgpt-shell">
+  <!--prompt text shown before user begins chatting. Acts as the landing state message. -->
+  <div class="chatgpt-prompt">Need a recipe, ingredient list, or step-by-step help?</div>
+  <!--message display container. JavaScript dynamically inserts user and bot messages here.-->
+  <div id="messages" class="messages"></div>
+  <!--chat input form. Submitting this form sends the message to the backend via fetch(). -->
+  <form id="chat-form" class="chat-form">
+    {% csrf_token %}
+    <button type="button" class="icon-btn" aria-label="Add">+</button>
+    <!--user text input field -->
+    <input
+      id="chat-input"
+      class="chat-input"
+      type="text"
+      placeholder="Ask anything"
+      autocomplete="off"
+    />
+    <!--submit button (styled as circular send icon) -->
+    <button type="submit" class="send-btn" aria-label="Send">➤</button>
+  </form>
+</div>
+
   
-<head>
-  {% load static %}
+<script>
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("chat-input");
+  const messages = document.getElementById("messages");
+  /*used to control chat behavior dynamically.*/
+  const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
+  const csrftoken = csrfElement ? csrfElement.value : null;
+  /*
+    addMessage()- Dynamically creates and inserts a new message into the chat window.
+  */
+  function addMessage(text, who) {
+    const div = document.createElement("div");
+    //assign styling class depending on sender
+    div.className = who === "user" ? "user-message" : "bot-message";
+    //set visible message text
+    div.textContent = text;
+    //append message to message container
+    messages.appendChild(div);
+    //auto-scroll to bottom after new message 
+    messages.scrollTop = messages.scrollHeight;
+  }
+  /*event listener for chat form submission. Prevents page refresh and instead sends message via fetch().*/
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+     //do nothing if input is empty
+    if (!text) return;
+    //immediately show user's message in chat UI
+    addMessage("You: " + text, "user");
+    input.value = "";
+    
+    /*Send message to backend endpoint: /chat/send/ Using JSON payload.*/
+    const res = await fetch("/chat/send/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ message: text }),
+    });
 
-  <!-- Home Main Custom CSS Stylesheet -->
-  <link rel="stylesheet" href="{% static 'chat.css' %}">
-
-</head>
-
-<body>
-  
- <!-- Introductory Content -->
-  <div class="introduction-content">
-    <div class="introduction-header-wrapper">
-      <div class="introduction-header">
-        Here's a Title,<br>Continued Title!
-      </div>
-      <div class="introduction-body">
-        Introduction Body
-      </div>
-      <div class="text-center">
-        <a href="{% url 'signup' %}" class="btn btn-primary btn-lg rounded-pill get-started-btn">Get Started</a>
-      </div>
-    </div>
-  </div>
-
-</body>
-
+    const data = await res.json();
+    /*Handle server errors. If backend returns error status, display message.*/
+    if (!res.ok) {
+      addMessage("Error: " + (data.error || "Server error"), "bot");
+      return;
+    }
+    // Display backend reply
+    addMessage("Bot: " + data.reply, "bot");
+  });
+</script>
 {% endblock %}

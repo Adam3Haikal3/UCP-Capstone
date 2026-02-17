@@ -1,91 +1,89 @@
-body {
-    font-family: var(--font-family);
-    margin: 0;
-    padding: 0;
+/*chat page layout (centers like ChatGPT does)*/
+.chatgpt-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px;
+
+  /*center the prompt + input vertically */
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+
 }
 
-.introduction-content {
-    margin-top: -30px;
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    height: 900px;
-    padding: 0 20px;
-    color: var(--color-text-light);
-    font-family: var(--font-family);
-    overflow: hidden;
-    text-align: center;
-    display: block;
+/* prompt text */
+.chatgpt-prompt {
+  text-align: center;
+  font-family: 'Caveat', cursive;
+  font-size: 48px;
+  margin: 0 0 28px 0; 
 }
 
-/* Optional Background Image */
-.introduction-content::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    background-image: url('/static/images/homepage_background.jpeg');
-    background-size: 106%;
-    background-position: center;
-    background-repeat: no-repeat;
+/* messages (when empty, it won’t push things) */
+.messages {
+  width: 100%;
+  max-width: 820px;
+  max-height: 40vh;
+  overflow-y: auto;
+  margin: 0 0 18px 0;
+  padding: 10px;
 }
 
-.introduction-header {
-    color: var(--color-text);
-    font-size: var(--font-size-header);
-    line-height: 1.2;
-    font-weight: 300;
-    border-bottom: 2px solid var(--color-primary);
-    width: 80%;
-    padding-bottom: 10px;
-    margin-top: -20px;
+/* shape of input box*/
+.chat-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  max-width: 820px;
+  padding: 12px 16px;
+
+  border: 1px solid #e1e1e1;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
-.introduction-header-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 225px;
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #e1e1e1;
+  background: white;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-.introduction-body {
-    position: relative;
-    padding: 20px;
-    color: var(--color-text);
-    text-align: center;
+.chat-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background: transparent;
+}
+/*send button*/
+.send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: #111;
+  color: white;
+  cursor: pointer;
 }
 
-.get-started-btn {
-    width: 225px;
-    background-color: var(--color-primary);
-    border: none;
-    transition: transform var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1);
-    color: var(--color-text-light);
+.send-btn:hover {
+  opacity: 0.9;
 }
 
-.get-started-btn:hover {
-    background-color: var(--color-primary);
-    transform: scale(1.1);
-    transition: transform var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1);
-}
+/* messages */
+.user-message { text-align: right; margin-bottom: 8px; }
+.bot-message  { text-align: left;  margin-bottom: 8px; }
 
-.get-started-btn:focus,
-.get-started-btn:active {
-    background-color: var(--color-primary) !important;
-    color: var(--color-text-light) !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-.btn-primary:not(:disabled):not(.disabled):active,
-.btn-primary:not(:disabled):not(.disabled).active {
-    background-color: var(--color-primary) !important;
-    color: var(--color-text-light) !important;
-    border-color: var(--color-primary) !important;
+.chatgpt-shell {
+  transform: translateY(-40px);
 }
