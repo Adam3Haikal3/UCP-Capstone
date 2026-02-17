@@ -12,6 +12,9 @@
     <meta name="author" content="klove98">
     <meta name="keywords" content="keyword 1, keyword 2">
 
+    <!-- Cute Cookbook Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Quicksand:wght@400;500;600&family=Caveat:wght@600&display=swap" rel="stylesheet">
+
     <!-- Viewport configuration -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -32,8 +35,8 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-styling" id="navbar">
         <div class="d-flex align-items-left navbar-brand-container">
-            <img src="{% static 'images/generic_logo.jpg' %}" alt="Logo" class="navbar-logo d-none d-lg-block">
-            <a href="{% url 'chat' %}" class="navbar-brand-link">
+            <img src="{% static 'images/CookinBookLogo.jpg' %}" alt="Logo" class="navbar-logo d-none d-lg-block">
+            <a href="{% url 'home' %}" class="navbar-brand-link">
                 <span class="navbar-brand">Cookin' Book</span>
             </a>
         </div>
@@ -47,7 +50,12 @@
             </div>
         
             <!-- Center section -->
+        
+        
             <ul class="navbar-nav mx-auto navbar-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>  
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'chat' %}">Chat</a>
                 </li>  
@@ -55,6 +63,7 @@
                     <a class="nav-link" href="{% url 'history' %}">History</a>
                 </li>
             </ul>
+
         
             <!-- Right section -->
             <ul class="navbar-nav navbar-right">
@@ -75,14 +84,10 @@
     </nav>
 
     <div id="content" class="main">
-        <div class="row justify-content-center">
-            <div class="col-12"> <!-- This line affects how wide the displays are on the screen -->
-                <hr class="mt-0 mb-0">
-                {% block content %}
-                {% endblock %}
-            </div>
-        </div>
+        {% block content %}
+        {% endblock %}
     </div>
+
 
     <!-- JQuery library (MUST come before Bootstrap JS) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

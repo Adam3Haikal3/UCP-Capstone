@@ -1,0 +1,37 @@
+{% extends 'main/base/base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- Home Page CSS (only affects this page) -->
+<link rel="stylesheet" href="{% static 'home.css' %}">
+
+<div class="introduction-content">
+  <div class="introduction-header-wrapper">
+
+    <!-- Main Title -->
+    <div class="introduction-header handwritten">
+      Cookin' Book 
+    </div>
+
+    <!-- Short Description -->
+    <div class="introduction-body">
+      Cookin’ Book is your AI-powered recipe assistant.
+      Discover meals, generate ingredient lists, and get step-by-step
+      cooking guidance all in one place.
+    </div>
+
+    <!-- Get Started Button -->
+    <div class="text-center">
+      <a href="{% url 'signup' %}"
+         class="btn btn-primary btn-lg rounded-pill get-started-btn">
+        Get Started
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

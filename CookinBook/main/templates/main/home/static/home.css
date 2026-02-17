@@ -1,0 +1,58 @@
+/* Warm cookbook background */
+body {
+  background-color: #fdfaf6;
+}
+
+/* Main container */
+.introduction-content {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+/* Center wrapper */
+.introduction-header-wrapper {
+  text-align: center;
+  max-width: 900px;
+}
+
+/* Main Title */
+.introduction-header {
+  font-family: 'Playfair Display', serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: #3b3b3b;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+/* Body text */
+.introduction-body {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 22px;
+  color: #6b5e57;
+  line-height: 1.6;
+  margin-bottom: 35px;
+}
+
+/* Get Started Button */
+.get-started-btn {
+  font-family: 'Quicksand', sans-serif;
+  background-color: #ff914d;
+  border: none;
+  padding: 14px 32px;
+  font-size: 18px;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.get-started-btn:hover {
+  background-color: #ff7a26;
+  transform: translateY(-2px);
+}
+.handwritten {
+  font-family: 'Caveat', cursive;
+  font-size: 90px;
+}

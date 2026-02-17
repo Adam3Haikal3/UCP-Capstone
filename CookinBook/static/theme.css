@@ -15,7 +15,23 @@
     --font-size-nav: 21px;
 
     /* Layout */
-    --navbar-height: 8%;
-    --border-radius: 10px;
-    --transition-speed: 0.3s;
+  --navbar-height: 90px; /* try 80–100px */
+  --border-radius: 10px;
+  --transition-speed: 0.3s;
+
+}
+/* Navbar Links Styling */
+
+.navbar-nav .nav-link,
+.navbar-nav .nav-link:visited,
+.navbar-nav .nav-link:focus {
+    color: var(--color-text) !important;
+    font-family: var(--font-family);
+    font-size: var(--font-size-nav);
+    transition: var(--transition-speed);
+    text-decoration: none;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ff6b6b !important;
 }

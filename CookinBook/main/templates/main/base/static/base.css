@@ -103,9 +103,12 @@
     }
 }
 
-/* General navbar link styles */
-.navbar-nav > .nav-item > .nav-link {
-    color: var(--color-text);
+/* ensures navbar links maintain theme color*/
+.navbar-nav > .nav-item > .nav-link,
+.navbar-nav > .nav-item > .nav-link:visited,
+.navbar-nav > .nav-item > .nav-link:focus,
+.navbar-nav > .nav-item > .nav-link:active {
+    color: var(--color-text) !important;
     padding: 14px 16px;
     text-decoration: none;
     font-size: var(--font-size-nav);
@@ -115,12 +118,13 @@
     transition: transform var(--transition-speed) ease;
 }
 
+
 /* Scale on hover */
 .navbar-nav > .nav-item > .nav-link:hover {
     transform: scale(1.1);
 }
 
-/* Navbar logo */
+/*navbar logo */
 .navbar-logo {
     position: absolute;
     left: 1.5%;
@@ -153,8 +157,9 @@
 
 /* Signup button */
 .nav-item.signup-btn .nav-link {
-    color: var(--color-text-light) !important;
-    background-color: var(--color-primary);
+    
+    color: var(--color-primary);
+    background-color: var(--color-text-light) !important;
     border-radius: var(--border-radius);
     border: none;
     line-height: 1;
@@ -166,14 +171,23 @@
     transform: scale(1.1);
 }
 
-/* Main content below navbar */
-.main {
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
+
 
 body {
     margin: 0;
     padding: 0;
+}
+/*Ensures all navbar links maintain color theme*/
+a.nav-link {
+  color: var(--color-text) !important;
+}
+html, body {
+  height: 100%;
+}
+
+.main {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: var(--navbar-height); /* keeps content below fixed navbar */
 }
