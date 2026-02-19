@@ -7,6 +7,7 @@
 >    - `Timebox 3 — Shopping, Testing & Production`
 > 2. **Create these labels** if they don't already exist:
 >    `backend`, `frontend`, `database`, `API`, `security`, `infrastructure`, `testing`, `CI/CD`, `integration`, `UCP`, `data`, `admin`, `documentation`
+>    *(18 issues total: 7 in Timebox 2, 11 in Timebox 3)*
 > 3. **For each issue below**, click "New Issue" in GitHub, then:
 >    - Copy the **Title** line into the issue title field
 >    - Copy everything from **Description** through **Key Files** into the issue body
@@ -260,7 +261,7 @@ None
 
 # Timebox 3 — Shopping, Testing & Production
 
-**Milestone Goal:** Users can generate shopping lists from recipes, execute purchases via UCP, and the application is tested and hardened for deployment.
+**Milestone Goal:** Users can generate shopping lists from recipes, execute purchases via UCP, track order status, and the application is tested, containerized, and hardened for deployment.
 
 ---
 
@@ -521,6 +522,123 @@ Should be done **last** in the timebox, after all features merge.
 
 ---
 
+## Issue 16
+
+**Title:** Set up Elasticsearch infrastructure and recipe data ingestion pipeline
+
+**Milestone:** Timebox 3 — Shopping, Testing & Production
+**Labels:** `backend`, `infrastructure`, `data`
+
+### Description
+
+Issue 5 (Timebox 2) gets basic recipe search working with a JSON fixture or Django ORM queries as a stopgap. However, the project's architecture (per the presentation) is built around Elasticsearch for scalable full-text recipe search. This issue sets up the full Elasticsearch infrastructure: a running ES instance (via Docker), index configuration with proper mappings for recipe fields, a data ingestion pipeline to load recipes from an external source (public recipe API, scraped dataset, or curated CSV/JSON), and updates `search_recipes()` to query Elasticsearch instead of the ORM.
+
+### Acceptance Criteria
+
+- [ ] A `docker-compose.yml` includes an Elasticsearch service (or ES is added to the existing compose file from Issue 18)
+- [ ] An Elasticsearch index is defined with proper field mappings: `title` (text, analyzed), `ingredients` (text/keyword), `instructions` (text), `cuisine` (keyword), `prep_time` (integer)
+- [ ] `elasticsearch-dsl` and/or `django-elasticsearch-dsl` are added to `requirements.txt`
+- [ ] ES connection settings are configured in `settings.py` via environment variable (`ELASTICSEARCH_URL`)
+- [ ] A management command or script (`manage.py seed_recipes` or similar) loads recipe data from a source file into the ES index
+- [ ] At least 50+ recipes are included in the seed data (covering diverse cuisines and dietary types)
+- [ ] `search_recipes()` in `client.py` queries the Elasticsearch index instead of hardcoded/ORM data
+- [ ] Search supports fuzzy matching and ingredient-based queries
+- [ ] The `Recipe` model's `elasticsearch_id` field is used to link Django records to ES documents
+- [ ] `.env.example` updated with `ELASTICSEARCH_URL`
+- [ ] `README.md` updated with ES setup instructions
+
+### Dependencies
+
+- **Issue 5** (basic recipe data source from Timebox 2 — this replaces the stopgap approach)
+
+### Key Files
+
+- `CookinBook/gemini_wrapper/client.py` — `search_recipes()`
+- `CookinBook/CookinBook/settings.py`
+- `CookinBook/requirements.txt`
+- New: `docker-compose.yml` (or update existing)
+- New: management command for data seeding (e.g., `CookinBook/main/management/commands/seed_recipes.py`)
+- New: seed data file (e.g., `CookinBook/data/recipes.json`)
+
+---
+
+## Issue 17
+
+**Title:** Add order tracking UI for post-purchase status
+
+**Milestone:** Timebox 3 — Shopping, Testing & Production
+**Labels:** `backend`, `frontend`, `UCP`
+
+### Description
+
+After a user executes a purchase via UCP (Issue 10), there is currently no way to check order status. The `ShoppingListSession` model already has an `ORDER_STATUS` field with values `"OF"` (OrderFinalized) and `"D"` (Delivered), but no views or UI expose this to the user. Create an order tracking page where users can see their past orders, current status, items purchased, and total cost. Optionally, if UCP provides a status-check endpoint, poll it to update order status.
+
+### Acceptance Criteria
+
+- [ ] New URL pattern exists (e.g., `/orders/` and `/orders/<session_id>/`)
+- [ ] View is protected with `@login_required`
+- [ ] Order list page shows all `ShoppingListSession` records where `order_status` is set, ordered by most recent
+- [ ] Each order entry displays: date, total cost, status (OrderFinalized / Delivered), number of items
+- [ ] Order detail page shows full item list: ingredient name, quantity, unit, retailer, price
+- [ ] Status is displayed with visual indicators (e.g., badge colors: yellow for OrderFinalized, green for Delivered)
+- [ ] An "Orders" or "My Orders" link is added to the navbar (visible when authenticated)
+- [ ] Empty state shown when user has no orders
+- [ ] Design consistent with existing Bootstrap styling and theme variables
+
+### Dependencies
+
+- **Issue 10** (UCP purchase integration — orders must exist first)
+
+### Key Files
+
+- `CookinBook/main/views.py`
+- `CookinBook/main/urls.py`
+- New template: `CookinBook/main/templates/main/orders/orders.html`
+- New template: `CookinBook/main/templates/main/orders/order_detail.html`
+- `CookinBook/main/templates/main/base/base.html` (navbar update)
+
+---
+
+## Issue 18
+
+**Title:** Create deployment configuration with Docker and docker-compose
+
+**Milestone:** Timebox 3 — Shopping, Testing & Production
+**Labels:** `infrastructure`
+
+### Description
+
+There is no deployment configuration in the project. Create a `Dockerfile` for the Django application and a `docker-compose.yml` that orchestrates the app, database (PostgreSQL for production), and Elasticsearch. Include a production-ready WSGI server (Gunicorn), static file collection, and environment-based configuration. This enables the team to deploy the app to any Docker-capable hosting platform (Railway, Render, AWS ECS, etc.).
+
+### Acceptance Criteria
+
+- [ ] A `Dockerfile` exists at the repo root that builds the Django application
+- [ ] The Dockerfile uses a multi-stage build or slim Python base image for smaller size
+- [ ] Gunicorn (or uvicorn) is added to `requirements.txt` as the production WSGI/ASGI server
+- [ ] A `docker-compose.yml` orchestrates: Django app, PostgreSQL database, Elasticsearch (for Issue 16)
+- [ ] `docker-compose up` starts all services and the app is accessible at `localhost:8000`
+- [ ] Static files are collected via `python manage.py collectstatic` in the Docker build
+- [ ] `settings.py` supports PostgreSQL via `DATABASE_URL` environment variable (with SQLite fallback for local dev)
+- [ ] `dj-database-url` (or equivalent) added to `requirements.txt` for database URL parsing
+- [ ] `.env.example` updated with `DATABASE_URL` and any new variables
+- [ ] A `.dockerignore` file excludes unnecessary files (`.git`, `__pycache__`, `.env`, `db.sqlite3`)
+- [ ] `README.md` updated with Docker-based setup instructions as an alternative to manual setup
+
+### Dependencies
+
+None (can start immediately, but coordinates with Issue 16 for Elasticsearch in compose)
+
+### Key Files
+
+- New: `Dockerfile`
+- New: `docker-compose.yml`
+- New: `.dockerignore`
+- `CookinBook/requirements.txt`
+- `CookinBook/CookinBook/settings.py`
+- `CookinBook/.env.example`
+
+---
+
 # Quick Reference
 
 ## Dependency Graph
@@ -550,12 +668,19 @@ Can start immediately (needs Issue 1 from TB2):
   - Issue 8:  Shopping list UI             [backend, frontend]
   - Issue 12: Admin registration           [backend, admin]
 
-No dependencies:
+No dependencies (can start immediately):
   - Issue 13: Security settings            [infrastructure, security]
+  - Issue 18: Deployment (Docker)          [infrastructure]
+
+After Issue 5 (TB2) merges:
+  - Issue 16: Elasticsearch & data pipeline [backend, infrastructure, data]
 
 After Issue 8 merges:
   - Issue 9:  Chat → Shopping flow         [backend, integration]
   - Issue 10: UCP integration              [backend, integration, UCP]
+
+After Issue 10 merges:
+  - Issue 17: Order tracking UI            [backend, frontend, UCP]
 
 After Issues 1, 2, 8 are stable:
   - Issue 11: Tests                        [testing, backend]
@@ -580,7 +705,10 @@ After everything merges:
 | **P2** | 7 | CI test runner | Timebox 2 |
 | **P0** | 8 | Shopping list UI | Timebox 3 |
 | **P0** | 10 | UCP integration | Timebox 3 |
+| **P0** | 18 | Deployment (Docker) | Timebox 3 |
 | **P1** | 9 | Chat → Shopping flow | Timebox 3 |
+| **P1** | 16 | Elasticsearch & data pipeline | Timebox 3 |
+| **P1** | 17 | Order tracking UI | Timebox 3 |
 | **P1** | 11 | Unit & integration tests | Timebox 3 |
 | **P1** | 13 | Security settings | Timebox 3 |
 | **P2** | 12 | Admin registration | Timebox 3 |
@@ -591,16 +719,16 @@ After everything merges:
 
 | Label | Color Suggestion | Used In |
 |-------|-----------------|---------|
-| `backend` | `#0075ca` | Issues 1-2, 4-6, 8-14 |
-| `frontend` | `#7057ff` | Issues 3-4, 8 |
+| `backend` | `#0075ca` | Issues 1-2, 4-6, 8-14, 16-17 |
+| `frontend` | `#7057ff` | Issues 3-4, 8, 17 |
 | `database` | `#d73a4a` | Issue 1 |
 | `API` | `#0e8a16` | Issue 2 |
 | `security` | `#b60205` | Issues 6, 13 |
-| `infrastructure` | `#006b75` | Issues 7, 13-14 |
+| `infrastructure` | `#006b75` | Issues 7, 13-14, 16, 18 |
 | `testing` | `#fbca04` | Issues 7, 11 |
 | `CI/CD` | `#1d76db` | Issue 7 |
 | `integration` | `#5319e7` | Issues 9-10 |
-| `UCP` | `#e99695` | Issue 10 |
-| `data` | `#c2e0c6` | Issue 5 |
+| `UCP` | `#e99695` | Issues 10, 17 |
+| `data` | `#c2e0c6` | Issues 5, 16 |
 | `admin` | `#bfdadc` | Issue 12 |
 | `documentation` | `#0075ca` | Issue 15 |
