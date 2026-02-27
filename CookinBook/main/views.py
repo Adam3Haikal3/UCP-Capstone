@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from .forms import SignUpForm
 from django.contrib import messages
 import json
@@ -33,6 +34,7 @@ def chat_send(request):
     return JsonResponse({"reply": reply})
 
 
+@login_required
 def history_view(request):
     return render(request, "main/history/history.html")
 
@@ -70,6 +72,7 @@ def signup_view(request):
     return render(request, "main/users/signup/signup.html", {"form": form})
 
 
+@login_required
 def profile_view(request):
     return render(request, "main/users/profile/profile.html")
 
