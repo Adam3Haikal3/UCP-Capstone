@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+
 # Create your tests here.
 class SimplePagesTest(TestCase):
     def test_home_page_returns_200(self):
