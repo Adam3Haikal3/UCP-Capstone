@@ -75,7 +75,7 @@ class CookinBookBot:
 
         # 3. Create the chat session with tools attached
         self.chat = self.client.chats.create(
-            model="gemini-flash-lite-latest",
+            model="gemini-3.1-flash-lite-preview",
             config=types.GenerateContentConfig(
                 tools=[search_recipes, execute_purchase],
                 system_instruction=self.system_prompt,
