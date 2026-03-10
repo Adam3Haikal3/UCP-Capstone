@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import SignUpForm
-from django.contrib import messages
-import json
-from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.contrib import messages
+from .forms import SignUpForm
+from .models import ChatConversation, ChatMessage
+from gemini_wrapper.client import CookinBookBot
+import json
 
 
 # Create your views here.
@@ -19,6 +22,9 @@ def home_view(request):
 
 @require_POST
 def chat_send(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+
     try:
         data = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
@@ -28,9 +34,36 @@ def chat_send(request):
     if not user_message:
         return JsonResponse({"error": "Message is empty"}, status=400)
 
-    # replace later with AI call, recipe search, database lookup
-    reply = f"You said: {user_message}"
-    return JsonResponse({"reply": reply})
+    conversation_id = data.get("conversation_id")
+    if conversation_id:
+        try:
+            conversation = ChatConversation.objects.get(
+                id=conversation_id, user=request.user
+            )
+        except ChatConversation.DoesNotExist:
+            return JsonResponse({"error": "Conversation not found"}, status=404)
+    else:
+        conversation = ChatConversation.objects.create(user=request.user)
+
+    ChatMessage.objects.create(
+        conversation=conversation,
+        sender="U",
+        content=user_message,
+    )
+
+    try:
+        bot = CookinBookBot()
+        bot_reply = bot.send_message(user_message)
+    except Exception as e:
+        return JsonResponse({"error": f"Gemini error: {str(e)}"}, status=500)
+
+    ChatMessage.objects.create(
+        conversation=conversation,
+        sender="B",
+        content=bot_reply,
+    )
+
+    return JsonResponse({"response": bot_reply, "conversation_id": conversation.id})
 
 
 def history_view(request):
