@@ -66,6 +66,7 @@ def chat_send(request):
     return JsonResponse({"response": bot_reply, "conversation_id": conversation.id})
 
 
+@login_required
 def history_view(request):
     return render(request, "main/history/history.html")
 
@@ -103,6 +104,7 @@ def signup_view(request):
     return render(request, "main/users/signup/signup.html", {"form": form})
 
 
+@login_required
 def profile_view(request):
     return render(request, "main/users/profile/profile.html")
 
