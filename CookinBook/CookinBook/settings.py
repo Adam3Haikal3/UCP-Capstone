@@ -141,3 +141,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Gemini configuration
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Elasticsearch configuration
+ELASTICSEARCH_HOST = "http://localhost:9200"
+ELASTICSEARCH_INDEX = "recipes"

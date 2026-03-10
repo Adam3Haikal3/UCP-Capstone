@@ -32,3 +32,18 @@ cd into CookinBook
 
 to close the chat, type 'quit'
 exit the shell, type 'exit()'
+
+### How to run ElasticSearch Mock Recipe Search
+Before starting, ensure that ElasticSearch is downloaded and that the server is running
+
+Then, you need to index recipes into the ES server from TheMealDB. CD into CookinBook
+1. type into the shell one-by-one:
+
+    - python manage.py shell
+    - from gemini_wrapper.es import seed_from_db
+    - seed_from_db()
+
+After a little wait, all the recipes should be indexed into the recipe index
+
+Now, to run the recipe search, follow the instructions to run the CookinBook bot and ask for meals
+
