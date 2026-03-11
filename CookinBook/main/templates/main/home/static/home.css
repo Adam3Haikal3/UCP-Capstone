@@ -1,58 +1,221 @@
-/* Warm cookbook background */
-body {
-  background-color: #fdfaf6;
+/* ── Intro Video ── */
+#introVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1) brightness(1);
+  margin-top: -90px;
 }
 
-/* Main container */
-.introduction-content {
-  min-height: calc(100vh - 120px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-}
-
-/* Center wrapper */
-.introduction-header-wrapper {
-  text-align: center;
-  max-width: 900px;
-}
-
-/* Main Title */
-.introduction-header {
+/* ── Shared section styles ── */
+.section-title {
   font-family: 'Playfair Display', serif;
-  font-size: 80px;
+  font-size: clamp(32px, 5vw, 52px);
   font-weight: 700;
-  color: #3b3b3b;
-  margin-bottom: 20px;
-  letter-spacing: 1px;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 12px;
 }
 
-/* Body text */
-.introduction-body {
+.section-subtitle {
   font-family: 'Quicksand', sans-serif;
-  font-size: 22px;
-  color: #6b5e57;
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: #555;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 48px;
   line-height: 1.6;
-  margin-bottom: 35px;
 }
 
-/* Get Started Button */
-.get-started-btn {
+/* ══════════════════════════════
+   What Can You Do — Features
+   ══════════════════════════════ */
+.features-section {
+  padding: 120px 8% 120px;
+  background-color: #fafafa;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 36px 28px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  font-size: 38px;
+  color: #ff8644;
+  margin-bottom: 18px;
+}
+
+.feature-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 10px;
+}
+
+.feature-text {
   font-family: 'Quicksand', sans-serif;
-  background-color: #ff914d;
-  border: none;
-  padding: 14px 32px;
-  font-size: 18px;
-  border-radius: 50px;
-  transition: all 0.3s ease;
+  font-size: 15px;
+  color: #666;
+  line-height: 1.65;
+  margin: 0;
 }
 
-.get-started-btn:hover {
-  background-color: #ff7a26;
-  transform: translateY(-2px);
+/* ══════════════════════════════
+   How It Works — Steps
+   ══════════════════════════════ */
+.steps-section {
+  padding: 120px 8% 100px;
+  background-color: #fff;
 }
-.handwritten {
-  font-family: 'Caveat', cursive;
-  font-size: 90px;
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 640px;
+  margin: 0 auto;
+  gap: 0;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #101010;
+  color: #fff;
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.step-content {
+  padding-top: 4px;
+}
+
+.step-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.step-text {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 15px;
+  color: #666;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.footer-section {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  padding: 20px 0;
+  font-size: 15px;;
+  font-family: var(--font-family);
+  border-top: 1px solid var(--color-text-light);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-left p {
+  margin: 5px 0;
+}
+
+.footer-right {
+  text-align: right;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.footer-links li {
+  margin-left: 20px;
+}
+
+.footer-links li:first-child {
+  margin-left: 0;
+}
+
+.footer-links a {
+  color: var(--color-text-light);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--color-text-light);
+}
+
+
+/* ── Responsive tweaks ── */
+@media (max-width: 600px) {
+  .features-section,
+  .steps-section {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .feature-card {
+    padding: 28px 20px;
+  }
+
+  .step {
+    gap: 16px;
+  }
+
+  .step-number {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .step-connector {
+    margin-left: 21px;
+    height: 32px;
+  }
 }

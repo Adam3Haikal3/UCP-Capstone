@@ -34,12 +34,6 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-styling" id="navbar">
-        <div class="d-flex align-items-left navbar-brand-container">
-            <img src="{% static 'images/CookinBookLogo.jpg' %}" alt="Logo" class="navbar-logo d-none d-lg-block">
-            <a href="{% url 'home' %}" class="navbar-brand-link">
-                <span class="navbar-brand">Cookin' Book</span>
-            </a>
-        </div>
         <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -53,15 +47,14 @@
         
         
             <ul class="navbar-nav mx-auto navbar-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">Home</a>
-                </li>  
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'chat' %}">Chat</a>
-                </li>  
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'history' %}">History</a>
-                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'chat' %}">Chat</a>
+                    </li>  
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'history' %}">History</a>
+                    </li>
+                {% endif %}
             </ul>
 
         
@@ -72,6 +65,11 @@
                         <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                     </li>
                 {% else %}
+                    <li class="nav-item nav-logo-item d-none d-lg-flex">
+                        <a href="{% url 'home' %}">
+                            <img src="{% static 'images/CookinBookLogo.jpg' %}" alt="Logo" class="navbar-logo-inline">
+                        </a>
+                    </li>
                     <li class="nav-item login-btn">
                         <a class="nav-link" href="{% url 'login' %}">Login</a>
                     </li>
