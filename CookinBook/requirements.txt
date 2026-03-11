@@ -8,3 +8,10 @@ google-genai
 
 # For loading environment variables from .env file
 python-dotenv
+
+# For elasticsearch
+elasticsearch
+elasticsearch-dsl
+
+# For calling the MealDB api
+requests

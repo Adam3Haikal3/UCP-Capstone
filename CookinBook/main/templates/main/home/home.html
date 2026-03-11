@@ -8,30 +8,104 @@
 <!-- Home Page CSS (only affects this page) -->
 <link rel="stylesheet" href="{% static 'home.css' %}">
 
-<div class="introduction-content">
-  <div class="introduction-header-wrapper">
+<video id="introVideo" autoplay muted playsinline>
+  <source src="{% static 'images/CookinBookIntroVid.mp4' %}" type="video/mp4">
+</video>
 
-    <!-- Main Title -->
-    <div class="introduction-header handwritten">
-      Cookin' Book 
+<!-- What Can You Do -->
+<section class="features-section">
+  <h2 class="section-title">What Can You Do?</h2>
+  <p class="section-subtitle">Your personal AI-powered kitchen companion, ready to help with anything food-related.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="bi bi-chat-dots"></i></div>
+      <h3 class="feature-heading">Ask Anything</h3>
+      <p class="feature-text">Got a cooking question? Ask our AI chatbot for instant tips, substitutions, and techniques.</p>
     </div>
-
-    <!-- Short Description -->
-    <div class="introduction-body">
-      Cookin’ Book is your AI-powered recipe assistant.
-      Discover meals, generate ingredient lists, and get step-by-step
-      cooking guidance all in one place.
+    <div class="feature-card">
+      <div class="feature-icon"><i class="bi bi-journal-richtext"></i></div>
+      <h3 class="feature-heading">Generate Recipes</h3>
+      <p class="feature-text">Tell us what you have in mind and we'll create a delicious recipe tailored just for you.</p>
     </div>
-
-    <!-- Get Started Button -->
-    <div class="text-center">
-      <a href="{% url 'signup' %}"
-         class="btn btn-primary btn-lg rounded-pill get-started-btn">
-        Get Started
-      </a>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="bi bi-clock-history"></i></div>
+      <h3 class="feature-heading">Save &amp; Revisit</h3>
+      <p class="feature-text">All your conversations and recipes are saved so you can come back to them anytime.</p>
     </div>
-
+    <div class="feature-card">
+      <div class="feature-icon"><i class="bi bi-person-heart"></i></div>
+      <h3 class="feature-heading">Personalized Experience</h3>
+      <p class="feature-text">Set dietary preferences and allergies so every suggestion is perfect for you.</p>
+    </div>
   </div>
-</div>
+</section>
+
+<!-- How It Works -->
+<section class="steps-section">
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-subtitle">Get your first meal shipped in just a few simple steps!</p>
+
+  <div class="steps-container">
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <h3 class="step-heading">Create Your Account</h3>
+        <p class="step-text">Sign up in seconds to create your own customizable profile</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <h3 class="step-heading">Start a Conversation</h3>
+        <p class="step-text">Open the chat and ask anything — request a recipe, get cooking advice, or explore new cuisines.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <h3 class="step-heading">Select a Recipe</h3>
+        <p class="step-text">Follow along with your personalized recipe and cater to your dietary preferences.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <h3 class="step-heading">Alter the Ingredients</h3>
+        <p class="step-text">Modify the ingredients to suit your portion sizes or preferences.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <h3 class="step-heading">Review and Checkout</h3>
+        <p class="step-text">Review your recipe and checkout to get your ingredients delivered to your doorstep.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">6</div>
+      <div class="step-content">
+        <h3 class="step-heading">Cook and Enjoy</h3>
+        <p class="step-text">Follow along with your personalized recipe and enjoy a meal made just for you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer Section -->
+<footer class="footer-section">
+  <div class="footer-content">
+    <div class="footer-left">
+      <p>&copy; 2026 Cookin' Book. All rights reserved.</p>
+      <p>Disclaimer: This is where the disclaimers and legal aspects go.</p>
+    </div>
+    <div class="footer-right">
+      <ul class="footer-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 
 {% endblock %}

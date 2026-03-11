@@ -1,9 +1,13 @@
 from google import genai
 from google.genai import types
 from django.conf import settings
+<<<<<<< feature/14-chat-api-endpoint
 import logging
 
 logger = logging.getLogger(__name__)
+=======
+from gemini_wrapper.es import get_es
+>>>>>>> main
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
 
@@ -14,32 +18,44 @@ def search_recipes(query: str):
     Search for recipes based on a food name.
     """
     print(f"\n[Wrapper Log] Searching Elasticsearch for: '{query}'...")
-    # Mock Logic (using taco as an example)
-    if "taco" in query.lower():
-        return [
-            {
-                "id": "rec_01",
-                "title": "Street Style Tacos",
-                "ingredients": [
-                    "Mini Corn Tortillas",
-                    "Carne Asada",
-                    "Onion",
-                    "Cilantro",
-                ],
+
+    try:
+        es = get_es()
+    except Exception as e:
+        print(f"[Wrapper Log] Failed to connect to ES server: {e}")
+        return []
+
+    index_name = settings.ELASTICSEARCH_INDEX
+
+    # Searches each individual word in the query to try and find hits
+    try:
+        response = es.search(
+            index=index_name,
+            query={
+                "simple_query_string": {
+                    "query": query,
+                    "fields": ["title", "ingredients", "instructions"],
+                    "default_operator": "or",
+                }
             },
+        )
+    except Exception as e:
+        print(f"[Wrapper log] ES search failed: {e}")
+        return []
+
+    result = []
+
+    # By default, goes through the top ten findings from the search and appends them to result
+    for hit in response["hits"]["hits"]:
+        result.append(
             {
-                "id": "rec_02",
-                "title": "Vegetarian Tacos",
-                "ingredients": ["Corn Tortillas", "Black Beans", "Avocado", "Salsa"],
-            },
-        ]
-    return [
-        {
-            "id": "rec_99",
-            "title": f"Generic {query} Dish",
-            "ingredients": [f"Fresh {query}", "Salt", "Olive Oil"],
-        }
-    ]
+                "id": hit["_id"],
+                "title": hit["_source"]["title"],
+                "ingredients": hit["_source"]["ingredients"],
+            }
+        )
+
+    return result
 
 
 # UCP part
