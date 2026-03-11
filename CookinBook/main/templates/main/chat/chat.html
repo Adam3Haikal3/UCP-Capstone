@@ -5,79 +5,230 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'chat.css' %}">
-<!--main chat layout container: centers chat interface and mimics ChatGPT-style layout.-->
-<div class="chatgpt-shell">
-  <!--prompt text shown before user begins chatting. Acts as the landing state message. -->
-  <div class="chatgpt-prompt">Need a recipe, ingredient list, or step-by-step help?</div>
-  <!--message display container. JavaScript dynamically inserts user and bot messages here.-->
-  <div id="messages" class="messages"></div>
-  <!--chat input form. Submitting this form sends the message to the backend via fetch(). -->
-  <form id="chat-form" class="chat-form">
-    {% csrf_token %}
-    <button type="button" class="icon-btn" aria-label="Add">+</button>
-    <!--user text input field -->
-    <input
-      id="chat-input"
-      class="chat-input"
-      type="text"
-      placeholder="Ask anything"
-      autocomplete="off"
-    />
-    <!--submit button (styled as circular send icon) -->
-    <button type="submit" class="send-btn" aria-label="Send">➤</button>
-  </form>
+
+{% if user.is_authenticated %}
+
+<!-- STATE A: Start screen -->
+<div id="chatStart" class="chat-start-screen">
+  <div class="chat-start-inner">
+    <h1 class="chat-start-title">What would you like to cook?</h1>
+
+    <form id="chat-form-start" class="chat-form-start">
+      {% csrf_token %}
+      <input
+        id="chat-input-start"
+        class="chat-input-start"
+        type="text"
+        placeholder="Try: chicken, rice, garlic, spinach"
+        autocomplete="off"
+      />
+      <button type="submit" class="send-btn-start" aria-label="Send">➤</button>
+    </form>
+  </div>
 </div>
 
-  
+<!-- STATE B: Full chat -->
+<div id="chatFull" class="chat-app-shell" style="display:none;">
+  <div class="chat-grid">
+
+    <!-- LEFT: Chat -->
+    <section class="chat-main">
+      <div class="chat-card">
+
+        <div class="chat-card-header">
+          <div class="chat-card-heading">Tell me what ingredients you have</div>
+          <div class="chat-card-subheading">
+            I can help with recipes, ingredient lists, and step-by-step cooking help.
+          </div>
+        </div>
+
+        <div id="messages" class="chat-history" aria-live="polite"></div>
+
+        <div id="loadingRow" class="chat-loading" style="display:none;">
+          <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+          <span>Cooking up an answer…</span>
+        </div>
+
+        <div class="chat-inputbar">
+          <form id="chat-form" class="mb-0">
+            <div class="input-group">
+              <input
+                id="chat-input"
+                class="form-control"
+                type="text"
+                placeholder="Ask anything..."
+                autocomplete="off"
+              />
+              <div class="input-group-append">
+                <button id="sendBtn" class="btn btn-primary" type="submit">Send</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RIGHT: Artifact -->
+    <aside class="artifact-side">
+      <div class="artifact-panel">
+        <div id="artifact-body" class="artifact-body">
+          <div class="artifact-placeholder">
+            Ask for a recipe to see ingredients, steps, or a shopping list here.
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const CHAT_SEND_URL = "{% url 'chat_send' %}";
+
+  const chatStart = document.getElementById("chatStart");
+  const chatFull = document.getElementById("chatFull");
+
+  const formStart = document.getElementById("chat-form-start");
+  const inputStart = document.getElementById("chat-input-start");
+
   const form = document.getElementById("chat-form");
   const input = document.getElementById("chat-input");
   const messages = document.getElementById("messages");
-  /*used to control chat behavior dynamically.*/
-  const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
-  const csrftoken = csrfElement ? csrfElement.value : null;
-  /*
-    addMessage()- Dynamically creates and inserts a new message into the chat window.
-  */
-  function addMessage(text, who) {
-    const div = document.createElement("div");
-    //assign styling class depending on sender
-    div.className = who === "user" ? "user-message" : "bot-message";
-    //set visible message text
-    div.textContent = text;
-    //append message to message container
-    messages.appendChild(div);
-    //auto-scroll to bottom after new message 
-    messages.scrollTop = messages.scrollHeight;
+  const loadingRow = document.getElementById("loadingRow");
+  const artifactBody = document.getElementById("artifact-body");
+  const sendBtn = document.getElementById("sendBtn");
+
+  function getCookie(name) {
+    const cookies = document.cookie ? document.cookie.split(";") : [];
+    for (let i = 0; i < cookies.length; i++) {
+      const c = cookies[i].trim();
+      if (c.startsWith(name + "=")) {
+        return decodeURIComponent(c.substring(name.length + 1));
+      }
+    }
+    return null;
   }
-  /*event listener for chat form submission. Prevents page refresh and instead sends message via fetch().*/
+
+  const csrfToken = getCookie("csrftoken") || "";
+
+  function addMessage(text, who) {
+    const row = document.createElement("div");
+    row.className = "msg-row " + who;
+
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble " + who;
+    bubble.textContent = text;
+
+    row.appendChild(bubble);
+    messages.appendChild(row);
+    messages.scrollTop = messages.scrollHeight;
+    return bubble;
+  }
+
+  function setLoading(show) {
+    loadingRow.style.display = show ? "flex" : "none";
+    input.disabled = show;
+    sendBtn.disabled = show;
+  }
+
+  function showFullChat() {
+    chatStart.style.display = "none";
+    chatFull.style.display = "block";
+    input.focus();
+  }
+
+  async function sendMessage(text) {
+    addMessage(text, "user");
+
+    setLoading(true);
+    const botBubble = addMessage("…", "bot");
+
+    try {
+      const res = await fetch(CHAT_SEND_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+          "Accept": "application/json"
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ message: text })
+      });
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        throw new Error("Non-JSON response from server");
+      }
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        botBubble.textContent = data.error || "Server error";
+        return;
+      }
+
+      const reply = data.reply || "No reply";
+      botBubble.textContent = reply;
+
+      artifactBody.innerHTML = `
+        <div class="artifact-content">
+          <div class="artifact-kicker">Recipe Notes</div>
+          <div class="artifact-text"></div>
+        </div>
+      `;
+      artifactBody.querySelector(".artifact-text").textContent = reply;
+    } catch (err) {
+      botBubble.textContent = "Network error. Please try again.";
+    } finally {
+      setLoading(false);
+      input.focus();
+    }
+  }
+
+  formStart.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const text = inputStart.value.trim();
+    if (!text) return;
+
+    inputStart.value = "";
+    showFullChat();
+    await sendMessage(text);
+  });
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const text = input.value.trim();
-     //do nothing if input is empty
-    if (!text) return;
-    //immediately show user's message in chat UI
-    addMessage("You: " + text, "user");
-    input.value = "";
-    
-    /*Send message to backend endpoint: /chat/send/ Using JSON payload.*/
-    const res = await fetch("/chat/send/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrftoken,
-      },
-      body: JSON.stringify({ message: text }),
-    });
 
-    const data = await res.json();
-    /*Handle server errors. If backend returns error status, display message.*/
-    if (!res.ok) {
-      addMessage("Error: " + (data.error || "Server error"), "bot");
-      return;
-    }
-    // Display backend reply
-    addMessage("Bot: " + data.reply, "bot");
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = "";
+    await sendMessage(text);
   });
+
+  inputStart.focus();
+});
 </script>
+
+{% else %}
+
+<!-- LOGGED OUT CHAT GATE -->
+<div class="chat-gate-shell">
+  <div class="chat-gate-card">
+    <h1 class="chat-gate-title">Cookin’ Book</h1>
+    <p class="chat-gate-subtitle">
+      Log in or create an account to start chatting, get recipe ideas, and save your cooking notes.
+    </p>
+
+    <div class="chat-gate-actions">
+      <a href="{% url 'login' %}" class="chat-gate-btn chat-gate-btn-outline">Log In</a>
+      <a href="{% url 'signup' %}" class="chat-gate-btn chat-gate-btn-solid">Sign Up</a>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
 {% endblock %}
