@@ -43,12 +43,12 @@ def seed_from_mealdb():
 
     actions = []
 
-    for l in ascii_lowercase:
-        URL = f"http://www.themealdb.com/api/json/v1/1/search.php?f={l}"
+    for letter in ascii_lowercase:
+        URL = f"http://www.themealdb.com/api/json/v1/1/search.php?f={letter}"
         r = requests.get(url=URL)
         meals = r.json()
 
-        if meals["meals"] == None:
+        if meals["meals"] is None:
             continue
 
         for meal in meals["meals"]:
@@ -81,10 +81,5 @@ def get_es():
         basic_auth=(settings.ELASTICSEARCH_USER, settings.ELASTICSEARCH_PASSWORD),
         ssl_assert_fingerprint=settings.ELASTICSEARCH_CERT,
     )
-
-    try:
-        info = es.info()
-    except Exception as e:
-        print(f"[ES DEBUG] {type(e).__name__}: {e}")
 
     return es

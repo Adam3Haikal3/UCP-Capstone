@@ -1,7 +1,6 @@
 from google import genai
 from google.genai import types
 from django.conf import settings
-from elasticsearch import Elasticsearch
 from gemini_wrapper.es import get_es
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
