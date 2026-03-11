@@ -71,7 +71,7 @@ def chat_send(request):
         content=bot_reply,
     )
 
-    return JsonResponse({"response": bot_reply, "conversation_id": conversation.id})
+    return JsonResponse({"reply": bot_reply, "conversation_id": conversation.id})
 
 
 @login_required
