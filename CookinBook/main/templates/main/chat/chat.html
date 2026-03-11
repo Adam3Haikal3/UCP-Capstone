@@ -205,29 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!text) return;
 
     input.value = "";
-<<<<<<< feature/14-chat-api-endpoint
-    
-    /*Send message to backend endpoint: /chat/send/ Using JSON payload.*/
-    const res = await fetch("/chat/send/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrftoken,
-      },
-      body: JSON.stringify({ message: text }),
-    });
-
-    const data = await res.json();
-    /*Handle server errors. If backend returns error status, display message.*/
-    if (!res.ok) {
-      addMessage("Error: " + (data.error || "Server error"), "bot");
-      return;
-    }
-    // Display backend reply
-    addMessage("Bot: " + data.response, "bot");
-=======
     await sendMessage(text);
->>>>>>> main
   });
 
   inputStart.focus();

@@ -1,13 +1,10 @@
 from google import genai
 from google.genai import types
 from django.conf import settings
-<<<<<<< feature/14-chat-api-endpoint
 import logging
+from gemini_wrapper.es import get_es
 
 logger = logging.getLogger(__name__)
-=======
-from gemini_wrapper.es import get_es
->>>>>>> main
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
 
