@@ -6,6 +6,7 @@ from gemini_wrapper.es import get_es
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
 
+
 # Elasticsearch part
 def search_recipes(query: str):
     """
@@ -18,18 +19,21 @@ def search_recipes(query: str):
     except Exception as e:
         print(f"[Wrapper Log] Failed to connect to ES server: {e}")
         return []
-    
+
     index_name = settings.ELASTICSEARCH_INDEX
 
     # Searches each individual word in the query to try and find hits
     try:
-        response = es.search(index = index_name, query = {
-            "simple_query_string": {
-                "query": query,
-                "fields": ["title", "ingredients", "instructions"],
-                "default_operator": "or",
-            }
-        })
+        response = es.search(
+            index=index_name,
+            query={
+                "simple_query_string": {
+                    "query": query,
+                    "fields": ["title", "ingredients", "instructions"],
+                    "default_operator": "or",
+                }
+            },
+        )
     except Exception as e:
         print(f"[Wrapper log] ES search failed: {e}")
         return []
@@ -38,13 +42,16 @@ def search_recipes(query: str):
 
     # By default, goes through the top ten findings from the search and appends them to result
     for hit in response["hits"]["hits"]:
-        result.append({
-            "id": hit['_id'],
-            "title": hit['_source']['title'],
-            "ingredients": hit['_source']['ingredients'],
-        })
+        result.append(
+            {
+                "id": hit["_id"],
+                "title": hit["_source"]["title"],
+                "ingredients": hit["_source"]["ingredients"],
+            }
+        )
 
     return result
+
 
 # UCP part
 def execute_purchase(items: list[str]):
