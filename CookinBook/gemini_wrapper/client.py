@@ -2,9 +2,9 @@ from google import genai
 from google.genai import types
 from django.conf import settings
 from elasticsearch import Elasticsearch
+from gemini_wrapper.es import get_es
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
-
 
 # Elasticsearch part
 def search_recipes(query: str):
@@ -13,7 +13,12 @@ def search_recipes(query: str):
     """
     print(f"\n[Wrapper Log] Searching Elasticsearch for: '{query}'...")
 
-    es = Elasticsearch(settings.ELASTICSEARCH_HOST)
+    try:
+        es = get_es()
+    except Exception as e:
+        print(f"[Wrapper Log] Failed to connect to ES server: {e}")
+        return []
+    
     index_name = settings.ELASTICSEARCH_INDEX
 
     # Searches each individual word in the query to try and find hits
@@ -26,7 +31,7 @@ def search_recipes(query: str):
             }
         })
     except Exception as e:
-        print(f"[Wrapper log] ES search failed: {type(e).__name__}: {e}")
+        print(f"[Wrapper log] ES search failed: {e}")
         return []
 
     result = []

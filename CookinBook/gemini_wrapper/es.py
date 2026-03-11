@@ -5,7 +5,11 @@ from string import ascii_lowercase
 
 # Used to create the recipe index in the ES server if it does not exist
 def create_index():
-    es = Elasticsearch(settings.ELASTICSEARCH_HOST)
+    try:
+        es = get_es()
+    except Exception as e:
+        return f"ERROR failed to connect to ES server: {e}"
+    
     index_name = settings.ELASTICSEARCH_INDEX
 
     if es.indices.exists(index=index_name):
@@ -26,7 +30,11 @@ def create_index():
 
 # Collects recipes from TheMealDB and indexes them into the server
 def seed_from_mealdb():
-    es = Elasticsearch(settings.ELASTICSEARCH_HOST)
+    try:
+        es = get_es()
+    except Exception as e:
+        return f"ERROR failed to connect to ES server: {e}"
+
     index_name = settings.ELASTICSEARCH_INDEX
 
     create_index()
@@ -64,3 +72,15 @@ def seed_from_mealdb():
         
     helpers.bulk(es, actions)
 
+# Collects and returns the ES server
+def get_es():
+    es = Elasticsearch(settings.ELASTICSEARCH_HOST,
+                        basic_auth=(settings.ELASTICSEARCH_USER, settings.ELASTICSEARCH_PASSWORD),
+                        ssl_assert_fingerprint=settings.ELASTICSEARCH_CERT)
+    
+    try:
+        info = es.info()
+    except Exception as e:
+        print(f"[ES DEBUG] {type(e).__name__}: {e}")
+    
+    return es
