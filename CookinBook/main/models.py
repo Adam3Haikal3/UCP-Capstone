@@ -18,8 +18,12 @@ class ChatConversation(models.Model):
         User, on_delete=models.CASCADE, related_name="conversations"
     )
     title = models.CharField(max_length=255, blank=True, default="New Chat")
+    artifact_content = models.TextField(blank=True, default="")
     started_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
 
     def __str__(self):
         return f"{self.title} ({self.user.username})"
