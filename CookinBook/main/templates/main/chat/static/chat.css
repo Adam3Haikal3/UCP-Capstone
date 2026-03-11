@@ -30,6 +30,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 32px 16px;
+  margin-top: 60px;
 }
 
 .chat-start-inner {
@@ -150,21 +151,32 @@ body {
 
 /* main layout */
 .chat-app-shell {
+  height: calc(100vh - var(--navbar-height));
   padding: 22px;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-top: var(--navbar-height);
 }
 
 .chat-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 28px;
+  height: 100%;
+}
+
+/* chat columns */
+.chat-main,
+.artifact-side {
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* chat card */
-
 .chat-card {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 80px);
+  height: 100%;
   background: var(--cook-surface);
   border: 1px solid var(--cook-border);
   border-radius: 26px;
@@ -285,9 +297,10 @@ body {
 
 /* Artifact Panel */
 .artifact-panel {
-  height: calc(100vh - 80px);
+  height: 100%;
   border-left: 1px solid rgba(120, 94, 66, 0.12);
   padding-left: 24px;
+  overflow: hidden;
 }
 
 .artifact-body {

@@ -1,3 +1,18 @@
+/* Default styling for the navbar */
+.navbar-styling {
+    position: fixed !important;
+    width: 100%;
+    height: var(--navbar-height);
+    z-index: 1000;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar-styling.navbar-scrolled {
+    background-color: #ffffff;
+    opacity: .8;
+    box-shadow: 0 2px 8px var(--color-shadow);
+}
+
 :root {
   --cook-navbar: #f4efe7;
   --cook-bg: #f7f2ea;
@@ -8,15 +23,80 @@
   --cook-accent-dark: #ad5921;
 }
 
-/*navbar theme */
-.navbar,
-.navbar-light,
-.navbar.bg-light {
-  background-color: var(--cook-navbar) !important;
-  border-bottom: 1px solid var(--cook-border);
-  box-shadow: 0 2px 8px rgba(80, 50, 20, 0.05);
+/* Desktop */
+@media (min-width: 992px) { /* Bootstrap lg */
+    .navbar-collapse {
+        display: flex !important;
+        justify-content: space-between;
+    }
+    
+    .navbar-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+    }
+
+    .navbar-right {
+        margin-left: auto;
+        display: flex;
+    }
+    
+    .navbar-toggler {
+        display: none;
+    }
 }
 
+/* On mobile, give the navbar a solid background when the menu is open */
+.navbar-styling:has(.navbar-collapse.show) {
+    background-color: #ffffff;
+}
+
+/* Mobile */
+@media (max-width: 991px) {
+    .navbar-styling {
+        height: auto;
+        min-height: var(--navbar-height);
+    }
+    
+    .navbar-toggler {
+        display: block;
+        margin-left: auto;
+    }
+    
+    .navbar-collapse {
+        background-color: var(--color-background);
+        padding: 15px 0;
+    }
+    
+    /* Start with menu hidden on mobile */
+    .navbar-collapse:not(.show) {
+        display: none;
+    }
+    
+    .navbar-center,
+    .navbar-right {
+        position: static;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        margin: 10px 0;
+        width: 100%;
+    }
+
+    .navbar-nav > .nav-item > .nav-link {
+        padding: 10px 0;
+        text-align: center;
+        width: 100%;
+    }
+    
+    /* Logo is hidden on mobile via d-none/d-lg-flex on the element */
+}
+
+/* ensures navbar links maintain theme color*/
 /* Base brand + links */
 .navbar-brand,
 .navbar-nav .nav-link,
@@ -49,6 +129,31 @@ a.nav-link {
   transform: scale(1.06);
 }
 
+/* Navbar logo inline (right of signup) */
+.nav-logo-item {
+    align-items: center;
+    margin-left: 10px;
+}
+
+.navbar-logo-inline {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    transition: transform var(--transition-speed) ease;
+}
+
+.navbar-logo-inline:hover {
+    transform: scale(1.1);
+}
+
+/* Login and signup buttons */
+.nav-item.login-btn .nav-link {
+    border: none;
+    line-height: 1;
+}
+
+/* Signup button */
 /* Hamburger icon styling */
 .custom-toggler {
   border: 2px solid var(--cook-text);
@@ -83,7 +188,7 @@ a.nav-link {
 .nav-item.signup-btn .nav-link {
   background: transparent !important;
   border: 1.5px solid #c96e2d;
-  color: #c96e2d !important;
+  color: #ff8644 !important;
   border-radius: 999px;
   padding: 8px 18px;
   font-weight: 500;
@@ -94,7 +199,7 @@ a.nav-link {
 /* hover */
 .nav-item.login-btn .nav-link:hover,
 .nav-item.signup-btn .nav-link:hover {
-  background: #c96e2d !important;
+  background: #ff8644 !important;
   color: #fff !important;
   transform: none;
 }
