@@ -9,7 +9,9 @@ from .forms import SignUpForm
 from .models import ChatConversation, ChatMessage
 from gemini_wrapper.client import CookinBookBot
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 def chat_view(request):
@@ -54,8 +56,10 @@ def chat_send(request):
     try:
         bot = CookinBookBot()
         bot_reply = bot.send_message(user_message)
-    except Exception as e:
-        return JsonResponse({"error": f"Gemini error: {str(e)}"}, status=500)
+    except Exception:
+        logger.exception("Error while sending message to CookinBookBot")
+        return JsonResponse(
+            {"error": "Failed to get a response from the assistant."}, status=500)
 
     ChatMessage.objects.create(
         conversation=conversation,

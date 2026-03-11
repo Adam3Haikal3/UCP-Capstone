@@ -1,6 +1,9 @@
 from google import genai
 from google.genai import types
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
 
@@ -100,5 +103,6 @@ class CookinBookBot:
         try:
             response = self.chat.send_message(full_prompt)
             return response.text
-        except Exception as e:
-            return f"Error communicating with Gemini: {e}"
+        except Exception:
+            logger.exception("Error communicating with Gemini")
+            raise RuntimeError("Error communicating with Gemini")
