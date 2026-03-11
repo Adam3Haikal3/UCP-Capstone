@@ -13,6 +13,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 # Create your views here.
 def chat_view(request):
     return render(request, "main/chat/chat.html")
@@ -59,7 +60,8 @@ def chat_send(request):
     except Exception:
         logger.exception("Error while sending message to CookinBookBot")
         return JsonResponse(
-            {"error": "Failed to get a response from the assistant."}, status=500)
+            {"error": "Failed to get a response from the assistant."}, status=500
+        )
 
     ChatMessage.objects.create(
         conversation=conversation,
