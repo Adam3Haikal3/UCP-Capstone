@@ -31,8 +31,10 @@ def chat_view(request, conversation_id=None):
 
     return render(request, "main/chat/chat.html", context)
 
+
 def history_view(request):
     return render(request, "main/history/history.html")
+
 
 @require_POST
 @login_required
@@ -66,12 +68,14 @@ def chat_send(request):
     convo.artifact_content = reply
     convo.save()
 
-    return JsonResponse({
-        "reply": reply,
-        "conversation_id": convo.pk,
-        "conversation_title": convo.title,
-        "artifact_content": convo.artifact_content,
-    })
+    return JsonResponse(
+        {
+            "reply": reply,
+            "conversation_id": convo.pk,
+            "conversation_title": convo.title,
+            "artifact_content": convo.artifact_content,
+        }
+    )
 
 
 @require_GET
@@ -86,26 +90,22 @@ def conversation_list(request):
 @require_GET
 @login_required
 def conversation_detail(request, conversation_id):
-    convo = get_object_or_404(
-        ChatConversation, pk=conversation_id, user=request.user
+    convo = get_object_or_404(ChatConversation, pk=conversation_id, user=request.user)
+    msgs = list(convo.messages.values("sender", "content", "sent_at"))
+    return JsonResponse(
+        {
+            "id": convo.pk,
+            "title": convo.title,
+            "artifact_content": convo.artifact_content,
+            "messages": msgs,
+        }
     )
-    msgs = list(
-        convo.messages.values("sender", "content", "sent_at")
-    )
-    return JsonResponse({
-        "id": convo.pk,
-        "title": convo.title,
-        "artifact_content": convo.artifact_content,
-        "messages": msgs,
-    })
 
 
 @require_POST
 @login_required
 def conversation_delete(request, conversation_id):
-    convo = get_object_or_404(
-        ChatConversation, pk=conversation_id, user=request.user
-    )
+    convo = get_object_or_404(ChatConversation, pk=conversation_id, user=request.user)
     convo.delete()
     return JsonResponse({"ok": True})
 
@@ -136,9 +136,7 @@ def signup_view(request):
             password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=password)
             login(request, user)
-            messages.success(
-                request, f"Welcome, {username}! Your account was created."
-            )
+            messages.success(request, f"Welcome, {username}! Your account was created.")
             return redirect("chat")
     else:
         form = SignUpForm()

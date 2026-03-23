@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('main', '0001_initial'),
+        ("main", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='chatconversation',
-            options={'ordering': ['-updated_at']},
+            name="chatconversation",
+            options={"ordering": ["-updated_at"]},
         ),
         migrations.AddField(
-            model_name='chatconversation',
-            name='artifact_content',
-            field=models.TextField(blank=True, default=''),
+            model_name="chatconversation",
+            name="artifact_content",
+            field=models.TextField(blank=True, default=""),
         ),
     ]
