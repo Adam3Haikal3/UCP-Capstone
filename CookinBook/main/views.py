@@ -1,22 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
-from django.contrib import messages
 from .forms import SignUpForm
 from .models import ChatConversation, ChatMessage
 from gemini_wrapper.client import CookinBookBot
+from django.contrib import messages
 import json
 import logging
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST, require_GET
 
 logger = logging.getLogger(__name__)
-
-
-# Create your views here.
-def chat_view(request):
-    return render(request, "main/chat/chat.html")
 
 
 def home_view(request):
@@ -25,11 +20,29 @@ def home_view(request):
     return render(request, "main/home/home.html")
 
 
-@require_POST
-def chat_send(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
+def chat_view(request, conversation_id=None):
+    context = {}
+    if request.user.is_authenticated:
+        conversations = ChatConversation.objects.filter(user=request.user)
+        context["conversations"] = conversations
 
+        if conversation_id:
+            convo = get_object_or_404(
+                ChatConversation, pk=conversation_id, user=request.user
+            )
+            context["active_conversation"] = convo
+            context["active_messages"] = convo.messages.all()
+
+    return render(request, "main/chat/chat.html", context)
+
+
+def history_view(request):
+    return render(request, "main/history/history.html")
+
+
+@require_POST
+@login_required
+def chat_send(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
@@ -40,43 +53,71 @@ def chat_send(request):
         return JsonResponse({"error": "Message is empty"}, status=400)
 
     conversation_id = data.get("conversation_id")
-    if conversation_id:
-        try:
-            conversation = ChatConversation.objects.get(
-                id=conversation_id, user=request.user
-            )
-        except ChatConversation.DoesNotExist:
-            return JsonResponse({"error": "Conversation not found"}, status=404)
-    else:
-        conversation = ChatConversation.objects.create(user=request.user)
 
-    ChatMessage.objects.create(
-        conversation=conversation,
-        sender="U",
-        content=user_message,
-    )
+    if conversation_id:
+        convo = get_object_or_404(
+            ChatConversation, pk=conversation_id, user=request.user
+        )
+    else:
+        title = user_message[:60] + ("…" if len(user_message) > 60 else "")
+        convo = ChatConversation.objects.create(user=request.user, title=title)
+
+    ChatMessage.objects.create(conversation=convo, sender="U", content=user_message)
 
     try:
         bot = CookinBookBot()
-        bot_reply = bot.send_message(user_message)
+        reply = bot.send_message(user_message)
     except Exception:
         logger.exception("Error while sending message to CookinBookBot")
         return JsonResponse(
             {"error": "Failed to get a response from the assistant."}, status=500
         )
 
-    ChatMessage.objects.create(
-        conversation=conversation,
-        sender="B",
-        content=bot_reply,
+    ChatMessage.objects.create(conversation=convo, sender="B", content=reply)
+
+    convo.artifact_content = reply
+    convo.save()
+
+    return JsonResponse(
+        {
+            "reply": reply,
+            "conversation_id": convo.pk,
+            "conversation_title": convo.title,
+            "artifact_content": convo.artifact_content,
+        }
     )
 
-    return JsonResponse({"reply": bot_reply, "conversation_id": conversation.id})
 
-
+@require_GET
 @login_required
-def history_view(request):
-    return render(request, "main/history/history.html")
+def conversation_list(request):
+    convos = ChatConversation.objects.filter(user=request.user).values(
+        "id", "title", "updated_at"
+    )
+    return JsonResponse({"conversations": list(convos)})
+
+
+@require_GET
+@login_required
+def conversation_detail(request, conversation_id):
+    convo = get_object_or_404(ChatConversation, pk=conversation_id, user=request.user)
+    msgs = list(convo.messages.values("sender", "content", "sent_at"))
+    return JsonResponse(
+        {
+            "id": convo.pk,
+            "title": convo.title,
+            "artifact_content": convo.artifact_content,
+            "messages": msgs,
+        }
+    )
+
+
+@require_POST
+@login_required
+def conversation_delete(request, conversation_id):
+    convo = get_object_or_404(ChatConversation, pk=conversation_id, user=request.user)
+    convo.delete()
+    return JsonResponse({"ok": True})
 
 
 def login_view(request):
@@ -100,11 +141,11 @@ def signup_view(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()  # Saves the user to the database
+            form.save()
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=password)
-            login(request, user)  # Log the user in immediately
+            login(request, user)
             messages.success(request, f"Welcome, {username}! Your account was created.")
             return redirect("chat")
     else:
