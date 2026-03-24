@@ -8,122 +8,166 @@
 
 {% if user.is_authenticated %}
 
-<!-- STATE A: Start screen -->
-<div id="chatStart" class="chat-start-screen">
-  <div class="chat-start-inner">
-    <h1 class="chat-start-title">What would you like to cook?</h1>
+<div class="chat-layout">
 
-    <form id="chat-form-start" class="chat-form-start">
-      {% csrf_token %}
-      <input
-        id="chat-input-start"
-        class="chat-input-start"
-        type="text"
-        placeholder="Try: chicken, rice, garlic, spinach"
-        autocomplete="off"
-      />
-      <button type="submit" class="send-btn-start" aria-label="Send">➤</button>
-    </form>
-  </div>
-</div>
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="chat-sidebar">
+    <div class="sidebar-header">
+      <button id="newChatBtn" class="sidebar-new-btn" title="New chat">
+        <i class="bi bi-plus-lg"></i> New Chat
+      </button>
+    </div>
 
-<!-- STATE B: Full chat -->
-<div id="chatFull" class="chat-app-shell" style="display:none;">
-  <div class="chat-grid">
-
-    <!-- LEFT: Chat -->
-    <section class="chat-main">
-      <div class="chat-card">
-
-        <div class="chat-card-header">
-          <div class="chat-card-heading">Tell me what ingredients you have</div>
-          <div class="chat-card-subheading">
-            I can help with recipes, ingredient lists, and step-by-step cooking help.
-          </div>
+    <div id="sidebarList" class="sidebar-list">
+      {% for convo in conversations %}
+        <div class="sidebar-item {% if active_conversation.id == convo.id %}active{% endif %}"
+             data-id="{{ convo.id }}">
+          <span class="sidebar-item-title">{{ convo.title }}</span>
+          <button class="sidebar-item-delete" data-id="{{ convo.id }}" title="Delete">
+            <i class="bi bi-trash3"></i>
+          </button>
         </div>
+      {% endfor %}
+    </div>
+  </aside>
 
-        <div id="messages" class="chat-history" aria-live="polite"></div>
+  <!-- TOGGLE BUTTON (mobile) -->
+  <button id="sidebarToggle" class="sidebar-toggle" title="Toggle sidebar">
+    <i class="bi bi-layout-sidebar-inset"></i>
+  </button>
 
-        <div id="loadingRow" class="chat-loading" style="display:none;">
-          <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
-          <span>Cooking up an answer…</span>
-        </div>
+  <!-- MAIN CONTENT -->
+  <div class="chat-content">
 
-        <div class="chat-inputbar">
-          <form id="chat-form" class="mb-0">
-            <div class="input-group">
-              <input
-                id="chat-input"
-                class="form-control"
-                type="text"
-                placeholder="Ask anything..."
-                autocomplete="off"
-              />
-              <div class="input-group-append">
-                <button id="sendBtn" class="btn btn-primary" type="submit">Send</button>
+    <!-- STATE A: Start screen -->
+    <div id="chatStart" class="chat-start-screen" {% if active_conversation %}style="display:none;"{% endif %}>
+      <div class="chat-start-inner">
+        <h1 class="chat-start-title">What would you like to cook?</h1>
+        <form id="chat-form-start" class="chat-form-start">
+          {% csrf_token %}
+          <input id="chat-input-start" class="chat-input-start" type="text"
+                 placeholder="Try: chicken, rice, garlic, spinach" autocomplete="off" />
+          <button type="submit" class="send-btn-start" aria-label="Send">➤</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- STATE B: Full chat + artifact -->
+    <div id="chatFull" class="chat-app-shell" {% if not active_conversation %}style="display:none;"{% endif %}>
+      <div class="chat-grid">
+
+        <!-- Chat -->
+        <section class="chat-main">
+          <div class="chat-card">
+            <div class="chat-card-header">
+              <div class="chat-card-heading">Tell me what ingredients you have</div>
+              <div class="chat-card-subheading">
+                I can help with recipes, ingredient lists, and step-by-step cooking help.
               </div>
             </div>
-          </form>
-        </div>
 
-      </div>
-    </section>
+            <div id="messages" class="chat-history" aria-live="polite">
+              {% if active_messages %}
+                {% for msg in active_messages %}
+                  <div class="msg-row {% if msg.sender == 'U' %}user{% else %}bot{% endif %}">
+                    <div class="msg-bubble {% if msg.sender == 'U' %}user{% else %}bot{% endif %}">{{ msg.content }}</div>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
 
-    <!-- RIGHT: Artifact -->
-    <aside class="artifact-side">
-      <div class="artifact-panel">
-        <div id="artifact-body" class="artifact-body">
-          <div class="artifact-placeholder">
-            Ask for a recipe to see ingredients, steps, or a shopping list here.
+            <div id="loadingRow" class="chat-loading" style="display:none;">
+              <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+              <span>Cooking up an answer…</span>
+            </div>
+
+            <div class="chat-inputbar">
+              <form id="chat-form" class="mb-0">
+                <div class="input-group">
+                  <input id="chat-input" class="form-control" type="text"
+                         placeholder="Ask anything..." autocomplete="off" />
+                  <div class="input-group-append">
+                    <button id="sendBtn" class="btn btn-primary" type="submit">Send</button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <!-- Artifact -->
+        <aside class="artifact-side">
+          <div class="artifact-panel">
+            <div id="artifact-body" class="artifact-body">
+              {% if active_conversation and active_conversation.artifact_content %}
+                <div class="artifact-content">
+                  <div class="artifact-kicker">Recipe Notes</div>
+                  <div class="artifact-text">{{ active_conversation.artifact_content }}</div>
+                </div>
+              {% else %}
+                <div class="artifact-placeholder">
+                  Ask for a recipe to see ingredients, steps, or a shopping list here.
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </aside>
+
       </div>
-    </aside>
+    </div>
 
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const CHAT_SEND_URL = "{% url 'chat_send' %}";
+  const CHAT_SEND_URL   = "{% url 'chat_send' %}";
+  const CONVO_LIST_URL  = "{% url 'conversation_list' %}";
+  const CONVO_DETAIL_BASE = "/api/conversations/";
+  const CHAT_PAGE_BASE    = "/chat/";
 
-  const chatStart = document.getElementById("chatStart");
-  const chatFull = document.getElementById("chatFull");
+  let currentConvoId = {{ active_conversation.id|default:"null" }};
 
-  const formStart = document.getElementById("chat-form-start");
-  const inputStart = document.getElementById("chat-input-start");
-
-  const form = document.getElementById("chat-form");
-  const input = document.getElementById("chat-input");
-  const messages = document.getElementById("messages");
-  const loadingRow = document.getElementById("loadingRow");
+  const chatStart    = document.getElementById("chatStart");
+  const chatFull     = document.getElementById("chatFull");
+  const formStart    = document.getElementById("chat-form-start");
+  const inputStart   = document.getElementById("chat-input-start");
+  const form         = document.getElementById("chat-form");
+  const input        = document.getElementById("chat-input");
+  const msgContainer = document.getElementById("messages");
+  const loadingRow   = document.getElementById("loadingRow");
   const artifactBody = document.getElementById("artifact-body");
-  const sendBtn = document.getElementById("sendBtn");
+  const sendBtn      = document.getElementById("sendBtn");
+  const sidebarList  = document.getElementById("sidebarList");
+  const newChatBtn   = document.getElementById("newChatBtn");
+  const sidebar      = document.getElementById("sidebar");
+  const sidebarToggle = document.getElementById("sidebarToggle");
 
   function getCookie(name) {
     const cookies = document.cookie ? document.cookie.split(";") : [];
-    for (let i = 0; i < cookies.length; i++) {
-      const c = cookies[i].trim();
-      if (c.startsWith(name + "=")) {
-        return decodeURIComponent(c.substring(name.length + 1));
-      }
+    for (let c of cookies) {
+      c = c.trim();
+      if (c.startsWith(name + "=")) return decodeURIComponent(c.substring(name.length + 1));
     }
     return null;
   }
-
   const csrfToken = getCookie("csrftoken") || "";
 
+  /* ── Sidebar toggle (mobile) ── */
+  sidebarToggle.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+  });
+
+  /* ── Helpers ── */
   function addMessage(text, who) {
     const row = document.createElement("div");
     row.className = "msg-row " + who;
-
     const bubble = document.createElement("div");
     bubble.className = "msg-bubble " + who;
     bubble.textContent = text;
-
     row.appendChild(bubble);
-    messages.appendChild(row);
-    messages.scrollTop = messages.scrollHeight;
+    msgContainer.appendChild(row);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
     return bubble;
   }
 
@@ -139,9 +183,77 @@ document.addEventListener("DOMContentLoaded", () => {
     input.focus();
   }
 
+  function showStartScreen() {
+    chatFull.style.display = "none";
+    chatStart.style.display = "flex";
+    inputStart.value = "";
+    inputStart.focus();
+    currentConvoId = null;
+    msgContainer.innerHTML = "";
+    artifactBody.innerHTML = '<div class="artifact-placeholder">Ask for a recipe to see ingredients, steps, or a shopping list here.</div>';
+    setActiveSidebar(null);
+    history.pushState(null, "", CHAT_PAGE_BASE);
+  }
+
+  function setActiveSidebar(id) {
+    sidebarList.querySelectorAll(".sidebar-item").forEach(el => {
+      el.classList.toggle("active", el.dataset.id == id);
+    });
+  }
+
+  function setArtifact(text) {
+    if (text) {
+      artifactBody.innerHTML = '<div class="artifact-content"><div class="artifact-kicker">Recipe Notes</div><div class="artifact-text"></div></div>';
+      artifactBody.querySelector(".artifact-text").textContent = text;
+    }
+  }
+
+  /* ── Add / update sidebar entry ── */
+  function upsertSidebarItem(id, title) {
+    let item = sidebarList.querySelector(`.sidebar-item[data-id="${id}"]`);
+    if (item) {
+      item.querySelector(".sidebar-item-title").textContent = title;
+      sidebarList.prepend(item);
+    } else {
+      item = document.createElement("div");
+      item.className = "sidebar-item";
+      item.dataset.id = id;
+      item.innerHTML = `<span class="sidebar-item-title">${title}</span><button class="sidebar-item-delete" data-id="${id}" title="Delete"><i class="bi bi-trash3"></i></button>`;
+      sidebarList.prepend(item);
+      bindSidebarItem(item);
+    }
+    setActiveSidebar(id);
+  }
+
+  /* ── Load a conversation ── */
+  async function loadConversation(id) {
+    const res = await fetch(CONVO_DETAIL_BASE + id + "/", {
+      credentials: "same-origin",
+      headers: { "Accept": "application/json" }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+
+    currentConvoId = data.id;
+    msgContainer.innerHTML = "";
+    data.messages.forEach(m => {
+      addMessage(m.content, m.sender === "U" ? "user" : "bot");
+    });
+
+    if (data.artifact_content) {
+      setArtifact(data.artifact_content);
+    } else {
+      artifactBody.innerHTML = '<div class="artifact-placeholder">Ask for a recipe to see ingredients, steps, or a shopping list here.</div>';
+    }
+
+    showFullChat();
+    setActiveSidebar(id);
+    history.pushState(null, "", CHAT_PAGE_BASE + id + "/");
+  }
+
+  /* ── Send message ── */
   async function sendMessage(text) {
     addMessage(text, "user");
-
     setLoading(true);
     const botBubble = addMessage("…", "bot");
 
@@ -154,32 +266,24 @@ document.addEventListener("DOMContentLoaded", () => {
           "Accept": "application/json"
         },
         credentials: "same-origin",
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify({ message: text, conversation_id: currentConvoId })
       });
 
-      const contentType = res.headers.get("content-type") || "";
-      if (!contentType.includes("application/json")) {
-        throw new Error("Non-JSON response from server");
-      }
+      const ct = res.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) throw new Error("Non-JSON response");
 
       const data = await res.json();
+      if (!res.ok) { botBubble.textContent = data.error || "Server error"; return; }
 
-      if (!res.ok) {
-        botBubble.textContent = data.error || "Server error";
-        return;
+      botBubble.textContent = data.reply || "No reply";
+      setArtifact(data.artifact_content);
+
+      if (!currentConvoId) {
+        currentConvoId = data.conversation_id;
+        history.pushState(null, "", CHAT_PAGE_BASE + currentConvoId + "/");
       }
-
-      const reply = data.reply || "No reply";
-      botBubble.textContent = reply;
-
-      artifactBody.innerHTML = `
-        <div class="artifact-content">
-          <div class="artifact-kicker">Recipe Notes</div>
-          <div class="artifact-text"></div>
-        </div>
-      `;
-      artifactBody.querySelector(".artifact-text").textContent = reply;
-    } catch (err) {
+      upsertSidebarItem(data.conversation_id, data.conversation_title);
+    } catch {
       botBubble.textContent = "Network error. Please try again.";
     } finally {
       setLoading(false);
@@ -187,28 +291,61 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  /* ── Event: start form ── */
   formStart.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const text = inputStart.value.trim();
     if (!text) return;
-
     inputStart.value = "";
     showFullChat();
     await sendMessage(text);
   });
 
+  /* ── Event: chat form ── */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const text = input.value.trim();
     if (!text) return;
-
     input.value = "";
     await sendMessage(text);
   });
 
-  inputStart.focus();
+  /* ── Event: new chat button ── */
+  newChatBtn.addEventListener("click", showStartScreen);
+
+  /* ── Sidebar click handlers ── */
+  function bindSidebarItem(item) {
+    item.addEventListener("click", (e) => {
+      if (e.target.closest(".sidebar-item-delete")) return;
+      loadConversation(item.dataset.id);
+      sidebar.classList.remove("open");
+    });
+
+    const delBtn = item.querySelector(".sidebar-item-delete");
+    if (delBtn) {
+      delBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const id = delBtn.dataset.id;
+        await fetch(CONVO_DETAIL_BASE + id + "/delete/", {
+          method: "POST",
+          headers: { "X-CSRFToken": csrfToken },
+          credentials: "same-origin"
+        });
+        item.remove();
+        if (currentConvoId == id) showStartScreen();
+      });
+    }
+  }
+
+  sidebarList.querySelectorAll(".sidebar-item").forEach(bindSidebarItem);
+
+  /* ── Initial focus ── */
+  if (currentConvoId) {
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+    input.focus();
+  } else {
+    inputStart.focus();
+  }
 });
 </script>
 
@@ -217,11 +354,10 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- LOGGED OUT CHAT GATE -->
 <div class="chat-gate-shell">
   <div class="chat-gate-card">
-    <h1 class="chat-gate-title">Cookin’ Book</h1>
+    <h1 class="chat-gate-title">Cookin' Book</h1>
     <p class="chat-gate-subtitle">
       Log in or create an account to start chatting, get recipe ideas, and save your cooking notes.
     </p>
-
     <div class="chat-gate-actions">
       <a href="{% url 'login' %}" class="chat-gate-btn chat-gate-btn-outline">Log In</a>
       <a href="{% url 'signup' %}" class="chat-gate-btn chat-gate-btn-solid">Sign Up</a>
