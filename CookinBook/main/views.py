@@ -4,10 +4,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import SignUpForm
 from .models import ChatConversation, ChatMessage
+from gemini_wrapper.client import CookinBookBot
 from django.contrib import messages
 import json
+import logging
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
+
+logger = logging.getLogger(__name__)
 
 
 def home_view(request):
@@ -60,8 +64,14 @@ def chat_send(request):
 
     ChatMessage.objects.create(conversation=convo, sender="U", content=user_message)
 
-    # Placeholder reply — replace with AI call later
-    reply = f"You said: {user_message}"
+    try:
+        bot = CookinBookBot()
+        reply = bot.send_message(user_message)
+    except Exception:
+        logger.exception("Error while sending message to CookinBookBot")
+        return JsonResponse(
+            {"error": "Failed to get a response from the assistant."}, status=500
+        )
 
     ChatMessage.objects.create(conversation=convo, sender="B", content=reply)
 

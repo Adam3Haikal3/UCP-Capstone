@@ -1,7 +1,10 @@
 from google import genai
 from google.genai import types
 from django.conf import settings
+import logging
 from gemini_wrapper.es import get_es
+
+logger = logging.getLogger(__name__)
 
 # --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
 
@@ -88,7 +91,7 @@ class CookinBookBot:
 
         # 3. Create the chat session with tools attached
         self.chat = self.client.chats.create(
-            model="gemini-flash-lite-latest",
+            model="gemini-3.1-flash-lite-preview",
             config=types.GenerateContentConfig(
                 tools=[search_recipes, execute_purchase],
                 system_instruction=self.system_prompt,
@@ -113,5 +116,6 @@ class CookinBookBot:
         try:
             response = self.chat.send_message(full_prompt)
             return response.text
-        except Exception as e:
-            return f"Error communicating with Gemini: {e}"
+        except Exception:
+            logger.exception("Error communicating with Gemini")
+            raise RuntimeError("Error communicating with Gemini")
