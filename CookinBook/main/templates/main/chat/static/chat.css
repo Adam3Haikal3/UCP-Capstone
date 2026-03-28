@@ -254,6 +254,7 @@ body {
 .artifact-side {
   min-height: 0;
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   height: 100%;
   padding-top: var(--navbar-height);
@@ -379,11 +380,13 @@ body {
 .artifact-panel {
   height: 100%;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .artifact-body {
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .artifact-placeholder {
@@ -398,6 +401,9 @@ body {
   border-radius: 24px;
   padding: 26px;
   box-shadow: 0 6px 18px rgba(84, 56, 28, 0.04);
+  overflow: hidden;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .artifact-kicker {
@@ -412,6 +418,269 @@ body {
   font-size: 1.05rem;
   line-height: 1.8;
   white-space: pre-wrap;
+}
+
+.artifact-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--cook-muted);
+  padding: 12px 0;
+}
+
+/* ── Artifact: back / continue buttons ── */
+.artifact-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--cook-accent);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  transition: color 0.15s;
+}
+
+.artifact-back-btn:hover {
+  color: var(--cook-accent-dark);
+}
+
+.artifact-continue-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 14px;
+  background: var(--cook-accent);
+  color: #fff;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.artifact-continue-btn:hover {
+  background: var(--cook-accent-dark);
+}
+
+/* ── Phase 1: Recipe card grid ── */
+.recipe-card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 8px;
+  min-width: 0;
+}
+
+.recipe-card {
+  padding: 16px 18px;
+  border: 1px solid var(--cook-border);
+  border-radius: 14px;
+  background: #fffdf9;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.recipe-card:hover {
+  border-color: var(--cook-accent);
+  box-shadow: 0 4px 14px rgba(201, 110, 45, 0.12);
+  transform: translateY(-1px);
+}
+
+.recipe-card-title {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--cook-text);
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recipe-card-preview {
+  font-size: 0.85rem;
+  color: var(--cook-muted);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Phase 2: Recipe overview ── */
+.recipe-thumb {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  object-fit: cover;
+  max-height: 220px;
+}
+
+.recipe-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.recipe-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(201, 110, 45, 0.1);
+  color: var(--cook-accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.recipe-instructions {
+  font-family: Georgia, serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--cook-text);
+  white-space: pre-wrap;
+}
+
+/* ── Phase 3: Ingredient checklist ── */
+.serving-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  background: #fffdf9;
+  border: 1px solid var(--cook-border);
+  border-radius: 12px;
+}
+
+.serving-label {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--cook-text);
+}
+
+.serving-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--cook-border);
+  background: var(--cook-surface);
+  color: var(--cook-text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.serving-btn:hover {
+  background: var(--cook-accent);
+  border-color: var(--cook-accent);
+  color: #fff;
+}
+
+.serving-count {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  min-width: 24px;
+  text-align: center;
+  color: var(--cook-accent);
+}
+
+.ingredient-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.ingredient-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.ingredient-row:hover {
+  background: rgba(201, 110, 45, 0.06);
+}
+
+.ingredient-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--cook-accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.ingredient-measure {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--cook-accent);
+  min-width: 70px;
+}
+
+.ingredient-name {
+  font-size: 0.95rem;
+  color: var(--cook-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* ── Add to Cart button ── */
+.cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 14px;
+  background: #2d8a4e;
+  color: #fff;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.cart-btn:hover {
+  background: #236b3d;
+  transform: translateY(-1px);
+}
+
+.cart-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cart-btn-success {
+  background: #2d8a4e;
+  opacity: 1;
 }
 
 /* ══════════════════════════════

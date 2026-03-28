@@ -99,16 +99,9 @@
         <aside class="artifact-side">
           <div class="artifact-panel">
             <div id="artifact-body" class="artifact-body">
-              {% if active_conversation and active_conversation.artifact_content %}
-                <div class="artifact-content">
-                  <div class="artifact-kicker">Recipe Notes</div>
-                  <div class="artifact-text">{{ active_conversation.artifact_content }}</div>
-                </div>
-              {% else %}
-                <div class="artifact-placeholder">
-                  Ask for a recipe to see ingredients, steps, or a shopping list here.
-                </div>
-              {% endif %}
+              <div class="artifact-placeholder">
+                Ask for a recipe to see ingredients, steps, or a shopping list here.
+              </div>
             </div>
           </div>
         </aside>
@@ -119,29 +112,37 @@
   </div>
 </div>
 
+{{ active_conversation.id|json_script:"convo-id" }}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const CHAT_SEND_URL   = "{% url 'chat_send' %}";
-  const CONVO_LIST_URL  = "{% url 'conversation_list' %}";
+  const CHAT_SEND_URL     = "{% url 'chat_send' %}";
+  const CONVO_LIST_URL    = "{% url 'conversation_list' %}";
   const CONVO_DETAIL_BASE = "/api/conversations/";
+  const RECIPE_API_BASE   = "/api/recipe/";
+  const CART_ADD_URL       = "/api/cart/add/";
   const CHAT_PAGE_BASE    = "/chat/";
 
-  let currentConvoId = {{ active_conversation.id|default:"null" }};
+  let currentConvoId = JSON.parse(document.getElementById("convo-id").textContent) || null;
 
-  const chatStart    = document.getElementById("chatStart");
-  const chatFull     = document.getElementById("chatFull");
-  const formStart    = document.getElementById("chat-form-start");
-  const inputStart   = document.getElementById("chat-input-start");
-  const form         = document.getElementById("chat-form");
-  const input        = document.getElementById("chat-input");
-  const msgContainer = document.getElementById("messages");
-  const loadingRow   = document.getElementById("loadingRow");
-  const artifactBody = document.getElementById("artifact-body");
-  const sendBtn      = document.getElementById("sendBtn");
-  const sidebarList  = document.getElementById("sidebarList");
-  const newChatBtn   = document.getElementById("newChatBtn");
-  const sidebar      = document.getElementById("sidebar");
+  const chatStart     = document.getElementById("chatStart");
+  const chatFull      = document.getElementById("chatFull");
+  const formStart     = document.getElementById("chat-form-start");
+  const inputStart    = document.getElementById("chat-input-start");
+  const form          = document.getElementById("chat-form");
+  const input         = document.getElementById("chat-input");
+  const msgContainer  = document.getElementById("messages");
+  const loadingRow    = document.getElementById("loadingRow");
+  const artifactBody  = document.getElementById("artifact-body");
+  const sendBtn       = document.getElementById("sendBtn");
+  const sidebarList   = document.getElementById("sidebarList");
+  const newChatBtn    = document.getElementById("newChatBtn");
+  const sidebar       = document.getElementById("sidebar");
   const sidebarToggle = document.getElementById("sidebarToggle");
+
+  let artifactRecipes = [];
+  let artifactSelectedRecipe = null;
+  let artifactServings = 4;
+  let artifactBaseServings = 4;
 
   function getCookie(name) {
     const cookies = document.cookie ? document.cookie.split(";") : [];
@@ -158,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar.classList.toggle("open");
   });
 
-  /* ── Helpers ── */
+  /* ── Chat helpers ── */
   function addMessage(text, who) {
     const row = document.createElement("div");
     row.className = "msg-row " + who;
@@ -190,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
     inputStart.focus();
     currentConvoId = null;
     msgContainer.innerHTML = "";
-    artifactBody.innerHTML = '<div class="artifact-placeholder">Ask for a recipe to see ingredients, steps, or a shopping list here.</div>';
+    resetArtifact();
     setActiveSidebar(null);
     history.pushState(null, "", CHAT_PAGE_BASE);
   }
@@ -201,14 +202,233 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function setArtifact(text) {
-    if (text) {
-      artifactBody.innerHTML = '<div class="artifact-content"><div class="artifact-kicker">Recipe Notes</div><div class="artifact-text"></div></div>';
-      artifactBody.querySelector(".artifact-text").textContent = text;
+  /* ══════════════════════════════════════
+     ARTIFACT PANEL — 3-phase state machine
+     ══════════════════════════════════════ */
+
+  function resetArtifact() {
+    artifactRecipes = [];
+    artifactSelectedRecipe = null;
+    artifactServings = 4;
+    artifactBaseServings = 4;
+    artifactBody.innerHTML = '<div class="artifact-placeholder">Ask for a recipe to see ingredients, steps, or a shopping list here.</div>';
+  }
+
+  function escHtml(str) {
+    const d = document.createElement("div");
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  /* ── Phase 1: Recipe card list ── */
+  function renderRecipeList(recipes) {
+    artifactRecipes = recipes;
+    if (!recipes || !recipes.length) {
+      artifactBody.innerHTML = '<div class="artifact-placeholder">No recipes found. Try a different search!</div>';
+      return;
+    }
+
+    let html = '<div class="artifact-kicker">Recipe Results</div>';
+    html += '<div class="recipe-card-grid">';
+    recipes.forEach(r => {
+      const preview = (r.ingredients || []).filter(Boolean).slice(0, 5).join(", ");
+      html += `<div class="recipe-card" data-recipe-id="${escHtml(r.id)}">
+        <div class="recipe-card-title">${escHtml(r.title)}</div>
+        <div class="recipe-card-preview">${escHtml(preview)}${r.ingredients && r.ingredients.length > 5 ? "..." : ""}</div>
+      </div>`;
+    });
+    html += '</div>';
+
+    artifactBody.innerHTML = '<div class="artifact-content">' + html + '</div>';
+
+    artifactBody.querySelectorAll(".recipe-card").forEach(card => {
+      card.addEventListener("click", () => {
+        fetchAndShowOverview(card.dataset.recipeId);
+      });
+    });
+  }
+
+  /* ── Fetch full recipe from MealDB via backend ── */
+  async function fetchAndShowOverview(mealdbId) {
+    artifactBody.innerHTML = '<div class="artifact-content"><div class="artifact-loading"><span class="spinner-border spinner-border-sm"></span> Loading recipe details...</div></div>';
+
+    try {
+      const res = await fetch(RECIPE_API_BASE + mealdbId + "/", {
+        credentials: "same-origin",
+        headers: { "Accept": "application/json" }
+      });
+      if (!res.ok) throw new Error("Failed to load");
+      const recipe = await res.json();
+      artifactSelectedRecipe = recipe;
+      artifactBaseServings = 4;
+      artifactServings = 4;
+      renderOverview(recipe);
+    } catch {
+      artifactBody.innerHTML = '<div class="artifact-content"><div class="artifact-placeholder">Failed to load recipe details. Please try again.</div></div>';
     }
   }
 
-  /* ── Add / update sidebar entry ── */
+  /* ── Phase 2: Recipe overview ── */
+  function renderOverview(recipe) {
+    let html = '<div class="artifact-content">';
+    html += '<button class="artifact-back-btn" data-target="list"><i class="bi bi-arrow-left"></i> All recipes</button>';
+
+    if (recipe.thumbnail) {
+      html += `<img class="recipe-thumb" src="${escHtml(recipe.thumbnail)}" alt="${escHtml(recipe.title)}">`;
+    }
+
+    html += `<div class="artifact-kicker">${escHtml(recipe.title)}</div>`;
+
+    if (recipe.category || recipe.area) {
+      html += '<div class="recipe-meta">';
+      if (recipe.category) html += `<span class="recipe-tag">${escHtml(recipe.category)}</span>`;
+      if (recipe.area) html += `<span class="recipe-tag">${escHtml(recipe.area)}</span>`;
+      html += '</div>';
+    }
+
+    if (recipe.instructions) {
+      const shortInstructions = recipe.instructions.length > 400
+        ? recipe.instructions.substring(0, 400) + "..."
+        : recipe.instructions;
+      html += `<div class="recipe-instructions">${escHtml(shortInstructions)}</div>`;
+    }
+
+    html += '<button class="artifact-continue-btn">Continue to Ingredients <i class="bi bi-arrow-right"></i></button>';
+    html += '</div>';
+
+    artifactBody.innerHTML = html;
+
+    artifactBody.querySelector(".artifact-back-btn").addEventListener("click", () => {
+      renderRecipeList(artifactRecipes);
+    });
+
+    artifactBody.querySelector(".artifact-continue-btn").addEventListener("click", () => {
+      renderIngredients(recipe);
+    });
+  }
+
+  /* ── Phase 3: Ingredient checklist ── */
+  function renderIngredients(recipe) {
+    const multiplier = artifactServings / artifactBaseServings;
+
+    let html = '<div class="artifact-content">';
+    html += '<button class="artifact-back-btn" data-target="overview"><i class="bi bi-arrow-left"></i> Back to overview</button>';
+    html += `<div class="artifact-kicker">Ingredients</div>`;
+
+    html += '<div class="serving-control">';
+    html += '<span class="serving-label">Servings:</span>';
+    html += '<button class="serving-btn serving-minus">−</button>';
+    html += `<span class="serving-count">${artifactServings}</span>`;
+    html += '<button class="serving-btn serving-plus">+</button>';
+    html += '</div>';
+
+    html += '<div class="ingredient-list">';
+    (recipe.ingredients || []).forEach((ing, i) => {
+      const scaledMeasure = scaleMeasure(ing.measure, multiplier);
+      html += `<label class="ingredient-row">
+        <input type="checkbox" class="ingredient-check" data-index="${i}" checked>
+        <span class="ingredient-measure">${escHtml(scaledMeasure)}</span>
+        <span class="ingredient-name">${escHtml(ing.name)}</span>
+      </label>`;
+    });
+    html += '</div>';
+
+    html += '<button class="cart-btn"><i class="bi bi-cart-plus"></i> Add Selected to Cart</button>';
+    html += '</div>';
+
+    artifactBody.innerHTML = html;
+
+    artifactBody.querySelector(".artifact-back-btn").addEventListener("click", () => {
+      renderOverview(recipe);
+    });
+
+    artifactBody.querySelector(".serving-minus").addEventListener("click", () => {
+      if (artifactServings > 1) {
+        artifactServings--;
+        renderIngredients(recipe);
+      }
+    });
+
+    artifactBody.querySelector(".serving-plus").addEventListener("click", () => {
+      artifactServings++;
+      renderIngredients(recipe);
+    });
+
+    artifactBody.querySelector(".cart-btn").addEventListener("click", () => {
+      handleAddToCart(recipe);
+    });
+  }
+
+  function scaleMeasure(measure, multiplier) {
+    if (!measure || multiplier === 1) return measure || "";
+    const match = measure.match(/^([\d./]+)\s*(.*)/);
+    if (!match) return measure;
+
+    let num = match[1];
+    const unit = match[2];
+
+    if (num.includes("/")) {
+      const parts = num.split("/");
+      num = parseFloat(parts[0]) / parseFloat(parts[1]);
+    } else {
+      num = parseFloat(num);
+    }
+
+    if (isNaN(num)) return measure;
+
+    const scaled = Math.round(num * multiplier * 100) / 100;
+    return scaled + (unit ? " " + unit : "");
+  }
+
+  async function handleAddToCart(recipe) {
+    const checks = artifactBody.querySelectorAll(".ingredient-check:checked");
+    const multiplier = artifactServings / artifactBaseServings;
+
+    const items = [];
+    checks.forEach(cb => {
+      const idx = parseInt(cb.dataset.index);
+      const ing = recipe.ingredients[idx];
+      if (ing) {
+        items.push({
+          name: ing.name,
+          measure: scaleMeasure(ing.measure, multiplier),
+        });
+      }
+    });
+
+    if (!items.length) return;
+
+    const cartBtn = artifactBody.querySelector(".cart-btn");
+    cartBtn.disabled = true;
+    cartBtn.textContent = "Adding...";
+
+    try {
+      const res = await fetch(CART_ADD_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+          "Accept": "application/json"
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ items, conversation_id: currentConvoId })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        cartBtn.innerHTML = '<i class="bi bi-check-lg"></i> Added to Cart!';
+        cartBtn.classList.add("cart-btn-success");
+      } else {
+        cartBtn.textContent = data.error || "Failed";
+        cartBtn.disabled = false;
+      }
+    } catch {
+      cartBtn.textContent = "Network error";
+      cartBtn.disabled = false;
+    }
+  }
+
+  /* ── Sidebar entry helper ── */
   function upsertSidebarItem(id, title) {
     let item = sidebarList.querySelector(`.sidebar-item[data-id="${id}"]`);
     if (item) {
@@ -240,10 +460,10 @@ document.addEventListener("DOMContentLoaded", () => {
       addMessage(m.content, m.sender === "U" ? "user" : "bot");
     });
 
-    if (data.artifact_content) {
-      setArtifact(data.artifact_content);
+    if (data.recipes && data.recipes.length) {
+      renderRecipeList(data.recipes);
     } else {
-      artifactBody.innerHTML = '<div class="artifact-placeholder">Ask for a recipe to see ingredients, steps, or a shopping list here.</div>';
+      resetArtifact();
     }
 
     showFullChat();
@@ -276,7 +496,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!res.ok) { botBubble.textContent = data.error || "Server error"; return; }
 
       botBubble.textContent = data.reply || "No reply";
-      setArtifact(data.artifact_content);
+
+      if (data.recipes && data.recipes.length) {
+        renderRecipeList(data.recipes);
+      }
 
       if (!currentConvoId) {
         currentConvoId = data.conversation_id;
@@ -339,10 +562,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sidebarList.querySelectorAll(".sidebar-item").forEach(bindSidebarItem);
 
-  /* ── Initial focus ── */
+  /* ── Initial load: restore artifact from server-rendered conversation ── */
   if (currentConvoId) {
-    msgContainer.scrollTop = msgContainer.scrollHeight;
-    input.focus();
+    loadConversation(currentConvoId);
   } else {
     inputStart.focus();
   }

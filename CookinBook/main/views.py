@@ -8,6 +8,7 @@ from gemini_wrapper.client import CookinBookBot
 from django.contrib import messages
 import json
 import logging
+import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 
@@ -66,7 +67,7 @@ def chat_send(request):
 
     try:
         bot = CookinBookBot()
-        reply = bot.send_message(user_message)
+        reply, recipes = bot.send_message(user_message)
     except Exception:
         logger.exception("Error while sending message to CookinBookBot")
         return JsonResponse(
@@ -75,7 +76,8 @@ def chat_send(request):
 
     ChatMessage.objects.create(conversation=convo, sender="B", content=reply)
 
-    convo.artifact_content = reply
+    if recipes:
+        convo.artifact_content = json.dumps(recipes)
     convo.save()
 
     return JsonResponse(
@@ -83,7 +85,7 @@ def chat_send(request):
             "reply": reply,
             "conversation_id": convo.pk,
             "conversation_title": convo.title,
-            "artifact_content": convo.artifact_content,
+            "recipes": recipes,
         }
     )
 
@@ -102,12 +104,81 @@ def conversation_list(request):
 def conversation_detail(request, conversation_id):
     convo = get_object_or_404(ChatConversation, pk=conversation_id, user=request.user)
     msgs = list(convo.messages.values("sender", "content", "sent_at"))
+
+    recipes = []
+    if convo.artifact_content:
+        try:
+            recipes = json.loads(convo.artifact_content)
+        except (json.JSONDecodeError, TypeError):
+            recipes = []
+
     return JsonResponse(
         {
             "id": convo.pk,
             "title": convo.title,
-            "artifact_content": convo.artifact_content,
+            "recipes": recipes,
             "messages": msgs,
+        }
+    )
+
+
+@require_GET
+@login_required
+def recipe_detail(request, mealdb_id):
+    """Fetch full recipe details from TheMealDB API by ID."""
+    try:
+        r = requests.get(
+            f"https://www.themealdb.com/api/json/v1/1/lookup.php?i={mealdb_id}",
+            timeout=10,
+        )
+        data = r.json()
+    except Exception:
+        return JsonResponse({"error": "Failed to fetch recipe details."}, status=502)
+
+    meals = data.get("meals")
+    if not meals:
+        return JsonResponse({"error": "Recipe not found."}, status=404)
+
+    meal = meals[0]
+
+    ingredients = []
+    for n in range(1, 21):
+        name = (meal.get(f"strIngredient{n}") or "").strip()
+        measure = (meal.get(f"strMeasure{n}") or "").strip()
+        if name:
+            ingredients.append({"name": name, "measure": measure})
+
+    return JsonResponse(
+        {
+            "id": meal.get("idMeal"),
+            "title": meal.get("strMeal", ""),
+            "instructions": meal.get("strInstructions", ""),
+            "thumbnail": meal.get("strMealThumb", ""),
+            "category": meal.get("strCategory", ""),
+            "area": meal.get("strArea", ""),
+            "ingredients": ingredients,
+        }
+    )
+
+
+@require_POST
+@login_required
+def add_to_cart(request):
+    """Stub endpoint for adding ingredients to cart (UCP placeholder)."""
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    items = data.get("items", [])
+    if not items:
+        return JsonResponse({"error": "No items provided."}, status=400)
+
+    return JsonResponse(
+        {
+            "status": "success",
+            "message": f"{len(items)} item(s) added to cart.",
+            "transaction_id": "TX-UCP-PENDING",
         }
     )
 

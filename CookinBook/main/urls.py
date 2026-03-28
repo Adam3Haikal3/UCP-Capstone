@@ -18,6 +18,8 @@ urlpatterns = [
         views.conversation_delete,
         name="conversation_delete",
     ),
+    path("api/recipe/<str:mealdb_id>/", views.recipe_detail, name="recipe_detail"),
+    path("api/cart/add/", views.add_to_cart, name="add_to_cart"),
     path("login/", views.login_view, name="login"),
     path("signup/", views.signup_view, name="signup"),
     path("profile/", views.profile_view, name="profile"),
