@@ -6,25 +6,25 @@ from gemini_wrapper.es import get_es
 
 logger = logging.getLogger(__name__)
 
-# --- TOOLS (Mock Functions until elasticsearch and UCP parts are finished) ---
+_last_search_results = []
 
 
-# Elasticsearch part
 def search_recipes(query: str):
     """
     Search for recipes based on a food name.
     """
+    global _last_search_results
     print(f"\n[Wrapper Log] Searching Elasticsearch for: '{query}'...")
 
     try:
         es = get_es()
     except Exception as e:
         print(f"[Wrapper Log] Failed to connect to ES server: {e}")
+        _last_search_results = []
         return []
 
     index_name = settings.ELASTICSEARCH_INDEX
 
-    # Searches each individual word in the query to try and find hits
     try:
         response = es.search(
             index=index_name,
@@ -38,11 +38,11 @@ def search_recipes(query: str):
         )
     except Exception as e:
         print(f"[Wrapper log] ES search failed: {e}")
+        _last_search_results = []
         return []
 
     result = []
 
-    # By default, goes through the top ten findings from the search and appends them to result
     for hit in response["hits"]["hits"]:
         result.append(
             {
@@ -52,10 +52,10 @@ def search_recipes(query: str):
             }
         )
 
+    _last_search_results = result
     return result
 
 
-# UCP part
 def execute_purchase(items: list[str]):
     """
     Buy ingredients. Use ONLY after user explicitly confirms the list.
@@ -68,28 +68,26 @@ def execute_purchase(items: list[str]):
     }
 
 
-# --- THE MAIN WRAPPER CLASS ---
-
-
 class CookinBookBot:
     def __init__(self):
-        # 1. Load the system prompt
-        self.system_prompt = """
-        Role: You are "Cookin' Bot", a helpful shopping assistant.
-        Rules:
-        1. Always search for recipes first. Do not make up ingredients.
-        2. Before buying, list the ingredients and ask for confirmation.
-        3. If the user confirms, call 'execute_purchase'.
-        4. Be brief and friendly.
-        """
+        self.system_prompt = (
+            "Role: You are 'Cookin' Bot', a friendly recipe assistant.\n"
+            "Rules:\n"
+            "1. Always use search_recipes to find recipes. Never invent recipes or ingredients.\n"
+            "2. When search results are returned, give a brief friendly summary in chat "
+            "(e.g. 'I found 5 chicken recipes for you! Browse the cards in the recipe panel "
+            "and pick one you like.'). Do NOT list full ingredients in the chat — "
+            "the recipe panel handles that automatically.\n"
+            "3. If the user asks general cooking questions (technique, substitutions, etc.), "
+            "answer directly without searching.\n"
+            "4. Be brief, warm, and helpful.\n"
+        )
 
-        # 2. Initialize the client using the key from settings.py
         try:
             self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
         except AttributeError:
             raise ValueError("GEMINI_API_KEY is missing from settings.py!")
 
-        # 3. Create the chat session with tools attached
         self.chat = self.client.chats.create(
             model="gemini-3.1-flash-lite-preview",
             config=types.GenerateContentConfig(
@@ -101,13 +99,16 @@ class CookinBookBot:
             ),
         )
 
-        # Simple cart memory (reset every time the class is instantiated)
         self.cart = []
 
     def send_message(self, user_text):
         """
-        Sends a message to the bot and returns the text response.
+        Sends a message and returns (reply_text, recipes_list).
+        recipes_list comes from the side-effect capture in search_recipes.
         """
+        global _last_search_results
+        _last_search_results = []
+
         cart_status = (
             f"Current Cart: {self.cart}" if self.cart else "Current Cart: Empty"
         )
@@ -115,7 +116,7 @@ class CookinBookBot:
 
         try:
             response = self.chat.send_message(full_prompt)
-            return response.text
+            return response.text, list(_last_search_results)
         except Exception:
             logger.exception("Error communicating with Gemini")
             raise RuntimeError("Error communicating with Gemini")
