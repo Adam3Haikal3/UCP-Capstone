@@ -32,4 +32,7 @@ jobs:
           cd CookinBook
           python manage.py test
         env:
-          GEMINI_API_KEY: "dummy-key-for-ci"    
+          GEMINI_API_KEY: "dummy-key-for-ci"  
+          SECRET_KEY: "dummy-secret-key-for-ci"
+          DEBUG: "True"
+          ALLOWED_HOSTS: "localhost,127.0.0.1"  
