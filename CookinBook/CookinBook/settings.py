@@ -30,9 +30,15 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",") if os.getenv("ALLOWED_HOSTS") else []
+ALLOWED_HOSTS = (
+    os.getenv("ALLOWED_HOSTS", "").split(",") if os.getenv("ALLOWED_HOSTS") else []
+)
 
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if os.getenv("CSRF_TRUSTED_ORIGINS") else []
+CSRF_TRUSTED_ORIGINS = (
+    os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if os.getenv("CSRF_TRUSTED_ORIGINS")
+    else []
+)
 
 
 # Application definition
@@ -145,7 +151,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Elasticsearch configuration
-ELASTICSEARCH_HOST = "https://localhost:9200"
+ELASTICSEARCH_HOST = "http://localhost:9200"
 ELASTICSEARCH_INDEX = "recipes"
 
 ELASTICSEARCH_USER = "elastic"
