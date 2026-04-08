@@ -4,40 +4,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('main', '0002_alter_chatconversation_options_and_more'),
+        ("main", "0002_alter_chatconversation_options_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='city',
-            field=models.CharField(blank=True, default='', max_length=100),
+            model_name="profile",
+            name="city",
+            field=models.CharField(blank=True, default="", max_length=100),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='country',
-            field=models.CharField(blank=True, default='US', max_length=100),
+            model_name="profile",
+            name="country",
+            field=models.CharField(blank=True, default="US", max_length=100),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='state',
-            field=models.CharField(blank=True, default='', max_length=100),
+            model_name="profile",
+            name="state",
+            field=models.CharField(blank=True, default="", max_length=100),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='street_address',
-            field=models.CharField(blank=True, default='', max_length=255),
+            model_name="profile",
+            name="street_address",
+            field=models.CharField(blank=True, default="", max_length=255),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='street_address_2',
-            field=models.CharField(blank=True, default='', max_length=255, verbose_name='Address line 2'),
+            model_name="profile",
+            name="street_address_2",
+            field=models.CharField(
+                blank=True, default="", max_length=255, verbose_name="Address line 2"
+            ),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='zip_code',
-            field=models.CharField(blank=True, default='', max_length=20),
+            model_name="profile",
+            name="zip_code",
+            field=models.CharField(blank=True, default="", max_length=20),
         ),
     ]
