@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .forms import SignUpForm
-from .models import ChatConversation, ChatMessage
+from .forms import SignUpForm, ProfileAddressForm
+from .models import Profile, ChatConversation, ChatMessage
 from gemini_wrapper.client import CookinBookBot
 from django.contrib import messages
 import json
@@ -253,7 +253,18 @@ def signup_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request, "main/users/profile/profile.html")
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = ProfileAddressForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Address updated successfully!")
+            return redirect("profile")
+    else:
+        form = ProfileAddressForm(instance=profile)
+
+    return render(request, "main/users/profile/profile.html", {"form": form})
 
 
 def logout_view(request):

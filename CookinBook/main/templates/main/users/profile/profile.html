@@ -11,7 +11,9 @@
 </head>
 
 <div class="profile-page">
-    <div class="profile-card">
+
+    <!-- Left card: greeting + logout -->
+    <div class="profile-card profile-card-left">
         <h1 class="profile-title">Hello, {{ user.username }}!</h1>
         <p class="profile-description">Welcome back to the site.</p>
 
@@ -20,5 +22,65 @@
             <button type="submit" class="btn logout-btn">Logout</button>
         </form>
     </div>
+
+    <!-- Right card: shipping address -->
+    <div class="profile-card profile-card-right">
+        <h2 class="address-heading">Shipping Address</h2>
+        <p class="address-subtext">Used for future grocery deliveries via UCP.</p>
+
+        <!-- Django messages (success / error banners) -->
+        {% if messages %}
+        <div class="profile-messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="address-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_street_address">{{ form.street_address.label }}</label>
+                {{ form.street_address }}
+                {{ form.street_address.errors }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_street_address_2">{{ form.street_address_2.label }}</label>
+                {{ form.street_address_2 }}
+                {{ form.street_address_2.errors }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-half">
+                    <label for="id_city">{{ form.city.label }}</label>
+                    {{ form.city }}
+                    {{ form.city.errors }}
+                </div>
+                <div class="form-group form-group-half">
+                    <label for="id_state">{{ form.state.label }}</label>
+                    {{ form.state }}
+                    {{ form.state.errors }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-half">
+                    <label for="id_zip_code">{{ form.zip_code.label }}</label>
+                    {{ form.zip_code }}
+                    {{ form.zip_code.errors }}
+                </div>
+                <div class="form-group form-group-half">
+                    <label for="id_country">{{ form.country.label }}</label>
+                    {{ form.country }}
+                    {{ form.country.errors }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn save-btn">Save Address</button>
+        </form>
+    </div>
+
 </div>
 {% endblock %}
