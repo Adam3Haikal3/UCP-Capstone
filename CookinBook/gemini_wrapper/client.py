@@ -3,6 +3,7 @@ from google.genai import types
 from django.conf import settings
 import logging
 from gemini_wrapper.es import get_es
+from gemini_wrapper.tools import UCPClientTools
 
 logger = logging.getLogger(__name__)
 
@@ -55,19 +56,6 @@ def search_recipes(query: str):
     _last_search_results = result
     return result
 
-
-def execute_purchase(items: list[str]):
-    """
-    Buy ingredients. Use ONLY after user explicitly confirms the list.
-    """
-    print(f"\n[Wrapper Log] Connecting to Google UCP to buy: {items}...")
-    return {
-        "status": "success",
-        "transaction_id": "TX-UCP-77821",
-        "message": "Payment processed via UCP.",
-    }
-
-
 class CookinBookBot:
     def __init__(self):
         self.system_prompt = (
@@ -87,11 +75,17 @@ class CookinBookBot:
             self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
         except AttributeError:
             raise ValueError("GEMINI_API_KEY is missing from settings.py!")
+        
+        ucp_tools = UCPClientTools()
 
         self.chat = self.client.chats.create(
             model="gemini-3.1-flash-lite-preview",
             config=types.GenerateContentConfig(
-                tools=[search_recipes, execute_purchase],
+                tools=[
+                    search_recipes, 
+                    ucp_tools.discover_merchant,
+                    ucp_tools.create_cart
+                    ],
                 system_instruction=self.system_prompt,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
                     disable=False
@@ -120,3 +114,34 @@ class CookinBookBot:
         except Exception:
             logger.exception("Error communicating with Gemini")
             raise RuntimeError("Error communicating with Gemini")
+        
+    def handle_purchase(self, items: list[dict[str, str]]):
+    
+        prompt = f"""
+        A user just created their cart
+
+        You have access to UCP shopping tools:
+        - discover_merchant() - Get merchant info
+        - create_cart() - Create a shopping cart
+
+        Before calling create_cart, normalize the ingredient names in {items}
+        and quantities to store buyable ingredients. Remove preperation words. For example:
+        - "Melted Butter" -> "butter"
+        - "Chopped Onions" -> "onions"
+        Be carefull though, not all should be truncated, for example ground sugar is different
+        than sugar.
+        Change quantities to store buyable ammounts:
+        - "Pinch" -> 1
+        - "200g" -> 2
+
+        Follow this WORKFLOW:
+        1. Discover merchant
+        2. Normalize items and quantities
+        3. Create a cart with items: {items}
+        """
+
+        response = self.chat.send_message(prompt)
+
+        #TODO Send response back to frontend to say if cart was succesfully created
+
+    

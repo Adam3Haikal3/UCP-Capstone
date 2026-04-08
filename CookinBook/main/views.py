@@ -164,7 +164,7 @@ def recipe_detail(request, mealdb_id):
 @require_POST
 @login_required
 def add_to_cart(request):
-    """Stub endpoint for adding ingredients to cart (UCP placeholder)."""
+    """Send items to Gemini cooking bot """
     try:
         data = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
@@ -173,6 +173,15 @@ def add_to_cart(request):
     items = data.get("items", [])
     if not items:
         return JsonResponse({"error": "No items provided."}, status=400)
+    
+    try:
+        bot = CookinBookBot()
+        bot.handle_purchase(items)
+    except Exception:
+        logger.exception("Error while sending ingredients to CookinBookBot")
+        return JsonResponse(
+            {"error": "Failed to get a response from the assistant."}, status=500
+        )
 
     return JsonResponse(
         {
