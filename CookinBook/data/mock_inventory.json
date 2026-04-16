@@ -1,0 +1,902 @@
+{
+"chicken": {
+    "quantity": 100
+  },
+  "salmon": {
+    "quantity": 100
+  },
+  "beef": {
+    "quantity": 100
+  },
+  "pork": {
+    "quantity": 100
+  },
+  "avocado": {
+    "quantity": 100
+  },
+  "apple cider vinegar": {
+    "quantity": 100
+  },
+  "asparagus": {
+    "quantity": 100
+  },
+  "aubergine": {
+    "quantity": 100
+  },
+  "baby plum tomatoes": {
+    "quantity": 100
+  },
+  "bacon": {
+    "quantity": 100
+  },
+  "baking powder": {
+    "quantity": 100
+  },
+  "balsamic vinegar": {
+    "quantity": 100
+  },
+  "basil": {
+    "quantity": 100
+  },
+  "basil leaves": {
+    "quantity": 100
+  },
+  "basmati rice": {
+    "quantity": 100
+  },
+  "bay leaf": {
+    "quantity": 100
+  },
+  "bay leaves": {
+    "quantity": 100
+  },
+  "beef brisket": {
+    "quantity": 100
+  },
+  "beef fillet": {
+    "quantity": 100
+  },
+  "beef gravy": {
+    "quantity": 100
+  },
+  "beef stock": {
+    "quantity": 100
+  },
+  "bicarbonate of soda": {
+    "quantity": 100
+  },
+  "biryani masala": {
+    "quantity": 100
+  },
+  "black pepper": {
+    "quantity": 100
+  },
+  "black treacle": {
+    "quantity": 100
+  },
+  "borlotti beans": {
+    "quantity": 100
+  },
+  "bowtie pasta": {
+    "quantity": 100
+  },
+  "bramley apples": {
+    "quantity": 100
+  },
+  "brandy": {
+    "quantity": 100
+  },
+  "bread": {
+    "quantity": 100
+  },
+  "breadcrumbs": {
+    "quantity": 100
+  },
+  "broccoli": {
+    "quantity": 100
+  },
+  "brown lentils": {
+    "quantity": 100
+  },
+  "brown rice": {
+    "quantity": 100
+  },
+  "brown sugar": {
+    "quantity": 100
+  },
+  "butter": {
+    "quantity": 100
+  },
+  "cacao": {
+    "quantity": 100
+  },
+  "cajun": {
+    "quantity": 100
+  },
+  "canned tomatoes": {
+    "quantity": 100
+  },
+  "cannellini beans": {
+    "quantity": 100
+  },
+  "cardamom": {
+    "quantity": 100
+  },
+  "carrots": {
+    "quantity": 100
+  },
+  "cashew nuts": {
+    "quantity": 100
+  },
+  "cashews": {
+    "quantity": 100
+  },
+  "caster sugar": {
+    "quantity": 100
+  },
+  "cayenne pepper": {
+    "quantity": 100
+  },
+  "celeriac": {
+    "quantity": 100
+  },
+  "celery": {
+    "quantity": 100
+  },
+  "celery salt": {
+    "quantity": 100
+  },
+  "challots": {
+    "quantity": 100
+  },
+  "charlotte potatoes": {
+    "quantity": 100
+  },
+  "cheddar cheese": {
+    "quantity": 100
+  },
+  "cheese": {
+    "quantity": 100
+  },
+  "cheese curds": {
+    "quantity": 100
+  },
+  "cherry tomatoes": {
+    "quantity": 100
+  },
+  "chestnut mushroom": {
+    "quantity": 100
+  },
+  "chicken breast": {
+    "quantity": 100
+  },
+  "chicken breasts": {
+    "quantity": 100
+  },
+  "chicken legs": {
+    "quantity": 100
+  },
+  "chicken stock": {
+    "quantity": 100
+  },
+  "chicken thighs": {
+    "quantity": 100
+  },
+  "chickpeas": {
+    "quantity": 100
+  },
+  "chili powder": {
+    "quantity": 100
+  },
+  "chilled butter": {
+    "quantity": 100
+  },
+  "chilli": {
+    "quantity": 100
+  },
+  "chilli powder": {
+    "quantity": 100
+  },
+  "chinese broccoli": {
+    "quantity": 100
+  },
+  "chocolate chips": {
+    "quantity": 100
+  },
+  "chopped onion": {
+    "quantity": 100
+  },
+  "chopped parsley": {
+    "quantity": 100
+  },
+  "chopped tomatoes": {
+    "quantity": 100
+  },
+  "chorizo": {
+    "quantity": 100
+  },
+  "christmas pudding": {
+    "quantity": 100
+  },
+  "cilantro": {
+    "quantity": 100
+  },
+  "cinnamon": {
+    "quantity": 100
+  },
+  "cinnamon stick": {
+    "quantity": 100
+  },
+  "cloves": {
+    "quantity": 100
+  },
+  "coco sugar": {
+    "quantity": 100
+  },
+  "cocoa": {
+    "quantity": 100
+  },
+  "coconut cream": {
+    "quantity": 100
+  },
+  "coconut milk": {
+    "quantity": 100
+  },
+  "colby jack cheese": {
+    "quantity": 100
+  },
+  "cold water": {
+    "quantity": 100
+  },
+  "condensed milk": {
+    "quantity": 100
+  },
+  "coriander": {
+    "quantity": 100
+  },
+  "coriander leaves": {
+    "quantity": 100
+  },
+  "coriander seeds": {
+    "quantity": 100
+  },
+  "corn tortillas": {
+    "quantity": 100
+  },
+  "cornstarch": {
+    "quantity": 100
+  },
+  "cream": {
+    "quantity": 100
+  },
+  "creme fraiche": {
+    "quantity": 100
+  },
+  "cubed feta cheese": {
+    "quantity": 100
+  },
+  "cucumber": {
+    "quantity": 100
+  },
+  "cumin": {
+    "quantity": 100
+  },
+  "cumin seeds": {
+    "quantity": 100
+  },
+  "curry powder": {
+    "quantity": 100
+  },
+  "dark brown sugar": {
+    "quantity": 100
+  },
+  "dark soft brown sugar": {
+    "quantity": 100
+  },
+  "dark soy sauce": {
+    "quantity": 100
+  },
+  "demerara sugar": {
+    "quantity": 100
+  },
+  "diced tomatoes": {
+    "quantity": 100
+  },
+  "digestive biscuits": {
+    "quantity": 100
+  },
+  "dill": {
+    "quantity": 100
+  },
+  "doner meat": {
+    "quantity": 100
+  },
+  "double cream": {
+    "quantity": 100
+  },
+  "dried oregano": {
+    "quantity": 100
+  },
+  "dry white wine": {
+    "quantity": 100
+  },
+  "egg plants": {
+    "quantity": 100
+  },
+  "egg rolls": {
+    "quantity": 100
+  },
+  "egg white": {
+    "quantity": 100
+  },
+  "egg yolks": {
+    "quantity": 100
+  },
+  "eggs": {
+    "quantity": 100
+  },
+  "enchilada sauce": {
+    "quantity": 100
+  },
+  "english mustard": {
+    "quantity": 100
+  },
+  "extra virgin olive oil": {
+    "quantity": 100
+  },
+  "fajita seasoning": {
+    "quantity": 100
+  },
+  "farfalle": {
+    "quantity": 100
+  },
+  "fennel bulb": {
+    "quantity": 100
+  },
+  "fennel seeds": {
+    "quantity": 100
+  },
+  "fenugreek": {
+    "quantity": 100
+  },
+  "feta": {
+    "quantity": 100
+  },
+  "fish sauce": {
+    "quantity": 100
+  },
+  "flaked almonds": {
+    "quantity": 100
+  },
+  "flax eggs": {
+    "quantity": 100
+  },
+  "flour": {
+    "quantity": 100
+  },
+  "flour tortilla": {
+    "quantity": 100
+  },
+  "floury potatoes": {
+    "quantity": 100
+  },
+  "free-range egg, beaten": {
+    "quantity": 100
+  },
+  "free-range eggs, beaten": {
+    "quantity": 100
+  },
+  "french lentils": {
+    "quantity": 100
+  },
+  "fresh basil": {
+    "quantity": 100
+  },
+  "fresh thyme": {
+    "quantity": 100
+  },
+  "freshly chopped parsley": {
+    "quantity": 100
+  },
+  "fries": {
+    "quantity": 100
+  },
+  "full fat yogurt": {
+    "quantity": 100
+  },
+  "garam masala": {
+    "quantity": 100
+  },
+  "garlic": {
+    "quantity": 100
+  },
+  "garlic clove": {
+    "quantity": 100
+  },
+  "garlic powder": {
+    "quantity": 100
+  },
+  "garlic sauce": {
+    "quantity": 100
+  },
+  "ghee": {
+    "quantity": 100
+  },
+  "ginger": {
+    "quantity": 100
+  },
+  "ginger cordial": {
+    "quantity": 100
+  },
+  "ginger garlic paste": {
+    "quantity": 100
+  },
+  "ginger paste": {
+    "quantity": 100
+  },
+  "golden syrup": {
+    "quantity": 100
+  },
+  "gouda cheese": {
+    "quantity": 100
+  },
+  "granulated sugar": {
+    "quantity": 100
+  },
+  "grape tomatoes": {
+    "quantity": 100
+  },
+  "greek yogurt": {
+    "quantity": 100
+  },
+  "green beans": {
+    "quantity": 100
+  },
+  "green chilli": {
+    "quantity": 100
+  },
+  "green olives": {
+    "quantity": 100
+  },
+  "green red lentils": {
+    "quantity": 100
+  },
+  "green salsa": {
+    "quantity": 100
+  },
+  "ground almonds": {
+    "quantity": 100
+  },
+  "ground cumin": {
+    "quantity": 100
+  },
+  "ground ginger": {
+    "quantity": 100
+  },
+  "gruy\u00e8re": {
+    "quantity": 100
+  },
+  "hard taco shells": {
+    "quantity": 100
+  },
+  "harissa spice": {
+    "quantity": 100
+  },
+  "heavy cream": {
+    "quantity": 100
+  },
+  "honey": {
+    "quantity": 100
+  },
+  "horseradish": {
+    "quantity": 100
+  },
+  "hot beef stock": {
+    "quantity": 100
+  },
+  "hotsauce": {
+    "quantity": 100
+  },
+  "ice cream": {
+    "quantity": 100
+  },
+  "italian fennel sausages": {
+    "quantity": 100
+  },
+  "italian seasoning": {
+    "quantity": 100
+  },
+  "jalapeno": {
+    "quantity": 100
+  },
+  "jasmine rice": {
+    "quantity": 100
+  },
+  "jerusalem artichokes": {
+    "quantity": 100
+  },
+  "kale": {
+    "quantity": 100
+  },
+  "khus khus": {
+    "quantity": 100
+  },
+  "king prawns": {
+    "quantity": 100
+  },
+  "kosher salt": {
+    "quantity": 100
+  },
+  "lamb": {
+    "quantity": 100
+  },
+  "lamb loin chops": {
+    "quantity": 100
+  },
+  "lamb mince": {
+    "quantity": 100
+  },
+  "lasagne sheets": {
+    "quantity": 100
+  },
+  "lean minced beef": {
+    "quantity": 100
+  },
+  "leek": {
+    "quantity": 100
+  },
+  "lemon": {
+    "quantity": 100
+  },
+  "lemon juice": {
+    "quantity": 100
+  },
+  "lemon zest": {
+    "quantity": 100
+  },
+  "lemons": {
+    "quantity": 100
+  },
+  "lettuce": {
+    "quantity": 100
+  },
+  "lime": {
+    "quantity": 100
+  },
+  "little gem lettuce": {
+    "quantity": 100
+  },
+  "macaroni": {
+    "quantity": 100
+  },
+  "mackerel": {
+    "quantity": 100
+  },
+  "madras paste": {
+    "quantity": 100
+  },
+  "marjoram": {
+    "quantity": 100
+  },
+  "massaman curry paste": {
+    "quantity": 100
+  },
+  "medjool dates": {
+    "quantity": 100
+  },
+  "meringue nests": {
+    "quantity": 100
+  },
+  "milk": {
+    "quantity": 100
+  },
+  "minced garlic": {
+    "quantity": 100
+  },
+  "miniature marshmallows": {
+    "quantity": 100
+  },
+  "mint": {
+    "quantity": 100
+  },
+  "monterey jack cheese": {
+    "quantity": 100
+  },
+  "mozzarella balls": {
+    "quantity": 100
+  },
+  "muscovado sugar": {
+    "quantity": 100
+  },
+  "mushrooms": {
+    "quantity": 100
+  },
+  "mustard": {
+    "quantity": 100
+  },
+  "mustard powder": {
+    "quantity": 100
+  },
+  "mustard seeds": {
+    "quantity": 100
+  },
+  "nutmeg": {
+    "quantity": 100
+  },
+  "oil": {
+    "quantity": 100
+  },
+  "olive oil": {
+    "quantity": 100
+  },
+  "onion salt": {
+    "quantity": 100
+  },
+  "onions": {
+    "quantity": 100
+  },
+  "orange": {
+    "quantity": 100
+  },
+  "orange zest": {
+    "quantity": 100
+  },
+  "oregano": {
+    "quantity": 100
+  },
+  "oyster sauce": {
+    "quantity": 100
+  },
+  "paprika": {
+    "quantity": 100
+  },
+  "parma ham": {
+    "quantity": 100
+  },
+  "parmesan": {
+    "quantity": 100
+  },
+  "parmesan cheese": {
+    "quantity": 100
+  },
+  "parmigiano-reggiano": {
+    "quantity": 100
+  },
+  "parsley": {
+    "quantity": 100
+  },
+  "peanut butter": {
+    "quantity": 100
+  },
+  "peanut oil": {
+    "quantity": 100
+  },
+  "peanuts": {
+    "quantity": 100
+  },
+  "peas": {
+    "quantity": 100
+  },
+  "pecorino": {
+    "quantity": 100
+  },
+  "penne rigate": {
+    "quantity": 100
+  },
+  "pepper": {
+    "quantity": 100
+  },
+  "pine nuts": {
+    "quantity": 100
+  },
+  "pitted black olives": {
+    "quantity": 100
+  },
+  "plain chocolate": {
+    "quantity": 100
+  },
+  "plain flour": {
+    "quantity": 100
+  },
+  "plum tomatoes": {
+    "quantity": 100
+  },
+  "potato starch": {
+    "quantity": 100
+  },
+  "potatoes": {
+    "quantity": 100
+  },
+  "prawns": {
+    "quantity": 100
+  },
+  "puff pastry": {
+    "quantity": 100
+  },
+  "raspberry jam": {
+    "quantity": 100
+  },
+  "raw king prawns": {
+    "quantity": 100
+  },
+  "red chilli flakes": {
+    "quantity": 100
+  },
+  "red chilli": {
+    "quantity": 100
+  },
+  "red chilli powder": {
+    "quantity": 100
+  },
+  "red onions": {
+    "quantity": 100
+  },
+  "red pepper": {
+    "quantity": 100
+  },
+  "red pepper flakes": {
+    "quantity": 100
+  },
+  "red wine": {
+    "quantity": 100
+  },
+  "refried beans": {
+    "quantity": 100
+  },
+  "rice": {
+    "quantity": 100
+  },
+  "rice noodles": {
+    "quantity": 100
+  },
+  "rice stick noodles": {
+    "quantity": 100
+  },
+  "rice vermicelli": {
+    "quantity": 100
+  },
+  "rigatoni": {
+    "quantity": 100
+  },
+  "rocket": {
+    "quantity": 100
+  },
+  "rolled oats": {
+    "quantity": 100
+  },
+  "saffron": {
+    "quantity": 100
+  },
+  "sage": {
+    "quantity": 100
+  },
+  "sake": {
+    "quantity": 100
+  },
+  "salsa": {
+    "quantity": 100
+  },
+  "salt": {
+    "quantity": 100
+  },
+  "salted butter": {
+    "quantity": 100
+  },
+  "sausages": {
+    "quantity": 100
+  },
+  "sea salt": {
+    "quantity": 100
+  },
+  "self-raising flour": {
+    "quantity": 100
+  },
+  "semi-skimmed milk": {
+    "quantity": 100
+  },
+  "sesame seed": {
+    "quantity": 100
+  },
+  "shallots": {
+    "quantity": 100
+  },
+  "shredded mexican cheese": {
+    "quantity": 100
+  },
+  "shredded monterey jack cheese": {
+    "quantity": 100
+  },
+  "small potatoes": {
+    "quantity": 100
+  },
+  "smoked paprika": {
+    "quantity": 100
+  },
+  "smoky paprika": {
+    "quantity": 100
+  },
+  "sour cream": {
+    "quantity": 100
+  },
+  "soy sauce": {
+    "quantity": 100
+  },
+  "soya milk": {
+    "quantity": 100
+  },
+  "spaghetti": {
+    "quantity": 100
+  },
+  "spinach": {
+    "quantity": 100
+  },
+  "spring onions": {
+    "quantity": 100
+  },
+  "squash": {
+    "quantity": 100
+  },
+  "stir-fry vegetables": {
+    "quantity": 100
+  },
+  "strawberries": {
+    "quantity": 100
+  },
+  "sugar": {
+    "quantity": 100
+  },
+  "sultanas": {
+    "quantity": 100
+  },
+  "sunflower oil": {
+    "quantity": 100
+  },
+  "tamarind ball": {
+    "quantity": 100
+  },
+  "tamarind paste": {
+    "quantity": 100
+  },
+  "thai fish sauce": {
+    "quantity": 100
+  },
+  "thai green curry paste": {
+    "quantity": 100
+  },
+  "thai red curry paste": {
+    "quantity": 100
+  },
+  "thyme": {
+    "quantity": 100
+  },
+  "tomato ketchup": {
+    "quantity": 100
+  },
+  "tomato puree": {
+    "quantity": 100
+  },
+  "tomatoes": {
+    "quantity": 100
+  },
+  "toor dal": {
+    "quantity": 100
+  },
+  "tuna": {
+    "quantity": 100
+  },
+  "turmeric": {
+    "quantity": 100
+  },
+  "turmeric powder": {
+    "quantity": 100
+  },
+  "turnips": {
+    "quantity": 100
+  },
+  "vanilla": {
+    "quantity": 100
+  },
+  "vanilla extract": {
+    "quantity": 100
+  }
+}

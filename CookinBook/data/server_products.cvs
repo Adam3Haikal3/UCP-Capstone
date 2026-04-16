@@ -1,0 +1,301 @@
+id,name,price,image
+chicken,Chicken,1000,https://www.themealdb.com/images/ingredients/Chicken.png
+salmon,Salmon,1010,https://www.themealdb.com/images/ingredients/Salmon.png
+beef,Beef,1020,https://www.themealdb.com/images/ingredients/Beef.png
+pork,Pork,1030,https://www.themealdb.com/images/ingredients/Pork.png
+avocado,Avocado,1040,https://www.themealdb.com/images/ingredients/Avocado.png
+apple cider vinegar,Apple Cider Vinegar,1050,https://www.themealdb.com/images/ingredients/Apple_Cider_Vinegar.png
+asparagus,Asparagus,1060,https://www.themealdb.com/images/ingredients/Asparagus.png
+aubergine,Aubergine,1070,https://www.themealdb.com/images/ingredients/Aubergine.png
+baby plum tomatoes,Baby Plum Tomatoes,1080,https://www.themealdb.com/images/ingredients/Baby_Plum_Tomatoes.png
+bacon,Bacon,1090,https://www.themealdb.com/images/ingredients/Bacon.png
+baking powder,Baking Powder,1100,https://www.themealdb.com/images/ingredients/Baking_Powder.png
+balsamic vinegar,Balsamic Vinegar,1110,https://www.themealdb.com/images/ingredients/Balsamic_Vinegar.png
+basil,Basil,1120,https://www.themealdb.com/images/ingredients/Basil.png
+basil leaves,Basil Leaves,1130,https://www.themealdb.com/images/ingredients/Basil_Leaves.png
+basmati rice,Basmati Rice,1140,https://www.themealdb.com/images/ingredients/Basmati_Rice.png
+bay leaf,Bay Leaf,1150,https://www.themealdb.com/images/ingredients/Bay_Leaf.png
+bay leaves,Bay Leaves,1160,https://www.themealdb.com/images/ingredients/Bay_Leaves.png
+beef brisket,Beef Brisket,1170,https://www.themealdb.com/images/ingredients/Beef_Brisket.png
+beef fillet,Beef Fillet,1180,https://www.themealdb.com/images/ingredients/Beef_Fillet.png
+beef gravy,Beef Gravy,1190,https://www.themealdb.com/images/ingredients/Beef_Gravy.png
+beef stock,Beef Stock,1200,https://www.themealdb.com/images/ingredients/Beef_Stock.png
+bicarbonate of soda,Bicarbonate Of Soda,1210,https://www.themealdb.com/images/ingredients/Bicarbonate_Of_Soda.png
+biryani masala,Biryani Masala,1220,https://www.themealdb.com/images/ingredients/Biryani_Masala.png
+black pepper,Black Pepper,1230,https://www.themealdb.com/images/ingredients/Black_Pepper.png
+black treacle,Black Treacle,1240,https://www.themealdb.com/images/ingredients/Black_Treacle.png
+borlotti beans,Borlotti Beans,1250,https://www.themealdb.com/images/ingredients/Borlotti_Beans.png
+bowtie pasta,Bowtie Pasta,1260,https://www.themealdb.com/images/ingredients/Bowtie_Pasta.png
+bramley apples,Bramley Apples,1270,https://www.themealdb.com/images/ingredients/Bramley_Apples.png
+brandy,Brandy,1280,https://www.themealdb.com/images/ingredients/Brandy.png
+bread,Bread,1290,https://www.themealdb.com/images/ingredients/Bread.png
+breadcrumbs,Breadcrumbs,1300,https://www.themealdb.com/images/ingredients/Breadcrumbs.png
+broccoli,Broccoli,1310,https://www.themealdb.com/images/ingredients/Broccoli.png
+brown lentils,Brown Lentils,1320,https://www.themealdb.com/images/ingredients/Brown_Lentils.png
+brown rice,Brown Rice,1330,https://www.themealdb.com/images/ingredients/Brown_Rice.png
+brown sugar,Brown Sugar,1340,https://www.themealdb.com/images/ingredients/Brown_Sugar.png
+butter,Butter,1350,https://www.themealdb.com/images/ingredients/Butter.png
+cacao,Cacao,1360,https://www.themealdb.com/images/ingredients/Cacao.png
+cajun,Cajun,1370,https://www.themealdb.com/images/ingredients/Cajun.png
+canned tomatoes,Canned Tomatoes,1380,https://www.themealdb.com/images/ingredients/Canned_Tomatoes.png
+cannellini beans,Cannellini Beans,1390,https://www.themealdb.com/images/ingredients/Cannellini_Beans.png
+cardamom,Cardamom,1400,https://www.themealdb.com/images/ingredients/Cardamom.png
+carrots,Carrots,1410,https://www.themealdb.com/images/ingredients/Carrots.png
+cashew nuts,Cashew Nuts,1420,https://www.themealdb.com/images/ingredients/Cashew_Nuts.png
+cashews,Cashews,1430,https://www.themealdb.com/images/ingredients/Cashews.png
+caster sugar,Caster Sugar,1440,https://www.themealdb.com/images/ingredients/Caster_Sugar.png
+cayenne pepper,Cayenne Pepper,1450,https://www.themealdb.com/images/ingredients/Cayenne_Pepper.png
+celeriac,Celeriac,1460,https://www.themealdb.com/images/ingredients/Celeriac.png
+celery,Celery,1470,https://www.themealdb.com/images/ingredients/Celery.png
+celery salt,Celery Salt,1480,https://www.themealdb.com/images/ingredients/Celery_Salt.png
+challots,Challots,1490,https://www.themealdb.com/images/ingredients/Challots.png
+charlotte potatoes,Charlotte Potatoes,1500,https://www.themealdb.com/images/ingredients/Charlotte_Potatoes.png
+cheddar cheese,Cheddar Cheese,1510,https://www.themealdb.com/images/ingredients/Cheddar_Cheese.png
+cheese,Cheese,1520,https://www.themealdb.com/images/ingredients/Cheese.png
+cheese curds,Cheese Curds,1530,https://www.themealdb.com/images/ingredients/Cheese_Curds.png
+cherry tomatoes,Cherry Tomatoes,1540,https://www.themealdb.com/images/ingredients/Cherry_Tomatoes.png
+chestnut mushroom,Chestnut Mushroom,1550,https://www.themealdb.com/images/ingredients/Chestnut_Mushroom.png
+chicken breast,Chicken Breast,1560,https://www.themealdb.com/images/ingredients/Chicken_Breast.png
+chicken breasts,Chicken Breasts,1570,https://www.themealdb.com/images/ingredients/Chicken_Breasts.png
+chicken legs,Chicken Legs,1580,https://www.themealdb.com/images/ingredients/Chicken_Legs.png
+chicken stock,Chicken Stock,1590,https://www.themealdb.com/images/ingredients/Chicken_Stock.png
+chicken thighs,Chicken Thighs,1600,https://www.themealdb.com/images/ingredients/Chicken_Thighs.png
+chickpeas,Chickpeas,1610,https://www.themealdb.com/images/ingredients/Chickpeas.png
+chili powder,Chili Powder,1620,https://www.themealdb.com/images/ingredients/Chili_Powder.png
+chilled butter,Chilled Butter,1630,https://www.themealdb.com/images/ingredients/Chilled_Butter.png
+chilli,Chilli,1640,https://www.themealdb.com/images/ingredients/Chilli.png
+chilli powder,Chilli Powder,1650,https://www.themealdb.com/images/ingredients/Chilli_Powder.png
+chinese broccoli,Chinese Broccoli,1660,https://www.themealdb.com/images/ingredients/Chinese_Broccoli.png
+chocolate chips,Chocolate Chips,1670,https://www.themealdb.com/images/ingredients/Chocolate_Chips.png
+chopped onion,Chopped Onion,1680,https://www.themealdb.com/images/ingredients/Chopped_Onion.png
+chopped parsley,Chopped Parsley,1690,https://www.themealdb.com/images/ingredients/Chopped_Parsley.png
+chopped tomatoes,Chopped Tomatoes,1700,https://www.themealdb.com/images/ingredients/Chopped_Tomatoes.png
+chorizo,Chorizo,1710,https://www.themealdb.com/images/ingredients/Chorizo.png
+christmas pudding,Christmas Pudding,1720,https://www.themealdb.com/images/ingredients/Christmas_Pudding.png
+cilantro,Cilantro,1730,https://www.themealdb.com/images/ingredients/Cilantro.png
+cinnamon,Cinnamon,1740,https://www.themealdb.com/images/ingredients/Cinnamon.png
+cinnamon stick,Cinnamon Stick,1750,https://www.themealdb.com/images/ingredients/Cinnamon_Stick.png
+cloves,Cloves,1760,https://www.themealdb.com/images/ingredients/Cloves.png
+coco sugar,Coco Sugar,1770,https://www.themealdb.com/images/ingredients/Coco_Sugar.png
+cocoa,Cocoa,1780,https://www.themealdb.com/images/ingredients/Cocoa.png
+coconut cream,Coconut Cream,1790,https://www.themealdb.com/images/ingredients/Coconut_Cream.png
+coconut milk,Coconut Milk,1800,https://www.themealdb.com/images/ingredients/Coconut_Milk.png
+colby jack cheese,Colby Jack Cheese,1810,https://www.themealdb.com/images/ingredients/Colby_Jack_Cheese.png
+cold water,Cold Water,1820,https://www.themealdb.com/images/ingredients/Cold_Water.png
+condensed milk,Condensed Milk,1830,https://www.themealdb.com/images/ingredients/Condensed_Milk.png
+coriander,Coriander,1840,https://www.themealdb.com/images/ingredients/Coriander.png
+coriander leaves,Coriander Leaves,1850,https://www.themealdb.com/images/ingredients/Coriander_Leaves.png
+coriander seeds,Coriander Seeds,1860,https://www.themealdb.com/images/ingredients/Coriander_Seeds.png
+corn tortillas,Corn Tortillas,1870,https://www.themealdb.com/images/ingredients/Corn_Tortillas.png
+cornstarch,Cornstarch,1880,https://www.themealdb.com/images/ingredients/Cornstarch.png
+cream,Cream,1890,https://www.themealdb.com/images/ingredients/Cream.png
+creme fraiche,Creme Fraiche,1900,https://www.themealdb.com/images/ingredients/Creme_Fraiche.png
+cubed feta cheese,Cubed Feta Cheese,1910,https://www.themealdb.com/images/ingredients/Cubed_Feta_Cheese.png
+cucumber,Cucumber,1920,https://www.themealdb.com/images/ingredients/Cucumber.png
+cumin,Cumin,1930,https://www.themealdb.com/images/ingredients/Cumin.png
+cumin seeds,Cumin Seeds,1940,https://www.themealdb.com/images/ingredients/Cumin_Seeds.png
+curry powder,Curry Powder,1950,https://www.themealdb.com/images/ingredients/Curry_Powder.png
+dark brown sugar,Dark Brown Sugar,1960,https://www.themealdb.com/images/ingredients/Dark_Brown_Sugar.png
+dark soft brown sugar,Dark Soft Brown Sugar,1970,https://www.themealdb.com/images/ingredients/Dark_Soft_Brown_Sugar.png
+dark soy sauce,Dark Soy Sauce,1980,https://www.themealdb.com/images/ingredients/Dark_Soy_Sauce.png
+demerara sugar,Demerara Sugar,1990,https://www.themealdb.com/images/ingredients/Demerara_Sugar.png
+diced tomatoes,Diced Tomatoes,2000,https://www.themealdb.com/images/ingredients/Diced_Tomatoes.png
+digestive biscuits,Digestive Biscuits,2010,https://www.themealdb.com/images/ingredients/Digestive_Biscuits.png
+dill,Dill,2020,https://www.themealdb.com/images/ingredients/Dill.png
+doner meat,Doner Meat,2030,https://www.themealdb.com/images/ingredients/Doner_Meat.png
+double cream,Double Cream,2040,https://www.themealdb.com/images/ingredients/Double_Cream.png
+dried oregano,Dried Oregano,2050,https://www.themealdb.com/images/ingredients/Dried_Oregano.png
+dry white wine,Dry White Wine,2060,https://www.themealdb.com/images/ingredients/Dry_White_Wine.png
+egg plants,Egg Plants,2070,https://www.themealdb.com/images/ingredients/Egg_Plants.png
+egg rolls,Egg Rolls,2080,https://www.themealdb.com/images/ingredients/Egg_Rolls.png
+egg white,Egg White,2090,https://www.themealdb.com/images/ingredients/Egg_White.png
+egg yolks,Egg Yolks,2100,https://www.themealdb.com/images/ingredients/Egg_Yolks.png
+eggs,Eggs,2110,https://www.themealdb.com/images/ingredients/Eggs.png
+enchilada sauce,Enchilada Sauce,2120,https://www.themealdb.com/images/ingredients/Enchilada_Sauce.png
+english mustard,English Mustard,2130,https://www.themealdb.com/images/ingredients/English_Mustard.png
+extra virgin olive oil,Extra Virgin Olive Oil,2140,https://www.themealdb.com/images/ingredients/Extra_Virgin_Olive_Oil.png
+fajita seasoning,Fajita Seasoning,2150,https://www.themealdb.com/images/ingredients/Fajita_Seasoning.png
+farfalle,Farfalle,2160,https://www.themealdb.com/images/ingredients/Farfalle.png
+fennel bulb,Fennel Bulb,2170,https://www.themealdb.com/images/ingredients/Fennel_Bulb.png
+fennel seeds,Fennel Seeds,2180,https://www.themealdb.com/images/ingredients/Fennel_Seeds.png
+fenugreek,Fenugreek,2190,https://www.themealdb.com/images/ingredients/Fenugreek.png
+feta,Feta,2200,https://www.themealdb.com/images/ingredients/Feta.png
+fish sauce,Fish Sauce,2210,https://www.themealdb.com/images/ingredients/Fish_Sauce.png
+flaked almonds,Flaked Almonds,2220,https://www.themealdb.com/images/ingredients/Flaked_Almonds.png
+flax eggs,Flax Eggs,2230,https://www.themealdb.com/images/ingredients/Flax_Eggs.png
+flour,Flour,2240,https://www.themealdb.com/images/ingredients/Flour.png
+flour tortilla,Flour Tortilla,2250,https://www.themealdb.com/images/ingredients/Flour_Tortilla.png
+floury potatoes,Floury Potatoes,2260,https://www.themealdb.com/images/ingredients/Floury_Potatoes.png
+"free-range egg, beaten","Free-range Egg, Beaten",2270,"https://www.themealdb.com/images/ingredients/Free-range_Egg,_Beaten.png"
+"free-range eggs, beaten","Free-range Eggs, Beaten",2280,"https://www.themealdb.com/images/ingredients/Free-range_Eggs,_Beaten.png"
+french lentils,French Lentils,2290,https://www.themealdb.com/images/ingredients/French_Lentils.png
+fresh basil,Fresh Basil,2300,https://www.themealdb.com/images/ingredients/Fresh_Basil.png
+fresh thyme,Fresh Thyme,2310,https://www.themealdb.com/images/ingredients/Fresh_Thyme.png
+freshly chopped parsley,Freshly Chopped Parsley,2320,https://www.themealdb.com/images/ingredients/Freshly_Chopped_Parsley.png
+fries,Fries,2330,https://www.themealdb.com/images/ingredients/Fries.png
+full fat yogurt,Full Fat Yogurt,2340,https://www.themealdb.com/images/ingredients/Full_Fat_Yogurt.png
+garam masala,Garam Masala,2350,https://www.themealdb.com/images/ingredients/Garam_Masala.png
+garlic,Garlic,2360,https://www.themealdb.com/images/ingredients/Garlic.png
+garlic clove,Garlic Clove,2370,https://www.themealdb.com/images/ingredients/Garlic_Clove.png
+garlic powder,Garlic Powder,2380,https://www.themealdb.com/images/ingredients/Garlic_Powder.png
+garlic sauce,Garlic Sauce,2390,https://www.themealdb.com/images/ingredients/Garlic_Sauce.png
+ghee,Ghee,2400,https://www.themealdb.com/images/ingredients/Ghee.png
+ginger,Ginger,2410,https://www.themealdb.com/images/ingredients/Ginger.png
+ginger cordial,Ginger Cordial,2420,https://www.themealdb.com/images/ingredients/Ginger_Cordial.png
+ginger garlic paste,Ginger Garlic Paste,2430,https://www.themealdb.com/images/ingredients/Ginger_Garlic_Paste.png
+ginger paste,Ginger Paste,2440,https://www.themealdb.com/images/ingredients/Ginger_Paste.png
+golden syrup,Golden Syrup,2450,https://www.themealdb.com/images/ingredients/Golden_Syrup.png
+gouda cheese,Gouda Cheese,2460,https://www.themealdb.com/images/ingredients/Gouda_Cheese.png
+granulated sugar,Granulated Sugar,2470,https://www.themealdb.com/images/ingredients/Granulated_Sugar.png
+grape tomatoes,Grape Tomatoes,2480,https://www.themealdb.com/images/ingredients/Grape_Tomatoes.png
+greek yogurt,Greek Yogurt,2490,https://www.themealdb.com/images/ingredients/Greek_Yogurt.png
+green beans,Green Beans,2500,https://www.themealdb.com/images/ingredients/Green_Beans.png
+green chilli,Green Chilli,2510,https://www.themealdb.com/images/ingredients/Green_Chilli.png
+green olives,Green Olives,2520,https://www.themealdb.com/images/ingredients/Green_Olives.png
+green red lentils,Green Red Lentils,2530,https://www.themealdb.com/images/ingredients/Green_Red_Lentils.png
+green salsa,Green Salsa,2540,https://www.themealdb.com/images/ingredients/Green_Salsa.png
+ground almonds,Ground Almonds,2550,https://www.themealdb.com/images/ingredients/Ground_Almonds.png
+ground cumin,Ground Cumin,2560,https://www.themealdb.com/images/ingredients/Ground_Cumin.png
+ground ginger,Ground Ginger,2570,https://www.themealdb.com/images/ingredients/Ground_Ginger.png
+gruyère,Gruyère,2580,https://www.themealdb.com/images/ingredients/Gruyère.png
+hard taco shells,Hard Taco Shells,2590,https://www.themealdb.com/images/ingredients/Hard_Taco_Shells.png
+harissa spice,Harissa Spice,2600,https://www.themealdb.com/images/ingredients/Harissa_Spice.png
+heavy cream,Heavy Cream,2610,https://www.themealdb.com/images/ingredients/Heavy_Cream.png
+honey,Honey,2620,https://www.themealdb.com/images/ingredients/Honey.png
+horseradish,Horseradish,2630,https://www.themealdb.com/images/ingredients/Horseradish.png
+hot beef stock,Hot Beef Stock,2640,https://www.themealdb.com/images/ingredients/Hot_Beef_Stock.png
+hotsauce,Hotsauce,2650,https://www.themealdb.com/images/ingredients/Hotsauce.png
+ice cream,Ice Cream,2660,https://www.themealdb.com/images/ingredients/Ice_Cream.png
+italian fennel sausages,Italian Fennel Sausages,2670,https://www.themealdb.com/images/ingredients/Italian_Fennel_Sausages.png
+italian seasoning,Italian Seasoning,2680,https://www.themealdb.com/images/ingredients/Italian_Seasoning.png
+jalapeno,Jalapeno,2690,https://www.themealdb.com/images/ingredients/Jalapeno.png
+jasmine rice,Jasmine Rice,2700,https://www.themealdb.com/images/ingredients/Jasmine_Rice.png
+jerusalem artichokes,Jerusalem Artichokes,2710,https://www.themealdb.com/images/ingredients/Jerusalem_Artichokes.png
+kale,Kale,2720,https://www.themealdb.com/images/ingredients/Kale.png
+khus khus,Khus Khus,2730,https://www.themealdb.com/images/ingredients/Khus_Khus.png
+king prawns,King Prawns,2740,https://www.themealdb.com/images/ingredients/King_Prawns.png
+kosher salt,Kosher Salt,2750,https://www.themealdb.com/images/ingredients/Kosher_Salt.png
+lamb,Lamb,2760,https://www.themealdb.com/images/ingredients/Lamb.png
+lamb loin chops,Lamb Loin Chops,2770,https://www.themealdb.com/images/ingredients/Lamb_Loin_Chops.png
+lamb mince,Lamb Mince,2780,https://www.themealdb.com/images/ingredients/Lamb_Mince.png
+lasagne sheets,Lasagne Sheets,2790,https://www.themealdb.com/images/ingredients/Lasagne_Sheets.png
+lean minced beef,Lean Minced Beef,2800,https://www.themealdb.com/images/ingredients/Lean_Minced_Beef.png
+leek,Leek,2810,https://www.themealdb.com/images/ingredients/Leek.png
+lemon,Lemon,2820,https://www.themealdb.com/images/ingredients/Lemon.png
+lemon juice,Lemon Juice,2830,https://www.themealdb.com/images/ingredients/Lemon_Juice.png
+lemon zest,Lemon Zest,2840,https://www.themealdb.com/images/ingredients/Lemon_Zest.png
+lemons,Lemons,2850,https://www.themealdb.com/images/ingredients/Lemons.png
+lettuce,Lettuce,2860,https://www.themealdb.com/images/ingredients/Lettuce.png
+lime,Lime,2870,https://www.themealdb.com/images/ingredients/Lime.png
+little gem lettuce,Little Gem Lettuce,2880,https://www.themealdb.com/images/ingredients/Little_Gem_Lettuce.png
+macaroni,Macaroni,2890,https://www.themealdb.com/images/ingredients/Macaroni.png
+mackerel,Mackerel,2900,https://www.themealdb.com/images/ingredients/Mackerel.png
+madras paste,Madras Paste,2910,https://www.themealdb.com/images/ingredients/Madras_Paste.png
+marjoram,Marjoram,2920,https://www.themealdb.com/images/ingredients/Marjoram.png
+massaman curry paste,Massaman Curry Paste,2930,https://www.themealdb.com/images/ingredients/Massaman_Curry_Paste.png
+medjool dates,Medjool Dates,2940,https://www.themealdb.com/images/ingredients/Medjool_Dates.png
+meringue nests,Meringue Nests,2950,https://www.themealdb.com/images/ingredients/Meringue_Nests.png
+milk,Milk,2960,https://www.themealdb.com/images/ingredients/Milk.png
+minced garlic,Minced Garlic,2970,https://www.themealdb.com/images/ingredients/Minced_Garlic.png
+miniature marshmallows,Miniature Marshmallows,2980,https://www.themealdb.com/images/ingredients/Miniature_Marshmallows.png
+mint,Mint,2990,https://www.themealdb.com/images/ingredients/Mint.png
+monterey jack cheese,Monterey Jack Cheese,3000,https://www.themealdb.com/images/ingredients/Monterey_Jack_Cheese.png
+mozzarella balls,Mozzarella Balls,3010,https://www.themealdb.com/images/ingredients/Mozzarella_Balls.png
+muscovado sugar,Muscovado Sugar,3020,https://www.themealdb.com/images/ingredients/Muscovado_Sugar.png
+mushrooms,Mushrooms,3030,https://www.themealdb.com/images/ingredients/Mushrooms.png
+mustard,Mustard,3040,https://www.themealdb.com/images/ingredients/Mustard.png
+mustard powder,Mustard Powder,3050,https://www.themealdb.com/images/ingredients/Mustard_Powder.png
+mustard seeds,Mustard Seeds,3060,https://www.themealdb.com/images/ingredients/Mustard_Seeds.png
+nutmeg,Nutmeg,3070,https://www.themealdb.com/images/ingredients/Nutmeg.png
+oil,Oil,3080,https://www.themealdb.com/images/ingredients/Oil.png
+olive oil,Olive Oil,3090,https://www.themealdb.com/images/ingredients/Olive_Oil.png
+onion salt,Onion Salt,3100,https://www.themealdb.com/images/ingredients/Onion_Salt.png
+onions,Onions,3110,https://www.themealdb.com/images/ingredients/Onions.png
+orange,Orange,3120,https://www.themealdb.com/images/ingredients/Orange.png
+orange zest,Orange Zest,3130,https://www.themealdb.com/images/ingredients/Orange_Zest.png
+oregano,Oregano,3140,https://www.themealdb.com/images/ingredients/Oregano.png
+oyster sauce,Oyster Sauce,3150,https://www.themealdb.com/images/ingredients/Oyster_Sauce.png
+paprika,Paprika,3160,https://www.themealdb.com/images/ingredients/Paprika.png
+parma ham,Parma Ham,3170,https://www.themealdb.com/images/ingredients/Parma_Ham.png
+parmesan,Parmesan,3180,https://www.themealdb.com/images/ingredients/Parmesan.png
+parmesan cheese,Parmesan Cheese,3190,https://www.themealdb.com/images/ingredients/Parmesan_Cheese.png
+parmigiano-reggiano,Parmigiano-reggiano,3200,https://www.themealdb.com/images/ingredients/Parmigiano-reggiano.png
+parsley,Parsley,3210,https://www.themealdb.com/images/ingredients/Parsley.png
+peanut butter,Peanut Butter,3220,https://www.themealdb.com/images/ingredients/Peanut_Butter.png
+peanut oil,Peanut Oil,3230,https://www.themealdb.com/images/ingredients/Peanut_Oil.png
+peanuts,Peanuts,3240,https://www.themealdb.com/images/ingredients/Peanuts.png
+peas,Peas,3250,https://www.themealdb.com/images/ingredients/Peas.png
+pecorino,Pecorino,3260,https://www.themealdb.com/images/ingredients/Pecorino.png
+penne rigate,Penne Rigate,3270,https://www.themealdb.com/images/ingredients/Penne_Rigate.png
+pepper,Pepper,3280,https://www.themealdb.com/images/ingredients/Pepper.png
+pine nuts,Pine Nuts,3290,https://www.themealdb.com/images/ingredients/Pine_Nuts.png
+pitted black olives,Pitted Black Olives,3300,https://www.themealdb.com/images/ingredients/Pitted_Black_Olives.png
+plain chocolate,Plain Chocolate,3310,https://www.themealdb.com/images/ingredients/Plain_Chocolate.png
+plain flour,Plain Flour,3320,https://www.themealdb.com/images/ingredients/Plain_Flour.png
+plum tomatoes,Plum Tomatoes,3330,https://www.themealdb.com/images/ingredients/Plum_Tomatoes.png
+potato starch,Potato Starch,3340,https://www.themealdb.com/images/ingredients/Potato_Starch.png
+potatoes,Potatoes,3350,https://www.themealdb.com/images/ingredients/Potatoes.png
+prawns,Prawns,3360,https://www.themealdb.com/images/ingredients/Prawns.png
+puff pastry,Puff Pastry,3370,https://www.themealdb.com/images/ingredients/Puff_Pastry.png
+raspberry jam,Raspberry Jam,3380,https://www.themealdb.com/images/ingredients/Raspberry_Jam.png
+raw king prawns,Raw King Prawns,3390,https://www.themealdb.com/images/ingredients/Raw_King_Prawns.png
+red chilli flakes,Red Chilli Flakes,3400,https://www.themealdb.com/images/ingredients/Red_Chilli_Flakes.png
+red chilli,Red Chilli,3410,https://www.themealdb.com/images/ingredients/Red_Chilli.png
+red chilli powder,Red Chilli Powder,3420,https://www.themealdb.com/images/ingredients/Red_Chilli_Powder.png
+red onions,Red Onions,3430,https://www.themealdb.com/images/ingredients/Red_Onions.png
+red pepper,Red Pepper,3440,https://www.themealdb.com/images/ingredients/Red_Pepper.png
+red pepper flakes,Red Pepper Flakes,3450,https://www.themealdb.com/images/ingredients/Red_Pepper_Flakes.png
+red wine,Red Wine,3460,https://www.themealdb.com/images/ingredients/Red_Wine.png
+refried beans,Refried Beans,3470,https://www.themealdb.com/images/ingredients/Refried_Beans.png
+rice,Rice,3480,https://www.themealdb.com/images/ingredients/Rice.png
+rice noodles,Rice Noodles,3490,https://www.themealdb.com/images/ingredients/Rice_Noodles.png
+rice stick noodles,Rice Stick Noodles,3500,https://www.themealdb.com/images/ingredients/Rice_Stick_Noodles.png
+rice vermicelli,Rice Vermicelli,3510,https://www.themealdb.com/images/ingredients/Rice_Vermicelli.png
+rigatoni,Rigatoni,3520,https://www.themealdb.com/images/ingredients/Rigatoni.png
+rocket,Rocket,3530,https://www.themealdb.com/images/ingredients/Rocket.png
+rolled oats,Rolled Oats,3540,https://www.themealdb.com/images/ingredients/Rolled_Oats.png
+saffron,Saffron,3550,https://www.themealdb.com/images/ingredients/Saffron.png
+sage,Sage,3560,https://www.themealdb.com/images/ingredients/Sage.png
+sake,Sake,3570,https://www.themealdb.com/images/ingredients/Sake.png
+salsa,Salsa,3580,https://www.themealdb.com/images/ingredients/Salsa.png
+salt,Salt,3590,https://www.themealdb.com/images/ingredients/Salt.png
+salted butter,Salted Butter,3600,https://www.themealdb.com/images/ingredients/Salted_Butter.png
+sausages,Sausages,3610,https://www.themealdb.com/images/ingredients/Sausages.png
+sea salt,Sea Salt,3620,https://www.themealdb.com/images/ingredients/Sea_Salt.png
+self-raising flour,Self-raising Flour,3630,https://www.themealdb.com/images/ingredients/Self-raising_Flour.png
+semi-skimmed milk,Semi-skimmed Milk,3640,https://www.themealdb.com/images/ingredients/Semi-skimmed_Milk.png
+sesame seed,Sesame Seed,3650,https://www.themealdb.com/images/ingredients/Sesame_Seed.png
+shallots,Shallots,3660,https://www.themealdb.com/images/ingredients/Shallots.png
+shredded mexican cheese,Shredded Mexican Cheese,3670,https://www.themealdb.com/images/ingredients/Shredded_Mexican_Cheese.png
+shredded monterey jack cheese,Shredded Monterey Jack Cheese,3680,https://www.themealdb.com/images/ingredients/Shredded_Monterey_Jack_Cheese.png
+small potatoes,Small Potatoes,3690,https://www.themealdb.com/images/ingredients/Small_Potatoes.png
+smoked paprika,Smoked Paprika,3700,https://www.themealdb.com/images/ingredients/Smoked_Paprika.png
+smoky paprika,Smoky Paprika,3710,https://www.themealdb.com/images/ingredients/Smoky_Paprika.png
+sour cream,Sour Cream,3720,https://www.themealdb.com/images/ingredients/Sour_Cream.png
+soy sauce,Soy Sauce,3730,https://www.themealdb.com/images/ingredients/Soy_Sauce.png
+soya milk,Soya Milk,3740,https://www.themealdb.com/images/ingredients/Soya_Milk.png
+spaghetti,Spaghetti,3750,https://www.themealdb.com/images/ingredients/Spaghetti.png
+spinach,Spinach,3760,https://www.themealdb.com/images/ingredients/Spinach.png
+spring onions,Spring Onions,3770,https://www.themealdb.com/images/ingredients/Spring_Onions.png
+squash,Squash,3780,https://www.themealdb.com/images/ingredients/Squash.png
+stir-fry vegetables,Stir-fry Vegetables,3790,https://www.themealdb.com/images/ingredients/Stir-fry_Vegetables.png
+strawberries,Strawberries,3800,https://www.themealdb.com/images/ingredients/Strawberries.png
+sugar,Sugar,3810,https://www.themealdb.com/images/ingredients/Sugar.png
+sultanas,Sultanas,3820,https://www.themealdb.com/images/ingredients/Sultanas.png
+sunflower oil,Sunflower Oil,3830,https://www.themealdb.com/images/ingredients/Sunflower_Oil.png
+tamarind ball,Tamarind Ball,3840,https://www.themealdb.com/images/ingredients/Tamarind_Ball.png
+tamarind paste,Tamarind Paste,3850,https://www.themealdb.com/images/ingredients/Tamarind_Paste.png
+thai fish sauce,Thai Fish Sauce,3860,https://www.themealdb.com/images/ingredients/Thai_Fish_Sauce.png
+thai green curry paste,Thai Green Curry Paste,3870,https://www.themealdb.com/images/ingredients/Thai_Green_Curry_Paste.png
+thai red curry paste,Thai Red Curry Paste,3880,https://www.themealdb.com/images/ingredients/Thai_Red_Curry_Paste.png
+thyme,Thyme,3890,https://www.themealdb.com/images/ingredients/Thyme.png
+tomato ketchup,Tomato Ketchup,3900,https://www.themealdb.com/images/ingredients/Tomato_Ketchup.png
+tomato puree,Tomato Puree,3910,https://www.themealdb.com/images/ingredients/Tomato_Puree.png
+tomatoes,Tomatoes,3920,https://www.themealdb.com/images/ingredients/Tomatoes.png
+toor dal,Toor Dal,3930,https://www.themealdb.com/images/ingredients/Toor_Dal.png
+tuna,Tuna,3940,https://www.themealdb.com/images/ingredients/Tuna.png
+turmeric,Turmeric,3950,https://www.themealdb.com/images/ingredients/Turmeric.png
+turmeric powder,Turmeric Powder,3960,https://www.themealdb.com/images/ingredients/Turmeric_Powder.png
+turnips,Turnips,3970,https://www.themealdb.com/images/ingredients/Turnips.png
+vanilla,Vanilla,3980,https://www.themealdb.com/images/ingredients/Vanilla.png
+vanilla extract,Vanilla Extract,3990,https://www.themealdb.com/images/ingredients/Vanilla_Extract.png

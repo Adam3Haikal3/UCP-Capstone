@@ -84,7 +84,8 @@ class CookinBookBot:
                 tools=[
                     search_recipes, 
                     ucp_tools.discover_merchant,
-                    ucp_tools.create_cart
+                    ucp_tools.create_cart,
+                    ucp_tools.search_inventory,
                     ],
                 system_instruction=self.system_prompt,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
@@ -122,22 +123,13 @@ class CookinBookBot:
 
         You have access to UCP shopping tools:
         - discover_merchant() - Get merchant info
+        - search_inventory() - returns ONLY available items
         - create_cart() - Create a shopping cart
 
-        Before calling create_cart, normalize the ingredient names in {items}
-        and quantities to store buyable ingredients. Remove preperation words. For example:
-        - "Melted Butter" -> "butter"
-        - "Chopped Onions" -> "onions"
-        Be carefull though, not all should be truncated, for example ground sugar is different
-        than sugar.
-        Change quantities to store buyable ammounts:
-        - "Pinch" -> 1
-        - "200g" -> 2
-
-        Follow this WORKFLOW:
+        You must use tools to:
         1. Discover merchant
-        2. Normalize items and quantities
-        3. Create a cart with items: {items}
+        3. Search the merchant inventory with search_inventory({items}) to get new item list: updated_items
+        4. Create a cart using the new item list with create_cart(updated_items)
         """
 
         response = self.chat.send_message(prompt)
