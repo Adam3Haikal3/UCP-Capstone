@@ -99,6 +99,102 @@ class UCPClientTools:
          print(f"[UCP] Response: {json.dumps(response.json(), indent=4)}")
 
          # TODO Save checkout id to class and to database
+    
+    def get_fulfillment_methods(self):
+
+        # Fulfillment methods are typically either -> 1) shipping and 2) pickup
+
+        # Returns available fulfillment methods from merchant profile. Call after discover_merchant()
+
+        if self.merchant_profile is None:
+            raise ValueError("Must call discover_merchant() before getting fulfillment methods")
+        
+        fulfillment_methods = []
+
+        # ASSUMPTION: fulfillment-related capabilities contain "fulfillment", "shipping", or "pickup" in their name. Verify against actual mock server capability names when running.
+        for capability in self.merchant_profile["ucp"]["capabilities"]:
+            if "fulfillment" in capability["name"] or "shipping" in capability["name"] or "pickup" in capability["name"]:
+                fulfillment_methods.append(capability["name"])
+        
+        # ASSUMPTION: if no fulfillment capabilities found, default to shipping and pickup as these are the standard UCP fulfillment options. Remove fallback once actual capability names are confirmed from mock server.
+        if not fulfillment_methods:
+
+            # Default fallback - most ucp merchants should support at least shipping
+            fulfillment_methods = ["shipping", "pickup"]
+        
+        return {"fulfillment_methods": fulfillment_methods}
+    
+    def set_fulfillment_method(self, method: str, address: dict = None):
+
+        # Sets fulfillment method on current checkout. method: "shipping" or "pickup". Address: required if method is "shipping"
+
+        if not self.shopping_cart_id:
+            raise ValueError("Must call create_cart() before setting fulfillment method")
+        
+        if method == "shipping" and address is None:
+            raise ValueError("Address is required for shipping fulfillment")
+        
+        # ASSUMPTION: operation is called "update_checkout" in the mock server schema. Verify against actual schema operationId when running mock server
+        info = self.get_path("update_checkout")
+
+        if info is None:
+            raise ValueError("Merchant does not support update_checkout operation")
+        
+        # ASSUMPTION: checkout_id is a path parameter in the URL (e.g. /checkouts/{checkout_id}) — verify against actual schema paths
+        url = self.rest_endpoint + info["path"].replace("{checkout_id}", self.shopping_cart_id)
+
+        # ASSUMPTION: fulfillment method is set via a "fulfillment" key in the payload with "method_type" as the field name — verify against actual mock server schema
+        payload = {
+            "fulfillment": {
+                "method_type": method,
+            }
+        }
+
+        if method == "shipping" and address:
+            payload["fulfillment"]["destination"] = address
+        
+        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
+
+        print(f"[UCP] Set fulfillment response: {json.dumps(response.json(), indent=4)}")
+
+        return response.json()
+
+    def complete_purchase(self):
+
+        # Finalized order after cart creation and fulfillment method has been set. Call after create_cart() and set_fulfillment_method()
+
+        if not self.shopping_cart_id:
+            raise ValueError("Must call create_cart() before completing purchase")
+        
+        # ASSUMPTION: operation is called "complete_checkout" in the mock server schema. Verify against actual schema operationId when running mock server
+        info = self.get_path("complete_checkout")
+
+        if info is None:
+            raise ValueError("Merchant does not support complete_checkout operation")
+
+        # ASSUMPTION: checkout_id is a path parameter (e.g. - /checkouts/{checkout_id}/complete). May differ in actual mock server schema
+        url = self.rest_endpoint + info["path"].replace("{checkout_id}", self.shopping_cart_id)
+        
+        # ASSUMPTION: no additional payload needed to complete — just the checkout ID in the path. Real UCP implementations may require payment confirmation or other fields here
+        response = requests.request(info["method"], url, headers=self.get_headers(), json={})
+
+        data = response.json()
+
+        print(f"[UCP] Complete purchase response: {json.dumps(data, indent=4)}")
+
+        if response.status_code == 200:
+            return {
+                "status": "success",
+                "transaction_id": data.get("id", "UNKNOWN"),
+                "message": "Order successfully placed via UCP.",
+                "data": data,
+            }
+        else:
+            return {
+                "status": "failure",
+                "message": data.get("error", "Unknown error from UCP server."),
+                "data": data
+            }
 
     def get_path(self, operation_name):
          for p in self.rest_schema["paths"]:
