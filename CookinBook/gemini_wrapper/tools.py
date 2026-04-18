@@ -3,6 +3,8 @@ from django.conf import settings
 import requests
 import uuid
 import json
+from ucp_sdk.models.schemas.shopping import checkout_create_req
+from ucp_sdk.models.schemas.shopping import checkout_update_req
 
 class UCPClientTools:
     def __init__(self):
@@ -16,6 +18,7 @@ class UCPClientTools:
         self.rest_schema = None
         self.capabilities = []
         self.shopping_cart_id = []
+        self.payment_handlers = []
             
     def discover_merchant(self):
         discovery_url = self.server_url + "/.well-known/ucp"
@@ -35,7 +38,8 @@ class UCPClientTools:
 
         for c in self.merchant_profile["ucp"]["capabilities"]:
             self.capabilities.append(c["name"])
-        # TODO Collect payment handlers
+
+        self.payment_handlers = self.merchant_profile["payment"]["handlers"]
 
         # print(f"[UCP] Merchant Profile: {json.dumps(self.merchant_profile, indent=4)}")
         # print(f"[UCP] Rest Endpoint: {self.rest_endpoint}")
@@ -89,26 +93,40 @@ class UCPClientTools:
              line_items.append(d)
 
          payload = {
+             "buyer": {
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+             },
              "line_items": line_items,
              "currency": "USD",
-             "payment": { # TODO Need to collect the info for this from discovery profile
+             "payment": { 
                  "instruments": [],
                  "selected_instruments_id": None,
-                 "handlers": [
-                     {
-                         "id": "stripe",
-                         "name": "Stripe",
-                     }
-                 ]
+                 "handlers": self.payment_handlers
              },
+             #"fulfillment": {
+                 #"methods": [
+                     #{
+                        # "type": "shipping",
+                        # "selected_destination_id": "addr_1",
+                        # "groups": [
+                        #     {
+                        #         "selected_option_id": "exp-ship-us"
+                        #     }
+                        # ]
+                         
+                     #}
+                 #]
+             #}
          }
              
          response = requests.request(info["method"], url, headers=headers, json=payload)
+         data = response.json()
 
-         print(f"[UCP] Response: {json.dumps(response.json(), indent=4)}")
+         print(f"[UCP] Response: {json.dumps(data, indent=4)}")
 
-         # TODO Save checkout id to class and to database
-    
+         self.shopping_cart_id = data["id"]
+
     def get_fulfillment_methods(self):
 
         # Fulfillment methods are typically either -> 1) shipping and 2) pickup
@@ -133,6 +151,141 @@ class UCPClientTools:
         
         return {"fulfillment_methods": fulfillment_methods}
     
+    # Need to call update checkout three seperate times
+    # The first time add this to the payload:
+    """
+    "fulfillment": {
+                 "methods": [
+                     {
+                         "type": "shipping",
+                     }
+                 ]
+             }
+    """
+    # Then in the response the server will send back a list of available destinations in the fulfillment -> methods section that
+    # Looks like this:
+    """
+    "destinations": [
+                    {
+                        "extended_address": null,
+                        "street_address": "123 Main St",
+                        "address_locality": null,
+                        "address_region": null,
+                        "address_country": "US",
+                        "postal_code": "62704",
+                        "first_name": null,
+                        "last_name": null,
+                        "full_name": null,
+                        "phone_number": null,
+                        "id": "addr_1",
+                        "city": "Springfield",
+                        "region": "IL"
+                    },
+                    {
+                        "extended_address": null,
+                        "street_address": "456 Oak Ave",
+                        "address_locality": null,
+                        "address_region": null,
+                        "address_country": "US",
+                        "postal_code": "10012",
+                        "first_name": null,
+                        "last_name": null,
+                        "full_name": null,
+                        "phone_number": null,
+                        "id": "addr_2",
+                        "city": "Metropolis",
+                        "region": "NY"
+                    }
+                        "region": "NY"
+                    }
+                ],
+    """
+    # Decide to pick one (Available addresses are those only stored in merchant server, we can't have the bot put on in)
+    # and send another update request with the fullfilment looking like this now:
+    """
+    "fulfillment": {
+                 "methods": [
+                     {
+                         "type": "shipping",
+                         "selected_destination_id": {Chosen Addres id}
+                     }
+                 ]
+             }
+    """
+    # At this point the response will then give you payment and shipping options that look like this in the response:
+    # Groups is located once again in the fulfilments -> methods section
+    """
+    "groups": [
+                    {
+                        "id": "group_afedad28-55f1-4564-b42c-6a9e30c7c9bc",
+                        "line_item_ids": [
+                            "a41ddc5f-c8cc-4783-bdb7-e989e2ace57a",
+                            "efdea997-eb6b-4fc0-ba19-00cfdbc4ad20",
+                            "66de98f3-6e1a-461f-a928-e9930c0898cd",
+                            "337dc647-cb87-46f9-b5a9-2f1064b7aef3",
+                            "c8074f38-ff3c-495d-9073-6073afe53558",
+                            "20d831e0-5109-4c0e-9dff-17b17ec1d4a9",
+                            "ff3e02c1-7771-43ce-a7e1-101fea9ab2e5",
+                            "f278c726-4104-43cf-a371-a031f49bae12",
+                            "21651256-7755-4b5f-87ae-b21c4493e4f4",
+                            "a8e76426-f77d-47dc-807b-d40cd109ab40"
+                        ],
+                        "options": [
+                            {
+                                "id": "std-ship",
+                                "title": "Standard Shipping (Free)",
+                                "description": null,
+                                "carrier": null,
+                                "earliest_fulfillment_time": null,
+                                "latest_fulfillment_time": null,
+                                "totals": [
+                                    {
+                                        "type": "subtotal",
+                                        "display_text": null,
+                                        "amount": 0
+                                    },
+                                    {
+                                        "type": "total",
+                                        "display_text": null,
+                                        "amount": 0
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "exp-ship-us",
+                                "title": "Express Shipping (US)",
+                                "description": null,
+                                "carrier": null,
+                                "earliest_fulfillment_time": null,
+                                "latest_fulfillment_time": null,
+                                "totals": [
+                                    {
+                                        "type": "subtotal",
+                                        "display_text": null,
+                                        "amount": 1500
+                                    },
+                                    {
+                                        "type": "total",
+                                        "display_text": null,
+                                        "amount": 1500
+                                    }
+                                ]
+                            }
+                        ],
+    """
+    # Decide to pick one and send one last update with the fulfillment section looking like:
+    """
+    "fulfillment": {
+                 "methods": [
+                     {
+                         "type": "shipping",
+                         "selected_destination_id": {Chosen Addres id},
+                         "selected_option_id": {Chosen shipping option id}
+                     }
+                 ]
+             }
+    """
+    # Then all will be good!
     def set_fulfillment_method(self, method: str, address: dict = None):
 
         # Sets fulfillment method on current checkout. method: "shipping" or "pickup". Address: required if method is "shipping"
@@ -143,14 +296,18 @@ class UCPClientTools:
         if method == "shipping" and address is None:
             raise ValueError("Address is required for shipping fulfillment")
         
-        # ASSUMPTION: operation is called "update_checkout" in the mock server schema. Verify against actual schema operationId when running mock server
+        # Operation is called "update_checkout" in the mock server schema. Verify against actual schema operationId when running mock server
         info = self.get_path("update_checkout")
 
         if info is None:
             raise ValueError("Merchant does not support update_checkout operation")
         
-        # ASSUMPTION: checkout_id is a path parameter in the URL (e.g. /checkouts/{checkout_id}) — verify against actual schema paths
+        # id is a path parameter in the URL (e.g. /checkout-session/{id})
         url = self.rest_endpoint + info["path"].replace("{checkout_id}", self.shopping_cart_id)
+
+        # TODO Every time you call update_checkout you need to rebuild the entire payload.
+        # Might be a good idea to just save the orignal payload as a class variable in the create_checkout method to re-use 
+        # Since we will never update the line-items. I will let you decide
 
         # ASSUMPTION: fulfillment method is set via a "fulfillment" key in the payload with "method_type" as the field name — verify against actual mock server schema
         payload = {
@@ -168,24 +325,50 @@ class UCPClientTools:
 
         return response.json()
 
-    def complete_purchase(self):
-
+    def complete_purchase(self,):
         # Finalized order after cart creation and fulfillment method has been set. Call after create_cart() and set_fulfillment_method()
 
         if not self.shopping_cart_id:
             raise ValueError("Must call create_cart() before completing purchase")
         
-        # ASSUMPTION: operation is called "complete_checkout" in the mock server schema. Verify against actual schema operationId when running mock server
+        # Operation is called "complete_checkout" in the mock server schema.
         info = self.get_path("complete_checkout")
 
         if info is None:
             raise ValueError("Merchant does not support complete_checkout operation")
 
-        # ASSUMPTION: checkout_id is a path parameter (e.g. - /checkouts/{checkout_id}/complete). May differ in actual mock server schema
-        url = self.rest_endpoint + info["path"].replace("{checkout_id}", self.shopping_cart_id)
+        # id is a path parameter (e.g. - /checkouts/{id}/complete).
+        url = self.rest_endpoint + info["path"].replace("{id}", self.shopping_cart_id)
+
+        # Placeholder payload that includes payment information, would need to change for an actual working bot
+        payload = {
+             "payment_data": { 
+                 "id": "instr_agent_card",
+                 "handler_id": "mock_payment_handler",
+                 "handler_id": "mock_payment_handler",
+                 "type": "card",
+                 "brand": "Visa",
+                 "last_digits": "4242",
+                 "credential": {
+                     "type": "token",
+                     "token": "success_token"
+                 },
+                 "billing_address": {
+                     "street_address": "123 Main St",
+                     "address_locality": "Anytown",
+                     "address_region": "CA",
+                     "address_country": "US",
+                     "postal_code": "12345",
+                 }
+             },
+             "risk_signals": {
+                 "ip": "127.0.0.1",
+                 "broswer": "ucp-agent-tools",
+             }
+         }
         
         # ASSUMPTION: no additional payload needed to complete — just the checkout ID in the path. Real UCP implementations may require payment confirmation or other fields here
-        response = requests.request(info["method"], url, headers=self.get_headers(), json={})
+        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
 
         data = response.json()
 
@@ -210,6 +393,10 @@ class UCPClientTools:
               method = self.rest_schema["paths"][p]
 
               for http_method in method:
+                  # Some paths have "parameters" which need to be skipped or else code breaks
+                  if http_method == "parameters":
+                      continue
+                  
                   info = method[http_method]
 
                   if info["operationId"] == operation_name:
@@ -220,7 +407,7 @@ class UCPClientTools:
          return None
     
     def search_inventory(self, items: list[dict[str, str]]):
-        print(f"[UCP]: Original List of Ingredients: {items}")
+        # print(f"[UCP]: Original List of Ingredients: {items}")
 
         if os.getenv("UCP_MOCK_MODE"):
             try:
@@ -239,7 +426,7 @@ class UCPClientTools:
                 if f.get(item["name"].lower()) is not None
             ]
 
-            print(f"[UCP] Updated List of Available Ingredients: {updated_items}")
+            # print(f"[UCP] Updated List of Available Ingredients: {updated_items}")
 
             return updated_items
         

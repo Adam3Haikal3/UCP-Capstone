@@ -86,6 +86,7 @@ class CookinBookBot:
                     ucp_tools.discover_merchant,
                     ucp_tools.create_cart,
                     ucp_tools.search_inventory,
+                    ucp_tools.complete_purchase,
                     ],
                 system_instruction=self.system_prompt,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
@@ -125,11 +126,13 @@ class CookinBookBot:
         - discover_merchant() - Get merchant info
         - search_inventory() - returns ONLY available items
         - create_cart() - Create a shopping cart
+        - complete_purchase() - Completes a created shopping cart
 
         You must use tools to:
         1. Discover merchant
         3. Search the merchant inventory with search_inventory({items}) to get new item list: updated_items
         4. Create a cart using the new item list with create_cart(updated_items)
+        7. Finalize cart by calling complete_purchase()
         """
 
         response = self.chat.send_message(prompt)
