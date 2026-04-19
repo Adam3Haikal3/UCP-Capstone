@@ -56,6 +56,7 @@ def search_recipes(query: str):
     _last_search_results = result
     return result
 
+
 class CookinBookBot:
     def __init__(self):
         self.system_prompt = (
@@ -75,7 +76,7 @@ class CookinBookBot:
             self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
         except AttributeError:
             raise ValueError("GEMINI_API_KEY is missing from settings.py!")
-        
+
         ucp_tools = UCPClientTools()
 
         # gemini-3.1-flash-lite-preview
@@ -85,13 +86,13 @@ class CookinBookBot:
             model="gemini-3.1-flash-lite-preview",
             config=types.GenerateContentConfig(
                 tools=[
-                    search_recipes, 
+                    search_recipes,
                     ucp_tools.discover_merchant,
                     ucp_tools.create_cart,
                     ucp_tools.search_inventory,
                     ucp_tools.complete_purchase,
                     ucp_tools.set_fulfillment_method,
-                    ],
+                ],
                 system_instruction=self.system_prompt,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
                     disable=False
@@ -120,9 +121,9 @@ class CookinBookBot:
         except Exception:
             logger.exception("Error communicating with Gemini")
             raise RuntimeError("Error communicating with Gemini")
-        
+
     def handle_purchase(self, items: list[dict[str, str]], sls_id: int):
-    
+
         prompt = f"""
         A user just created their cart
 
@@ -148,6 +149,3 @@ class CookinBookBot:
         if response.text.startswith("ERROR:"):
             print(f"[UCP] Problem Occured During Bot Tool Calling: {response.text}")
             raise ValueError(response.text)
-
-
-    

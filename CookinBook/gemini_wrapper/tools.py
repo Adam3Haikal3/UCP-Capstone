@@ -6,13 +6,14 @@ import json
 from main.models import ShoppingListSession
 from django.utils import timezone
 
+
 class UCPClientTools:
     def __init__(self):
         if os.getenv("UCP_MOCK_MODE"):
             self.server_url = settings.URL
-        else: # TODO: Need to decide how a url will be picked outside of mock mode
+        else:  # TODO: Need to decide how a url will be picked outside of mock mode
             self.server_url = None
-            
+
         self.merchant_profile = None
         self.rest_endpoint = None
         self.rest_schema = None
@@ -20,7 +21,7 @@ class UCPClientTools:
         self.shopping_cart_id = []
         self.payment_handlers = []
         self.checkout_payload = None
-            
+
     def discover_merchant(self):
         discovery_url = self.server_url + "/.well-known/ucp"
 
@@ -47,99 +48,98 @@ class UCPClientTools:
         # print(f"[UCP] Rest Schema: {json.dumps(self.rest_schema, indent=4)}")
 
     def get_rest(self, ss):
-         if ss["rest"] is None:
-             raise ValueError("Merchant does not support REST")
+        if ss["rest"] is None:
+            raise ValueError("Merchant does not support REST")
 
-         schema_url = ss["rest"]["schema"]
+        schema_url = ss["rest"]["schema"]
 
-         # Mock server has incorrect example schema url
-         if os.getenv("UCP_MOCK_MODE"):
-             schema_url = schema_url[:15] + "/2026-01-23" + schema_url[15:]
-             
-         # print(f"Schema URL: {schema_url}")
-         self.rest_schema = requests.get(url=schema_url).json()
+        # Mock server has incorrect example schema url
+        if os.getenv("UCP_MOCK_MODE"):
+            schema_url = schema_url[:15] + "/2026-01-23" + schema_url[15:]
 
-         self.rest_endpoint = ss["rest"]["endpoint"]
-        
+        # print(f"Schema URL: {schema_url}")
+        self.rest_schema = requests.get(url=schema_url).json()
+
+        self.rest_endpoint = ss["rest"]["endpoint"]
+
     def create_cart(self, items: list[dict[str, str]], sls_id: int):
-         if "dev.ucp.shopping.checkout" not in self.capabilities:
-             raise ValueError("Merchant is missing checkout capability")
-         
-         info = self.get_path("create_checkout")
+        if "dev.ucp.shopping.checkout" not in self.capabilities:
+            raise ValueError("Merchant is missing checkout capability")
 
-         url = self.rest_endpoint + info["path"]
+        info = self.get_path("create_checkout")
 
-         headers = self.get_headers()
+        url = self.rest_endpoint + info["path"]
 
-         line_items = []
+        headers = self.get_headers()
 
-         for i in items:
-             if "id" in i:
-                 d = {
-                 "item": {
-                     "id": i["id"],
-                     "title": i["name"],
-                 },
-                 "quantity": 1, # Need to figure out how to normalize measures, so for now set to 1 instead of i["measure"]
-             }
-             else:
-                 d = {
-                 "item": {
-                     "id": i["name"].lower(),
-                     "title": i["name"],
-                 },
-                 "quantity": 1, # Need to figure out how to normalize measures, so for now set to 1 instead of i["measure"]
-             }
-             
-             line_items.append(d)
+        line_items = []
 
-         payload = {
-             # IMPORTANT NOTE: A buyer must already have an account on the UCP Merchant server
-             # So we are using a placeholder to work with the mock server
-             "buyer": {
+        for i in items:
+            if "id" in i:
+                d = {
+                    "item": {
+                        "id": i["id"],
+                        "title": i["name"],
+                    },
+                    "quantity": 1,  # Need to figure out how to normalize measures, so for now set to 1 instead of i["measure"]
+                }
+            else:
+                d = {
+                    "item": {
+                        "id": i["name"].lower(),
+                        "title": i["name"],
+                    },
+                    "quantity": 1,  # Need to figure out how to normalize measures, so for now set to 1 instead of i["measure"]
+                }
+
+            line_items.append(d)
+
+        payload = {
+            # IMPORTANT NOTE: A buyer must already have an account on the UCP Merchant server
+            # So we are using a placeholder to work with the mock server
+            "buyer": {
                 "name": "John Doe",
                 "email": "john.doe@example.com",
-             },
-             "line_items": line_items,
-             "currency": "USD",
-             "payment": { 
-                 "instruments": [],
-                 "selected_instruments_id": None,
-                 "handlers": self.payment_handlers
-             },
-             #"fulfillment": {
-                 #"methods": [
-                     #{
-                        # "type": "shipping",
-                        # "selected_destination_id": "addr_1",
-                        # "groups": [
-                        #     {
-                        #         "selected_option_id": "exp-ship-us"
-                        #     }
-                        # ]
-                         
-                     #}
-                 #]
-             #}
-         }
-             
-         response = requests.request(info["method"], url, headers=headers, json=payload)
-         data = response.json()
+            },
+            "line_items": line_items,
+            "currency": "USD",
+            "payment": {
+                "instruments": [],
+                "selected_instruments_id": None,
+                "handlers": self.payment_handlers,
+            },
+            # "fulfillment": {
+            # "methods": [
+            # {
+            # "type": "shipping",
+            # "selected_destination_id": "addr_1",
+            # "groups": [
+            #     {
+            #         "selected_option_id": "exp-ship-us"
+            #     }
+            # ]
+            # }
+            # ]
+            # }
+        }
 
-         print(f"[UCP] Response: {json.dumps(data, indent=4)}")
+        response = requests.request(info["method"], url, headers=headers, json=payload)
+        data = response.json()
 
-         # Update the shopping list session to say the order is now actively being worked on
-         if data.get("code") is None:
+        print(f"[UCP] Response: {json.dumps(data, indent=4)}")
+
+        # Update the shopping list session to say the order is now actively being worked on
+        if data.get("code") is None:
             sls = ShoppingListSession.objects.get(pk=sls_id)
-            sls.status = "IP" 
-            sls.order_status= "P" 
-            sls.save()  
-         else:
-          raise ValueError(f"Failed to create checkout: {data.get("code")}")     
+            sls.status = "IP"
+            sls.order_status = "P"
+            sls.save()
+        else:
+            raise ValueError(f"Failed to create checkout: {data.get('code')}")
 
-         self.shopping_cart_id = data["id"]
+        self.shopping_cart_id = data["id"]
 
-         self.checkout_payload = payload
+        self.checkout_payload = payload
 
     def get_fulfillment_methods(self):
 
@@ -148,23 +148,28 @@ class UCPClientTools:
         # Returns available fulfillment methods from merchant profile. Call after discover_merchant()
 
         if self.merchant_profile is None:
-            raise ValueError("Must call discover_merchant() before getting fulfillment methods")
-        
+            raise ValueError(
+                "Must call discover_merchant() before getting fulfillment methods"
+            )
+
         fulfillment_methods = []
 
         # ASSUMPTION: fulfillment-related capabilities contain "fulfillment", "shipping", or "pickup" in their name. Verify against actual mock server capability names when running.
         for capability in self.merchant_profile["ucp"]["capabilities"]:
-            if "fulfillment" in capability["name"] or "shipping" in capability["name"] or "pickup" in capability["name"]:
+            if (
+                "fulfillment" in capability["name"]
+                or "shipping" in capability["name"]
+                or "pickup" in capability["name"]
+            ):
                 fulfillment_methods.append(capability["name"])
-        
+
         # ASSUMPTION: if no fulfillment capabilities found, default to shipping and pickup as these are the standard UCP fulfillment options. Remove fallback once actual capability names are confirmed from mock server.
         if not fulfillment_methods:
-
             # Default fallback - most ucp merchants should support at least shipping
             fulfillment_methods = ["shipping", "pickup"]
-        
+
         return {"fulfillment_methods": fulfillment_methods}
-    
+
     # Need to call update checkout three seperate times
     # The first time add this to the payload:
     """
@@ -299,22 +304,25 @@ class UCPClientTools:
                  ]
              }
     """
+
     def set_fulfillment_method(self, method: str, address: dict = None):
 
         # Sets fulfillment method on current checkout. method: "shipping" or "pickup". Address: required if method is "shipping"
 
         if not self.shopping_cart_id:
-            raise ValueError("Must call create_cart() before setting fulfillment method")
-        
-        #if method == "shipping" and address is None:
+            raise ValueError(
+                "Must call create_cart() before setting fulfillment method"
+            )
+
+        # if method == "shipping" and address is None:
         #    raise ValueError("Address is required for shipping fulfillment")
-        
+
         # Operation is called "update_checkout" in the mock server schema. Verify against actual schema operationId when running mock server
         info = self.get_path("update_checkout")
 
         if info is None:
             raise ValueError("Merchant does not support update_checkout operation")
-        
+
         # id is a path parameter in the URL (e.g. /checkout-session/{id})
         url = self.rest_endpoint + info["path"].replace("{id}", self.shopping_cart_id)
 
@@ -323,27 +331,35 @@ class UCPClientTools:
         payload["fulfillment"] = {
             "methods": [
                 {
-                    "type": "shipping", # Need to eventually allow for pickup but mock server doesn't allow so just craft shipping
+                    "type": "shipping",  # Need to eventually allow for pickup but mock server doesn't allow so just craft shipping
                 }
             ]
         }
 
         payload["id"] = self.shopping_cart_id
-        
-        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
-        
+
+        response = requests.request(
+            info["method"], url, headers=self.get_headers(), json=payload
+        )
+
         data = response.json()
         if data.get("code") is not None:
-            raise ValueError(f"Failed to request shipping destinations: {data.get("code")}")
-        
-        print(f"[UCP] Collect Shipping Destinations Response: {json.dumps(data, indent=4)}")
+            raise ValueError(
+                f"Failed to request shipping destinations: {data.get('code')}"
+            )
+
+        print(
+            f"[UCP] Collect Shipping Destinations Response: {json.dumps(data, indent=4)}"
+        )
 
         # Choose the first destination available
         destination = data["fulfillment"]["methods"][0]["destinations"][0]
 
         if destination is None:
-            raise ValueError("There are no available shipping destinations for this order")
-        
+            raise ValueError(
+                "There are no available shipping destinations for this order"
+            )
+
         payload["fulfillment"] = {
             "methods": [
                 {
@@ -353,10 +369,12 @@ class UCPClientTools:
             ]
         }
 
-        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
+        response = requests.request(
+            info["method"], url, headers=self.get_headers(), json=payload
+        )
 
         if data.get("code") is not None:
-            raise ValueError(f"Failed to request shipping options: {data.get("code")}")
+            raise ValueError(f"Failed to request shipping options: {data.get('code')}")
 
         data = response.json()
         print(f"[UCP] Collect Shipping Options Response: {json.dumps(data, indent=4)}")
@@ -365,8 +383,10 @@ class UCPClientTools:
         option = data["fulfillment"]["methods"][0]["groups"][0]["options"][0]
 
         if option is None:
-            raise ValueError("There are no shipping options available for this checkout")
-        
+            raise ValueError(
+                "There are no shipping options available for this checkout"
+            )
+
         payload["fulfillment"] = {
             "methods": [
                 {
@@ -377,10 +397,14 @@ class UCPClientTools:
             ]
         }
 
-        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
+        response = requests.request(
+            info["method"], url, headers=self.get_headers(), json=payload
+        )
 
         if data.get("code") is not None:
-            raise ValueError(f"Failed to finalize shipping destination and options: {data.get("code")}")
+            raise ValueError(
+                f"Failed to finalize shipping destination and options: {data.get('code')}"
+            )
 
         data = response.json()
         print(f"[UCP] Final Checkout With Shipping Added: {json.dumps(data, indent=4)}")
@@ -390,7 +414,7 @@ class UCPClientTools:
 
         if not self.shopping_cart_id:
             raise ValueError("Must call create_cart() before completing purchase")
-        
+
         # Operation is called "complete_checkout" in the mock server schema.
         info = self.get_path("complete_checkout")
 
@@ -402,32 +426,31 @@ class UCPClientTools:
 
         # Placeholder payload that includes payment information, would need to change for an actual working bot
         payload = {
-             "payment_data": { 
-                 "id": "instr_agent_card",
-                 "handler_id": "mock_payment_handler",
-                 "handler_id": "mock_payment_handler",
-                 "type": "card",
-                 "brand": "Visa",
-                 "last_digits": "4242",
-                 "credential": {
-                     "type": "token",
-                     "token": "success_token"
-                 },
-                 "billing_address": {
-                     "street_address": "123 Main St",
-                     "address_locality": "Anytown",
-                     "address_region": "CA",
-                     "address_country": "US",
-                     "postal_code": "12345",
-                 }
-             },
-             "risk_signals": {
-                 "ip": "127.0.0.1",
-                 "broswer": "ucp-agent-tools",
-             }
-         }
-        
-        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
+            "payment_data": {
+                "id": "instr_agent_card",
+                "handler_id": "mock_payment_handler",
+                "handler_id": "mock_payment_handler",
+                "type": "card",
+                "brand": "Visa",
+                "last_digits": "4242",
+                "credential": {"type": "token", "token": "success_token"},
+                "billing_address": {
+                    "street_address": "123 Main St",
+                    "address_locality": "Anytown",
+                    "address_region": "CA",
+                    "address_country": "US",
+                    "postal_code": "12345",
+                },
+            },
+            "risk_signals": {
+                "ip": "127.0.0.1",
+                "broswer": "ucp-agent-tools",
+            },
+        }
+
+        response = requests.request(
+            info["method"], url, headers=self.get_headers(), json=payload
+        )
 
         data = response.json()
 
@@ -435,12 +458,18 @@ class UCPClientTools:
 
         if data.get("code") is None:
             sls = ShoppingListSession.objects.get(pk=sls_id)
-            sls.status = "C" 
-            sls.order_status = "OF" 
-            sls.delivery_method = "D" # Mock server only allows delivery
+            sls.status = "C"
+            sls.order_status = "OF"
+            sls.delivery_method = "D"  # Mock server only allows delivery
             sls.completed_at = timezone.now()
             sls.ucp_transaction_id = data["order"]["id"]
-            sls.total_cost = data["totals"][2]["amount"] # First two options in total are the subtotal and fulfillment costs respectively
+            sls.total_cost = data[
+                "totals"
+            ][
+                2
+            ][
+                "amount"
+            ]  # First two options in total are the subtotal and fulfillment costs respectively
             sls.save()
 
             return {
@@ -453,57 +482,52 @@ class UCPClientTools:
             return {
                 "status": "failure",
                 "message": data.get("error", "Unknown error from UCP server."),
-                "data": data
+                "data": data,
             }
 
     def get_path(self, operation_name):
-         for p in self.rest_schema["paths"]:
-              method = self.rest_schema["paths"][p]
+        for p in self.rest_schema["paths"]:
+            method = self.rest_schema["paths"][p]
 
-              for http_method in method:
-                  # Some paths have "parameters" which need to be skipped or else code breaks
-                  if http_method == "parameters":
-                      continue
-                  
-                  info = method[http_method]
+            for http_method in method:
+                # Some paths have "parameters" which need to be skipped or else code breaks
+                if http_method == "parameters":
+                    continue
 
-                  if info["operationId"] == operation_name:
-                      return {
-                          'path': p,
-                          'method': http_method.upper()
-                      }
-         return None
-    
+                info = method[http_method]
+
+                if info["operationId"] == operation_name:
+                    return {"path": p, "method": http_method.upper()}
+        return None
+
     def search_inventory(self, items: list[dict[str, str]]):
         # print(f"[UCP]: Original List of Ingredients: {items}")
 
         if os.getenv("UCP_MOCK_MODE"):
             try:
                 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                file_path = os.path.join(base_dir, 'data', 'mock_inventory.json')
+                file_path = os.path.join(base_dir, "data", "mock_inventory.json")
 
                 f = open(file_path, "r")
                 f = json.load(f)
             except Exception as e:
                 print(f"Error loading mock inventory: {e}")
                 return items
-            
+
             updated_items = [
-                item
-                for item in items
-                if f.get(item["name"].lower()) is not None
+                item for item in items if f.get(item["name"].lower()) is not None
             ]
 
             # print(f"[UCP] Updated List of Available Ingredients: {updated_items}")
 
             return updated_items
-        
+
         # UCP search (The mock server we are using doesn't support this)
         # For right now this is just searching the catalog and picking the first match that comes back
         # This would definitly need to change if this was a full fledged product
         if "dev.ucp.shopping.catalog.search" not in self.capabilities:
-             raise ValueError("Merchant is missing catalog search capability")
-        
+            raise ValueError("Merchant is missing catalog search capability")
+
         info = self.get_path("search_catalog")
 
         url = self.rest_endpoint + info["path"]
@@ -512,12 +536,12 @@ class UCPClientTools:
         updated_items = []
 
         for i in items:
-            payload = {
-                "query": i["name"]
-            }
+            payload = {"query": i["name"]}
 
             try:
-                response = requests.request(info["method"], url, headers=headers, json=payload)
+                response = requests.request(
+                    info["method"], url, headers=headers, json=payload
+                )
 
                 data = response.json()
                 products = data.get("products")
@@ -536,18 +560,18 @@ class UCPClientTools:
                 updated_items.append(new_item)
 
             except Exception as e:
-                print(f"[UCP] Failed to lookup {i["name"]}: {e}")
+                print(f"[UCP] Failed to lookup {i['name']}: {e}")
 
         return updated_items
-    
+
     def get_headers(self):
         headers = {
-             "UCP-Agent": "https://agent.example/profile", # Example profile, technically need a real one for a full release
-             "Request-Signature": "test", # In production this needs to be properly signed
-             "Request-Id": str(uuid.uuid4()),
-             "idempotency-key": str(uuid.uuid4()),
-             "Content-Type": "application/json",
-             "Accept": "application/json",
-         }
-        
+            "UCP-Agent": "https://agent.example/profile",  # Example profile, technically need a real one for a full release
+            "Request-Signature": "test",  # In production this needs to be properly signed
+            "Request-Id": str(uuid.uuid4()),
+            "idempotency-key": str(uuid.uuid4()),
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+
         return headers

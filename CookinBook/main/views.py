@@ -164,7 +164,7 @@ def recipe_detail(request, mealdb_id):
 @require_POST
 @login_required
 def add_to_cart(request):
-    """Send items to Gemini cooking bot """
+    """Send items to Gemini cooking bot"""
     try:
         data = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
@@ -173,23 +173,21 @@ def add_to_cart(request):
     items = data.get("items", [])
     if not items:
         return JsonResponse({"error": "No items provided."}, status=400)
-    
-    conversation_id = data.get("conversation_id")
-    convo = get_object_or_404(
-        ChatConversation, pk=conversation_id, user=request.user
-    )
 
-    sls = ShoppingListSession.objects.create(user=request.user, conversation=convo, status="NS")
+    conversation_id = data.get("conversation_id")
+    convo = get_object_or_404(ChatConversation, pk=conversation_id, user=request.user)
+
+    sls = ShoppingListSession.objects.create(
+        user=request.user, conversation=convo, status="NS"
+    )
     sls_id = sls.id
-    
+
     try:
         bot = CookinBookBot()
         bot.handle_purchase(items, sls_id)
     except Exception:
         logger.exception("Error while sending ingredients to CookinBookBot")
-        return JsonResponse(
-            {"error": "Failed to create a checkout."}, status=500
-        )
+        return JsonResponse({"error": "Failed to create a checkout."}, status=500)
 
     return JsonResponse(
         {
