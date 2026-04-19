@@ -63,7 +63,11 @@ def chat_send(request):
         title = user_message[:60] + ("…" if len(user_message) > 60 else "")
         convo = ChatConversation.objects.create(user=request.user, title=title)
 
-    ChatMessage.objects.create(conversation=convo, sender="U", content=user_message)
+    try:
+        ChatMessage.objects.create(conversation=convo, sender="U", content=user_message)
+    except Exception:
+        logger.exception("Failed to save user message to database")
+        return JsonResponse({"error": "Failed to save your message."}, status=500)
 
     try:
         bot = CookinBookBot()
@@ -74,11 +78,16 @@ def chat_send(request):
             {"error": "Failed to get a response from the assistant."}, status=500
         )
 
-    ChatMessage.objects.create(conversation=convo, sender="B", content=reply)
-
-    if recipes:
-        convo.artifact_content = json.dumps(recipes)
-    convo.save()
+    try:
+        ChatMessage.objects.create(conversation=convo, sender="B", content=reply)
+        if recipes:
+            convo.artifact_content = json.dumps(recipes)
+        convo.save()
+    except Exception:
+        logger.exception("Failed to save bot reply to database")
+        return JsonResponse(
+            {"error": "Failed to save Cookin' Bot's reply."}, status=500
+        )
 
     return JsonResponse(
         {
@@ -133,6 +142,7 @@ def recipe_detail(request, mealdb_id):
         )
         data = r.json()
     except Exception:
+        logger.exception("Failed to fetch recipe details for mealdb_id=%s", mealdb_id)
         return JsonResponse({"error": "Failed to fetch recipe details."}, status=502)
 
     meals = data.get("meals")
@@ -227,10 +237,27 @@ def signup_view(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            try:
+                form.save()
+            except Exception:
+                logger.exception("Failed to save new user to database")
+                messages.error(
+                    request,
+                    "An error occurred while creating your account. Please try again.",
+                )
+                return render(request, "main/users/signup/signup.html", {"form": form})
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=password)
+            if user is None:
+                logger.error(
+                    "authenticate() returned None after signup for username=%s",
+                    username,
+                )
+                messages.error(
+                    request, "Account created but login failed. Please log in manually."
+                )
+                return redirect("login")
             login(request, user)
             messages.success(request, f"Welcome, {username}! Your account was created.")
             return redirect("chat")

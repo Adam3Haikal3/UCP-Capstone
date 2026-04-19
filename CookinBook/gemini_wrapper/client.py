@@ -15,12 +15,12 @@ def search_recipes(query: str):
     Search for recipes based on a food name.
     """
     global _last_search_results
-    print(f"\n[Wrapper Log] Searching Elasticsearch for: '{query}'...")
+    logger.info("Searching Elasticsearch for: %r", query)
 
     try:
         es = get_es()
     except Exception as e:
-        print(f"[Wrapper Log] Failed to connect to ES server: {e}")
+        logger.error("Failed to connect to ES server: %s", e)
         _last_search_results = []
         return []
 
@@ -38,7 +38,7 @@ def search_recipes(query: str):
             },
         )
     except Exception as e:
-        print(f"[Wrapper log] ES search failed: {e}")
+        logger.error("ES search failed: %s", e)
         _last_search_results = []
         return []
 
