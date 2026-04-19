@@ -429,7 +429,7 @@ class UCPClientTools:
             "payment_data": {
                 "id": "instr_agent_card",
                 "handler_id": "mock_payment_handler",
-                "handler_id": "mock_payment_handler",
+                "handler_name": "mock_payment_handler",
                 "type": "card",
                 "brand": "Visa",
                 "last_digits": "4242",
