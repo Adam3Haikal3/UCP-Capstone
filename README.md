@@ -55,5 +55,7 @@ Follow this link to access the public UCP Mock Sever: https://github.com/Upsonic
 Before going further, replace the "inventory" and "products" cvs files located in the server's test_data folder
 with the "server_inventory" and "server_products" cvs files located in the data folder of this CookinBook project
 
-Then, follow the README instructions of the UCP Mock Server to run before attempting to create a checkout cart with
+Then, ensure that UCP_MOCK_MODE is equal to True in .env before starting.
+
+Finally, follow the README instructions of the UCP Mock Server to run before attempting to create a checkout cart with
 the CookinBook bot

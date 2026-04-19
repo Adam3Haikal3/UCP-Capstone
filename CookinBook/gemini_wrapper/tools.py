@@ -23,6 +23,8 @@ class UCPClientTools:
         self.checkout_payload = None
 
     def discover_merchant(self):
+        if self.server_url is None:
+            raise ValueError("No server url was provided for merchant")
         discovery_url = self.server_url + "/.well-known/ucp"
 
         # print(f"Discovery URL: {discovery_url}")
