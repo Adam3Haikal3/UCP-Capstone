@@ -3,8 +3,8 @@ from django.conf import settings
 import requests
 import uuid
 import json
-from ucp_sdk.models.schemas.shopping import checkout_create_req
-from ucp_sdk.models.schemas.shopping import checkout_update_req
+from main.models import ShoppingListSession
+from django.utils import timezone
 
 class UCPClientTools:
     def __init__(self):
@@ -19,6 +19,7 @@ class UCPClientTools:
         self.capabilities = []
         self.shopping_cart_id = []
         self.payment_handlers = []
+        self.checkout_payload = None
             
     def discover_merchant(self):
         discovery_url = self.server_url + "/.well-known/ucp"
@@ -60,7 +61,7 @@ class UCPClientTools:
 
          self.rest_endpoint = ss["rest"]["endpoint"]
         
-    def create_cart(self, items: list[dict[str, str]]):
+    def create_cart(self, items: list[dict[str, str]], sls_id: int):
          if "dev.ucp.shopping.checkout" not in self.capabilities:
              raise ValueError("Merchant is missing checkout capability")
          
@@ -93,6 +94,8 @@ class UCPClientTools:
              line_items.append(d)
 
          payload = {
+             # IMPORTANT NOTE: A buyer must already have an account on the UCP Merchant server
+             # So we are using a placeholder to work with the mock server
              "buyer": {
                 "name": "John Doe",
                 "email": "john.doe@example.com",
@@ -125,7 +128,18 @@ class UCPClientTools:
 
          print(f"[UCP] Response: {json.dumps(data, indent=4)}")
 
+         # Update the shopping list session to say the order is now actively being worked on
+         if data.get("code") is None:
+            sls = ShoppingListSession.objects.get(pk=sls_id)
+            sls.status = "IP" 
+            sls.order_status= "P" 
+            sls.save()  
+         else:
+          raise ValueError(f"Failed to create checkout: {data.get("code")}")     
+
          self.shopping_cart_id = data["id"]
+
+         self.checkout_payload = payload
 
     def get_fulfillment_methods(self):
 
@@ -285,7 +299,6 @@ class UCPClientTools:
                  ]
              }
     """
-    # Then all will be good!
     def set_fulfillment_method(self, method: str, address: dict = None):
 
         # Sets fulfillment method on current checkout. method: "shipping" or "pickup". Address: required if method is "shipping"
@@ -293,8 +306,8 @@ class UCPClientTools:
         if not self.shopping_cart_id:
             raise ValueError("Must call create_cart() before setting fulfillment method")
         
-        if method == "shipping" and address is None:
-            raise ValueError("Address is required for shipping fulfillment")
+        #if method == "shipping" and address is None:
+        #    raise ValueError("Address is required for shipping fulfillment")
         
         # Operation is called "update_checkout" in the mock server schema. Verify against actual schema operationId when running mock server
         info = self.get_path("update_checkout")
@@ -303,29 +316,76 @@ class UCPClientTools:
             raise ValueError("Merchant does not support update_checkout operation")
         
         # id is a path parameter in the URL (e.g. /checkout-session/{id})
-        url = self.rest_endpoint + info["path"].replace("{checkout_id}", self.shopping_cart_id)
+        url = self.rest_endpoint + info["path"].replace("{id}", self.shopping_cart_id)
 
-        # TODO Every time you call update_checkout you need to rebuild the entire payload.
-        # Might be a good idea to just save the orignal payload as a class variable in the create_checkout method to re-use 
-        # Since we will never update the line-items. I will let you decide
+        payload = self.checkout_payload.copy()
 
-        # ASSUMPTION: fulfillment method is set via a "fulfillment" key in the payload with "method_type" as the field name — verify against actual mock server schema
-        payload = {
-            "fulfillment": {
-                "method_type": method,
-            }
+        payload["fulfillment"] = {
+            "methods": [
+                {
+                    "type": "shipping", # Need to eventually allow for pickup but mock server doesn't allow so just craft shipping
+                }
+            ]
         }
 
-        if method == "shipping" and address:
-            payload["fulfillment"]["destination"] = address
+        payload["id"] = self.shopping_cart_id
         
         response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
+        
+        data = response.json()
+        if data.get("code") is not None:
+            raise ValueError(f"Failed to request shipping destinations: {data.get("code")}")
+        
+        print(f"[UCP] Collect Shipping Destinations Response: {json.dumps(data, indent=4)}")
 
-        print(f"[UCP] Set fulfillment response: {json.dumps(response.json(), indent=4)}")
+        # Choose the first destination available
+        destination = data["fulfillment"]["methods"][0]["destinations"][0]
 
-        return response.json()
+        if destination is None:
+            raise ValueError("There are no available shipping destinations for this order")
+        
+        payload["fulfillment"] = {
+            "methods": [
+                {
+                    "type": "shipping",
+                    "selected_destination_id": destination["id"],
+                }
+            ]
+        }
 
-    def complete_purchase(self,):
+        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
+
+        if data.get("code") is not None:
+            raise ValueError(f"Failed to request shipping options: {data.get("code")}")
+
+        data = response.json()
+        print(f"[UCP] Collect Shipping Options Response: {json.dumps(data, indent=4)}")
+
+        # Choose the first shipping option available (This will usually be standard shipping)
+        option = data["fulfillment"]["methods"][0]["groups"][0]["options"][0]
+
+        if option is None:
+            raise ValueError("There are no shipping options available for this checkout")
+        
+        payload["fulfillment"] = {
+            "methods": [
+                {
+                    "type": "shipping",
+                    "selected_destination_id": destination["id"],
+                    "groups": [{"selected_option_id": option["id"]}],
+                }
+            ]
+        }
+
+        response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
+
+        if data.get("code") is not None:
+            raise ValueError(f"Failed to finalize shipping destination and options: {data.get("code")}")
+
+        data = response.json()
+        print(f"[UCP] Final Checkout With Shipping Added: {json.dumps(data, indent=4)}")
+
+    def complete_purchase(self, sls_id: int):
         # Finalized order after cart creation and fulfillment method has been set. Call after create_cart() and set_fulfillment_method()
 
         if not self.shopping_cart_id:
@@ -367,14 +427,22 @@ class UCPClientTools:
              }
          }
         
-        # ASSUMPTION: no additional payload needed to complete — just the checkout ID in the path. Real UCP implementations may require payment confirmation or other fields here
         response = requests.request(info["method"], url, headers=self.get_headers(), json=payload)
 
         data = response.json()
 
         print(f"[UCP] Complete purchase response: {json.dumps(data, indent=4)}")
 
-        if response.status_code == 200:
+        if data.get("code") is None:
+            sls = ShoppingListSession.objects.get(pk=sls_id)
+            sls.status = "C" 
+            sls.order_status = "OF" 
+            sls.delivery_method = "D" # Mock server only allows delivery
+            sls.completed_at = timezone.now()
+            sls.ucp_transaction_id = data["order"]["id"]
+            sls.total_cost = data["totals"][2]["amount"] # First two options in total are the subtotal and fulfillment costs respectively
+            sls.save()
+
             return {
                 "status": "success",
                 "transaction_id": data.get("id", "UNKNOWN"),

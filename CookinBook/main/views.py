@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import SignUpForm
-from .models import ChatConversation, ChatMessage
+from .models import ChatConversation, ChatMessage, ShoppingListSession
 from gemini_wrapper.client import CookinBookBot
 from django.contrib import messages
 import json
@@ -174,13 +174,21 @@ def add_to_cart(request):
     if not items:
         return JsonResponse({"error": "No items provided."}, status=400)
     
+    conversation_id = data.get("conversation_id")
+    convo = get_object_or_404(
+        ChatConversation, pk=conversation_id, user=request.user
+    )
+
+    sls = ShoppingListSession.objects.create(user=request.user, conversation=convo, status="NS")
+    sls_id = sls.id
+    
     try:
         bot = CookinBookBot()
-        bot.handle_purchase(items)
+        bot.handle_purchase(items, sls_id)
     except Exception:
         logger.exception("Error while sending ingredients to CookinBookBot")
         return JsonResponse(
-            {"error": "Failed to get a response from the assistant."}, status=500
+            {"error": "Failed to create a checkout."}, status=500
         )
 
     return JsonResponse(

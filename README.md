@@ -48,3 +48,12 @@ CD into CookinBook
 After a small wait, all the recipes should be indexed into the recipe index
 
 Now, to run the recipe search, follow the instructions under "how to test the mock gemini wrapper"
+
+### How to run UCP with Mock Server
+Follow this link to access the public UCP Mock Sever: https://github.com/Upsonic/ucp-client
+
+Before going further, replace the "inventory" and "products" cvs files located in the server's test_data folder
+with the "server_inventory" and "server_products" cvs files located in the data folder of this CookinBook project
+
+Then, follow the README instructions of the UCP Mock Server to run before attempting to create a checkout cart with
+the CookinBook bot

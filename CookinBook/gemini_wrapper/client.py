@@ -78,6 +78,9 @@ class CookinBookBot:
         
         ucp_tools = UCPClientTools()
 
+        # gemini-3.1-flash-lite-preview
+        # gemini-3-flash-lite
+
         self.chat = self.client.chats.create(
             model="gemini-3.1-flash-lite-preview",
             config=types.GenerateContentConfig(
@@ -87,6 +90,7 @@ class CookinBookBot:
                     ucp_tools.create_cart,
                     ucp_tools.search_inventory,
                     ucp_tools.complete_purchase,
+                    ucp_tools.set_fulfillment_method,
                     ],
                 system_instruction=self.system_prompt,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
@@ -117,7 +121,7 @@ class CookinBookBot:
             logger.exception("Error communicating with Gemini")
             raise RuntimeError("Error communicating with Gemini")
         
-    def handle_purchase(self, items: list[dict[str, str]]):
+    def handle_purchase(self, items: list[dict[str, str]], sls_id: int):
     
         prompt = f"""
         A user just created their cart
@@ -126,17 +130,24 @@ class CookinBookBot:
         - discover_merchant() - Get merchant info
         - search_inventory() - returns ONLY available items
         - create_cart() - Create a shopping cart
+        - set_fulfillment_method() - Set address and shipping method for checkout
         - complete_purchase() - Completes a created shopping cart
 
         You must use tools to:
         1. Discover merchant
-        3. Search the merchant inventory with search_inventory({items}) to get new item list: updated_items
-        4. Create a cart using the new item list with create_cart(updated_items)
-        7. Finalize cart by calling complete_purchase()
-        """
+        2. Search the merchant inventory with search_inventory({items}) to get new item list: updated_items
+        3. Create a cart using the new item list with create_cart(updated_items, {sls_id})
+        4. Set the shipping address and shipping method with set_fulfillment_method()
+        7. Finalize cart by calling complete_purchase({sls_id})
 
+        If any tools throw an error, stop immediately and respond with the follow message:
+        ERROR: (tool name) - (error caused)
+        """
         response = self.chat.send_message(prompt)
 
-        #TODO Send response back to frontend to say if cart was succesfully created
+        if response.text.startswith("ERROR:"):
+            print(f"[UCP] Problem Occured During Bot Tool Calling: {response.text}")
+            raise ValueError(response.text)
+
 
     
