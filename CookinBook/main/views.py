@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import SignUpForm
-from .models import ChatConversation, ChatMessage
+from .models import ChatConversation, ChatMessage, ShoppingListSession
 from gemini_wrapper.client import CookinBookBot
 from django.contrib import messages
 import json
@@ -174,7 +174,7 @@ def recipe_detail(request, mealdb_id):
 @require_POST
 @login_required
 def add_to_cart(request):
-    """Stub endpoint for adding ingredients to cart (UCP placeholder)."""
+    """Send items to Gemini cooking bot"""
     try:
         data = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
@@ -183,6 +183,21 @@ def add_to_cart(request):
     items = data.get("items", [])
     if not items:
         return JsonResponse({"error": "No items provided."}, status=400)
+
+    conversation_id = data.get("conversation_id")
+    convo = get_object_or_404(ChatConversation, pk=conversation_id, user=request.user)
+
+    sls = ShoppingListSession.objects.create(
+        user=request.user, conversation=convo, status="NS"
+    )
+    sls_id = sls.id
+
+    try:
+        bot = CookinBookBot()
+        bot.handle_purchase(items, sls_id)
+    except Exception:
+        logger.exception("Error while sending ingredients to CookinBookBot")
+        return JsonResponse({"error": "Failed to create a checkout."}, status=500)
 
     return JsonResponse(
         {
