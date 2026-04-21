@@ -1,61 +1,128 @@
 # Cookin' Book
 
-## Install dependencies
+## Quick Start with Docker
+
+The fastest way to run the full stack (Django + PostgreSQL + Elasticsearch):
+
+```bash
+cd CookinBook
+
+# Create your environment file
+cp .env.example .env
+# Edit .env and fill in SECRET_KEY, GEMINI_API_KEY, etc.
+
+# Start all services
+docker-compose up --build
+```
+
+The app will be available at **http://localhost:8000**.
+
+To run database migrations or seed Elasticsearch from a separate terminal:
+
+```bash
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+docker-compose exec web python manage.py shell -c "from gemini_wrapper.es import seed_from_mealdb; seed_from_mealdb()"
+```
+
+To stop everything:
+
+```bash
+docker-compose down          # keep data volumes
+docker-compose down -v       # remove data volumes too
+```
+
+---
+
+## Manual Setup (Local Development)
+
+### Install dependencies
+
+```bash
+cd CookinBook
 pip install -r requirements.txt
+```
 
-## Install ElasticSearch
-pip install elasticsearch-dsl django-elasticsearch-dsl
+### Configure environment
 
-## How to run:
-cd into CookinBook  
+```bash
+cp .env.example .env
+# Fill in SECRET_KEY, GEMINI_API_KEY, ELASTICSEARCH_PASSWORD, etc.
+```
+
+### Run the development server
+
+```bash
+python manage.py migrate
 python manage.py runserver
+```
 
-## How to test the mock gemini wrapper:
-cd into CookinBook
-1. type into shell one-by-one:
+By default the app uses SQLite. To use PostgreSQL locally, set `DATABASE_URL` in `.env`:
 
-    - python manage.py shell
-    - from gemini_wrapper.client import CookinBookBot 
-    - bot = CookinBookBot()
+```
+DATABASE_URL=postgres://user:password@localhost:5432/cookinbook
+```
 
-2. paste this whole loop in the shell (so you don't need to always type print(bot.send_message("..."))): 
-    
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() == "quit":
-            break
-        response = bot.send_message(user_input)
-        print("Bot:", response)
-3. press enter twice, should see 'You:'
+---
 
-4. You can now start a conversation (ex. I want to make tacos)
+## How to test the mock gemini wrapper
 
-to close the chat, type 'quit'
-exit the shell, type 'exit()'
+1. Start the Django shell:
 
-### How to run ElasticSearch Mock Recipe Search
-Before starting, ensure that ElasticSearch is downloaded on your computer and that the server is running
-Make sure to include the server password and CA cert fingerprint in the .env
+```bash
+python manage.py shell
+from gemini_wrapper.client import CookinBookBot
+bot = CookinBookBot()
+```
 
-Then, you need to first index recipes into the ES server from TheMealDB. 
-CD into CookinBook
-1. type into the shell one-by-one:
+2. Paste this loop for interactive chat:
 
-    - python manage.py shell
-    - from gemini_wrapper.es import seed_from_mealdb
-    - seed_from_mealdb()
+```python
+while True:
+    user_input = input("You: ")
+    if user_input.lower() == "quit":
+        break
+    response = bot.send_message(user_input)
+    print("Bot:", response)
+```
 
-After a small wait, all the recipes should be indexed into the recipe index
+3. Press enter twice, then start a conversation (e.g. "I want to make tacos"). Type `quit` to exit chat, then `exit()` to leave the shell.
 
-Now, to run the recipe search, follow the instructions under "how to test the mock gemini wrapper"
+---
 
-### How to run UCP with Mock Server
-Follow this link to access the public UCP Mock Sever: https://github.com/Upsonic/ucp-client
+## How to run ElasticSearch Mock Recipe Search
 
-Before going further, replace the "inventory" and "products" cvs files located in the server's test_data folder
-with the "server_inventory" and "server_products" cvs files located in the data folder of this CookinBook project
+Before starting, ensure that Elasticsearch is running (either via Docker Compose or locally).
 
-Then, ensure that UCP_MOCK_MODE is equal to True in .env before starting.
+If running locally, include the server password and CA cert fingerprint in `.env`.
 
-Finally, follow the README instructions of the UCP Mock Server to run before attempting to create a checkout cart with
-the CookinBook bot
+Index recipes from TheMealDB:
+
+```bash
+python manage.py shell
+from gemini_wrapper.es import seed_from_mealdb
+seed_from_mealdb()
+```
+
+Then follow the gemini wrapper instructions above to search recipes.
+
+---
+
+## How to run UCP with Mock Server
+
+Follow this link to access the public UCP Mock Server: https://github.com/Upsonic/ucp-client
+
+Before going further, replace the "inventory" and "products" csv files located in the server's `test_data` folder with the `server_inventory` and `server_products` csv files located in the `data` folder of this CookinBook project.
+
+Ensure that `UCP_MOCK_MODE=True` in `.env` before starting.
+
+Follow the README instructions of the UCP Mock Server to run before attempting to create a checkout cart with the CookinBook bot.
+
+---
+
+## Running Tests
+
+```bash
+cd CookinBook
+python manage.py test main
+```
