@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .forms import SignUpForm
-from .models import ChatConversation, ChatMessage, ShoppingListSession
+from .forms import SignUpForm, ProfileAddressForm
+from .models import ChatConversation, ChatMessage, Profile, ShoppingListSession
 from gemini_wrapper.client import CookinBookBot
 from django.contrib import messages
 import json
