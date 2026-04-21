@@ -11,7 +11,7 @@ import logging
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
-from .models import ShoppingListSession, ShoppingListItem
+from .models import ShoppingListItem
 from datetime import timedelta
 
 
@@ -43,8 +43,7 @@ def chat_view(request, conversation_id=None):
 @login_required
 def history_view(request):
     orders = ShoppingListSession.objects.filter(
-        user=request.user,
-        order_status__in=["OF", "D"]
+        user=request.user, order_status__in=["OF", "D"]
     ).order_by("-id")
 
     order_data = []
@@ -58,17 +57,17 @@ def history_view(request):
         else:
             status_label = order.order_status
 
-        order_data.append({
-            "id": order.id,
-            "date": getattr(order, "created_at", None),
-            "total_cost": order.total_cost,
-            "status": status_label,
-            "item_count": item_count,
-        })
+        order_data.append(
+            {
+                "id": order.id,
+                "date": getattr(order, "created_at", None),
+                "total_cost": order.total_cost,
+                "status": status_label,
+                "item_count": item_count,
+            }
+        )
 
-    return render(request, "main/history/history.html", {
-        "orders": orders
-    })
+    return render(request, "main/history/history.html", {"orders": orders})
 
 
 @require_POST
@@ -317,25 +316,19 @@ def logout_view(request):
     messages.info(request, "You have successfully logged out.")
     return redirect("home")
 
+
 @login_required
 def orders_list(request):
     orders = ShoppingListSession.objects.filter(
-        user=request.user,
-        order_status__in=["OF", "D"]
-    ).order_by('-id')  
+        user=request.user, order_status__in=["OF", "D"]
+    ).order_by("-id")
 
-    return render(request, "main/orders/list.html", {
-        "orders": orders
-    })
+    return render(request, "main/orders/list.html", {"orders": orders})
 
 
 @login_required
 def order_detail(request, session_id):
-    order = get_object_or_404(
-        ShoppingListSession,
-        id=session_id,
-        user=request.user
-    )
+    order = get_object_or_404(ShoppingListSession, id=session_id, user=request.user)
 
     items = order.items.all()
 
@@ -357,9 +350,13 @@ def order_detail(request, session_id):
     # 🔥 THIS is the shipping logic you asked for
     estimated_delivery = order.created_at + timedelta(days=3)
 
-    return render(request, "main/orders/detail.html", {
-        "order": order,
-        "items": items,
-        "address": address,
-        "estimated_delivery": estimated_delivery,
-    })
+    return render(
+        request,
+        "main/orders/detail.html",
+        {
+            "order": order,
+            "items": items,
+            "address": address,
+            "estimated_delivery": estimated_delivery,
+        },
+    )
