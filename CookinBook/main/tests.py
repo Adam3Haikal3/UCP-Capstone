@@ -147,9 +147,7 @@ class ShoppingListSessionModelTest(TestCase):
         self.assertIn("dave", str(sls))
 
     def test_fk_relationships(self):
-        ShoppingListSession.objects.create(
-            user=self.user, conversation=self.convo
-        )
+        ShoppingListSession.objects.create(user=self.user, conversation=self.convo)
         self.assertEqual(self.user.shopping_sessions.count(), 1)
         self.assertEqual(self.convo.shopping_sessions.count(), 1)
 
@@ -562,7 +560,9 @@ class ChatSendAPITests(TestCase):
 
     @patch("main.views.CookinBookBot")
     def test_recipes_in_response(self, MockBot):
-        recipes = [{"id": "52772", "title": "Chicken Curry", "ingredients": ["chicken"]}]
+        recipes = [
+            {"id": "52772", "title": "Chicken Curry", "ingredients": ["chicken"]}
+        ]
         mock_bot = MockBot.return_value
         mock_bot.send_message.return_value = ("Found recipes!", recipes)
 
@@ -628,10 +628,12 @@ class AddToCartAPITests(TestCase):
         convo = ChatConversation.objects.create(user=self.user)
         response = self.client.post(
             "/api/cart/add/",
-            json.dumps({
-                "items": [{"name": "flour", "measure": "1 cup"}],
-                "conversation_id": convo.pk,
-            }),
+            json.dumps(
+                {
+                    "items": [{"name": "flour", "measure": "1 cup"}],
+                    "conversation_id": convo.pk,
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)
@@ -665,10 +667,12 @@ class AddToCartAPITests(TestCase):
         convo = ChatConversation.objects.create(user=self.user)
         response = self.client.post(
             "/api/cart/add/",
-            json.dumps({
-                "items": [{"name": "milk"}],
-                "conversation_id": convo.pk,
-            }),
+            json.dumps(
+                {
+                    "items": [{"name": "milk"}],
+                    "conversation_id": convo.pk,
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 500)
