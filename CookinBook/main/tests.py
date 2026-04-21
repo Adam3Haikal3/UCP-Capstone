@@ -2,7 +2,7 @@ import json
 from decimal import Decimal
 from unittest.mock import patch, MagicMock
 
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -64,7 +64,7 @@ class ChatConversationModelTest(TestCase):
         self.assertEqual(self.user.conversations.count(), 2)
 
     def test_ordering(self):
-        c1 = ChatConversation.objects.create(user=self.user, title="First")
+        ChatConversation.objects.create(user=self.user, title="First")
         c2 = ChatConversation.objects.create(user=self.user, title="Second")
         # Most recently updated first
         convos = list(ChatConversation.objects.filter(user=self.user))
@@ -147,7 +147,7 @@ class ShoppingListSessionModelTest(TestCase):
         self.assertIn("dave", str(sls))
 
     def test_fk_relationships(self):
-        sls = ShoppingListSession.objects.create(
+        ShoppingListSession.objects.create(
             user=self.user, conversation=self.convo
         )
         self.assertEqual(self.user.shopping_sessions.count(), 1)
