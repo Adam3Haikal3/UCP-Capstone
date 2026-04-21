@@ -40,32 +40,13 @@ def chat_view(request, conversation_id=None):
     return render(request, "main/chat/chat.html", context)
 
 
-@login_required
 def history_view(request):
-    orders = ShoppingListSession.objects.filter(
-        user=request.user, order_status__in=["OF", "D"]
-    ).order_by("-id")
-
-    order_data = []
-    for order in orders:
-        item_count = ShoppingListItem.objects.filter(session=order).count()
-
-        if order.order_status == "OF":
-            status_label = "OrderFinalized"
-        elif order.order_status == "D":
-            status_label = "Delivered"
-        else:
-            status_label = order.order_status
-
-        order_data.append(
-            {
-                "id": order.id,
-                "date": getattr(order, "created_at", None),
-                "total_cost": order.total_cost,
-                "status": status_label,
-                "item_count": item_count,
-            }
-        )
+    if request.user.is_authenticated:
+        orders = ShoppingListSession.objects.filter(
+            user=request.user, order_status__in=["OF", "D"]
+        ).order_by("-id")
+    else:
+        orders = ShoppingListSession.objects.none()
 
     return render(request, "main/history/history.html", {"orders": orders})
 
@@ -328,35 +309,22 @@ def orders_list(request):
 
 @login_required
 def order_detail(request, session_id):
-    order = get_object_or_404(ShoppingListSession, id=session_id, user=request.user)
-
+    order = ShoppingListSession.objects.get(id=session_id)
     items = order.items.all()
 
     profile = getattr(request.user, "profile", None)
 
-    if profile:
-        address_parts = [
-            profile.street_address,
-            profile.street_address_2,
-            profile.city,
-            profile.state,
-            profile.zip_code,
-            profile.country,
-        ]
-        address = ", ".join([p for p in address_parts if p])
-    else:
-        address = "N/A"
+    address = "N/A"
+    if profile and profile.street_address:
+        address = f"{profile.street_address}, {profile.city}, {profile.state} {profile.zip_code}"
 
-    # 🔥 THIS is the shipping logic you asked for
-    estimated_delivery = order.created_at + timedelta(days=3)
+    estimated_delivery = None
+    if order.created_at:
+        estimated_delivery = order.created_at + timedelta(days=3)
 
-    return render(
-        request,
-        "main/orders/detail.html",
-        {
-            "order": order,
-            "items": items,
-            "address": address,
-            "estimated_delivery": estimated_delivery,
-        },
-    )
+    return render(request, "main/orders/detail.html", {
+        "order": order,
+        "items": items,
+        "address": address,
+        "estimated_delivery": estimated_delivery,
+    })

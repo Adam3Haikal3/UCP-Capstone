@@ -31,6 +31,11 @@
 
 <p><strong>Placed on:</strong> {{ order.created_at|date:"M d, Y" }}</p>
 
-<p><strong>Estimated Delivery:</strong> {{ estimated_delivery|date:"M d, Y" }}</p>
+<p><strong>Estimated Delivery:</strong> 
+  {% if estimated_delivery %}
+  {{ estimated_delivery|date:"M d, Y" }}
+{% else %}
+  N/A
+{% endif %}</p>
 
 <a href="/history/">← Back to History</a>
