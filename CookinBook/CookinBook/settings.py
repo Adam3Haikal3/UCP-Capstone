@@ -161,6 +161,9 @@ ELASTICSEARCH_CERT = os.getenv("ELASTICSEARCH_CERT")
 # Authentication
 LOGIN_URL = "/login/"
 
+# Mock UCP server url
+URL = "http://localhost:8182"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
