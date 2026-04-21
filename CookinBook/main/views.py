@@ -11,7 +11,6 @@ import logging
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
-from .models import ShoppingListItem
 from datetime import timedelta
 
 
@@ -322,9 +321,13 @@ def order_detail(request, session_id):
     if order.created_at:
         estimated_delivery = order.created_at + timedelta(days=3)
 
-    return render(request, "main/orders/detail.html", {
-        "order": order,
-        "items": items,
-        "address": address,
-        "estimated_delivery": estimated_delivery,
-    })
+    return render(
+        request,
+        "main/orders/detail.html",
+        {
+            "order": order,
+            "items": items,
+            "address": address,
+            "estimated_delivery": estimated_delivery,
+        },
+    )
