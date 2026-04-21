@@ -22,3 +22,7 @@ staticfiles/
 # Docker volumes
 postgres_data/
 es_data/
+
+__pycache__/
+*.pyc
+db.sqlite3

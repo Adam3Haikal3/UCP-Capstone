@@ -7,6 +7,17 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     birth_date = models.DateField(null=True, blank=True)
+
+    # Shipping / mailing address (all optional)
+    street_address = models.CharField(max_length=255, blank=True, default="")
+    street_address_2 = models.CharField(
+        "Address line 2", max_length=255, blank=True, default=""
+    )
+    city = models.CharField(max_length=100, blank=True, default="")
+    state = models.CharField(max_length=100, blank=True, default="")
+    zip_code = models.CharField(max_length=20, blank=True, default="")
+    country = models.CharField(max_length=100, blank=True, default="US")
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
