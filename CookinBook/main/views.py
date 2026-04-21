@@ -12,6 +12,7 @@ import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 from .models import ShoppingListSession, ShoppingListItem
+from datetime import timedelta
 
 
 logger = logging.getLogger(__name__)
@@ -336,12 +337,29 @@ def order_detail(request, session_id):
         user=request.user
     )
 
-    try:
-        items = order.items.all()
-    except:
-        items = []
+    items = order.items.all()
+
+    profile = getattr(request.user, "profile", None)
+
+    if profile:
+        address_parts = [
+            profile.street_address,
+            profile.street_address_2,
+            profile.city,
+            profile.state,
+            profile.zip_code,
+            profile.country,
+        ]
+        address = ", ".join([p for p in address_parts if p])
+    else:
+        address = "N/A"
+
+    # 🔥 THIS is the shipping logic you asked for
+    estimated_delivery = order.created_at + timedelta(days=3)
 
     return render(request, "main/orders/detail.html", {
         "order": order,
-        "items": items
+        "items": items,
+        "address": address,
+        "estimated_delivery": estimated_delivery,
     })

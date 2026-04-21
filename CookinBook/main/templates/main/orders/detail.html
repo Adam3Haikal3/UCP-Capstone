@@ -25,4 +25,12 @@
   {% endfor %}
 </ul>
 
+<hr>
+
+<p><strong>Shipping to:</strong> {{ address|default:"N/A" }}</p>
+
+<p><strong>Placed on:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+
+<p><strong>Estimated Delivery:</strong> {{ estimated_delivery|date:"M d, Y" }}</p>
+
 <a href="/history/">← Back to History</a>
