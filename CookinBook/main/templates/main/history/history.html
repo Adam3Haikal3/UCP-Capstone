@@ -1,20 +1,26 @@
-{% extends 'main/base/base.html' %}
+<h1>Order History</h1>
 
-{% block title %}
-History
-{% endblock %}
+{% if orders %}
+  <ul>
+    {% for order in orders %}
+      <li>
+        <a href="/orders/{{ order.id }}/">Order #{{ order.id }}</a>
 
-{% block content %}
-  
-<head>
-  {% load static %}
+        | Date:
+        {% if order.created_at %}
+          {{ order.created_at|date:"M d, Y" }}
+        {% else %}
+          N/A
+        {% endif %}
 
-  <!-- History Custom CSS Stylesheet -->
-  <link rel="stylesheet" href="{% static 'history.css' %}">
-</head>
+        | Total: ${{ order.total_cost }}
 
-<body>
-    <h1>History</h1>
-</body>
+        | Status: {{ order.get_order_status_display }}
 
-{% endblock %}
+        | Items: {{ order.items.count }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No orders yet.</p>
+{% endif %}

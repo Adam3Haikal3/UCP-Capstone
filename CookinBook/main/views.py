@@ -11,6 +11,8 @@ import logging
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
+from .models import ShoppingListSession, ShoppingListItem
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +39,35 @@ def chat_view(request, conversation_id=None):
     return render(request, "main/chat/chat.html", context)
 
 
+@login_required
 def history_view(request):
-    return render(request, "main/history/history.html")
+    orders = ShoppingListSession.objects.filter(
+        user=request.user,
+        order_status__in=["OF", "D"]
+    ).order_by("-id")
+
+    order_data = []
+    for order in orders:
+        item_count = ShoppingListItem.objects.filter(session=order).count()
+
+        if order.order_status == "OF":
+            status_label = "OrderFinalized"
+        elif order.order_status == "D":
+            status_label = "Delivered"
+        else:
+            status_label = order.order_status
+
+        order_data.append({
+            "id": order.id,
+            "date": getattr(order, "created_at", None),
+            "total_cost": order.total_cost,
+            "status": status_label,
+            "item_count": item_count,
+        })
+
+    return render(request, "main/history/history.html", {
+        "orders": orders
+    })
 
 
 @require_POST
@@ -275,3 +304,33 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("home")
+
+@login_required
+def orders_list(request):
+    orders = ShoppingListSession.objects.filter(
+        user=request.user,
+        order_status__in=["OF", "D"]
+    ).order_by('-id')  
+
+    return render(request, "main/orders/list.html", {
+        "orders": orders
+    })
+
+
+@login_required
+def order_detail(request, session_id):
+    order = get_object_or_404(
+        ShoppingListSession,
+        id=session_id,
+        user=request.user
+    )
+
+    try:
+        items = order.items.all()
+    except:
+        items = []
+
+    return render(request, "main/orders/detail.html", {
+        "order": order,
+        "items": items
+    })

@@ -1,0 +1,28 @@
+<h1>Order #{{ order.id }}</h1>
+
+<p><strong>Date:</strong>
+{% if order.created_at %}
+  {{ order.created_at|date:"M d, Y" }}
+{% else %}
+  N/A
+{% endif %}
+</p>
+
+<p><strong>Total:</strong> ${{ order.total_cost }}</p>
+
+<p><strong>Status:</strong> {{ order.get_order_status_display }}</p>
+
+<p><strong>Items:</strong></p>
+<ul>
+  {% for item in items %}
+    <li>
+      {{ item.quantity }} {{ item.unit }} {{ item.ingredient_name }}
+      {% if item.retailer %} ({{ item.retailer }}){% endif %}
+      {% if item.price %} - ${{ item.price }}{% endif %}
+    </li>
+  {% empty %}
+    <li>No items found</li>
+  {% endfor %}
+</ul>
+
+<a href="/history/">← Back to History</a>
