@@ -1,42 +1,63 @@
+/* ══════════════════════════════
+   Page wrapper — side-by-side cards
+   ══════════════════════════════ */
 .profile-page {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 32px;
     min-height: 100vh;
-    padding: 20px;
+    padding: 100px 24px 40px;
     box-sizing: border-box;
     font-family: var(--font-family);
     background-color: #ffffff;
+    flex-wrap: wrap;
 }
 
-/* Profile card */
+/* ══════════════════════════════
+   Shared card styles
+   ══════════════════════════════ */
 .profile-card {
-    max-width: 400px;
     background-color: var(--color-background);
     padding: 40px 30px;
     border-radius: var(--border-radius);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Left card – greeting + logout */
+.profile-card-left {
+    width: 340px;
     text-align: center;
 }
 
+/* Right card – address form */
+.profile-card-right {
+    width: 460px;
+    text-align: left;
+}
+
+/* ══════════════════════════════
+   Left card contents
+   ══════════════════════════════ */
+
 /* Greeting title */
 .profile-title {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 2.2rem;
+    margin-bottom: 6px;
     color: var(--color-text);
 }
 
 /* Description */
 .profile-description {
-    font-size: 1.2rem;
-    color: var(--color-text-light);
-    margin-bottom: 30px;
+    font-size: 1.1rem;
+    color: #888;
+    margin-bottom: 28px;
 }
 
 /* Logout button */
 .logout-btn {
     padding: 10px 20px;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     border-radius: var(--border-radius);
     border: none;
     cursor: pointer;
@@ -47,7 +68,128 @@
 }
 
 .logout-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
+    color: var(--color-text-light);
+}
+
+/* ══════════════════════════════
+   Right card contents – address
+   ══════════════════════════════ */
+
+.address-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+}
+
+.address-subtext {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 18px;
+}
+
+/* Messages */
+.profile-messages {
+    margin-bottom: 14px;
+}
+
+.profile-messages .alert {
+    padding: 10px 14px;
+    border-radius: var(--border-radius);
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.profile-messages .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.profile-messages .alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* ── Form layout ── */
+.address-form .form-group {
+    margin-bottom: 14px;
+}
+
+.address-form label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+/* Every input in the form – uniform sizing */
+.address-form input[type="text"] {
+    display: block;
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 38px;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.address-form input[type="text"]:focus {
+    border-color: var(--color-primary);
+}
+
+/* Side-by-side field rows */
+.address-form .form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.address-form .form-group-half {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* Save button */
+.save-btn {
+    margin-top: 6px;
+    padding: 10px 20px;
+    font-size: 1.05rem;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
     background-color: var(--color-primary);
     color: var(--color-text-light);
+    width: 100%;
+}
+
+.save-btn:hover {
+    transform: scale(1.03);
+    color: var(--color-text-light);
+}
+
+/* ══════════════════════════════
+   Mobile — stack cards vertically
+   ══════════════════════════════ */
+@media (max-width: 860px) {
+    .profile-page {
+        flex-direction: column;
+        align-items: center;
+        padding-top: 90px;
+    }
+
+    .profile-card-left,
+    .profile-card-right {
+        width: 100%;
+        max-width: 480px;
+    }
 }
