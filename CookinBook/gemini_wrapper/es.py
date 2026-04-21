@@ -76,10 +76,18 @@ def seed_from_mealdb():
 
 # Collects and returns the ES server
 def get_es():
-    es = Elasticsearch(
-        settings.ELASTICSEARCH_HOST,
-        basic_auth=(settings.ELASTICSEARCH_USER, settings.ELASTICSEARCH_PASSWORD),
-        ssl_assert_fingerprint=settings.ELASTICSEARCH_CERT,
-    )
+    kwargs = {}
+
+    # Only use auth when credentials are provided (skip for Docker/unsecured ES)
+    if settings.ELASTICSEARCH_PASSWORD:
+        kwargs["basic_auth"] = (
+            settings.ELASTICSEARCH_USER,
+            settings.ELASTICSEARCH_PASSWORD,
+        )
+
+    if settings.ELASTICSEARCH_CERT:
+        kwargs["ssl_assert_fingerprint"] = settings.ELASTICSEARCH_CERT
+
+    es = Elasticsearch(settings.ELASTICSEARCH_HOST, **kwargs)
 
     return es
