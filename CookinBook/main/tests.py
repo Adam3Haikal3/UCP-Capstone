@@ -25,17 +25,17 @@ class ProfileModelTest(TestCase):
         self.user = User.objects.create_user("alice", "alice@test.com", "pass1234")
 
     def test_create_profile(self):
-        profile = Profile.objects.create(user=self.user)
+        profile = Profile.objects.get(user=self.user)
         self.assertEqual(profile.user, self.user)
         self.assertIsNone(profile.birth_date)
         self.assertIsNotNone(profile.created_at)
 
     def test_str(self):
-        profile = Profile.objects.create(user=self.user)
+        profile = Profile.objects.get(user=self.user)
         self.assertEqual(str(profile), "alice's profile")
 
     def test_one_to_one_reverse(self):
-        profile = Profile.objects.create(user=self.user)
+        profile = Profile.objects.get(user=self.user)
         self.assertEqual(self.user.profile, profile)
 
 

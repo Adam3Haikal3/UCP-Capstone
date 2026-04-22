@@ -79,11 +79,11 @@ class ShoppingListSession(models.Model):
         "IP": "In Progress",
         "C": "Completed",
     }
-    ORDER_STATUS_CHOICES = {
-        "P": "Pending",
-        "OF": "Order Finalized",
-        "D": "Delivered",
-    }
+    ORDER_STATUS_CHOICES = [
+        ("P", "Pending"),
+        ("OF", "Order Finalized"),
+        ("D", "Delivered"),
+    ]
     DELIVERY_CHOICES = {
         "P": "Pickup",
         "D": "Delivery",

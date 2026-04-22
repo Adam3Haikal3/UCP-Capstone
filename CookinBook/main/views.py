@@ -11,6 +11,8 @@ import logging
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
+from datetime import timedelta
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +40,14 @@ def chat_view(request, conversation_id=None):
 
 
 def history_view(request):
-    return render(request, "main/history/history.html")
+    if request.user.is_authenticated:
+        orders = ShoppingListSession.objects.filter(
+            user=request.user, order_status__in=["OF", "D"]
+        ).order_by("-id")
+    else:
+        orders = ShoppingListSession.objects.none()
+
+    return render(request, "main/history/history.html", {"orders": orders})
 
 
 @require_POST
@@ -286,3 +295,39 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("home")
+
+
+@login_required
+def orders_list(request):
+    orders = ShoppingListSession.objects.filter(
+        user=request.user, order_status__in=["OF", "D"]
+    ).order_by("-id")
+
+    return render(request, "main/orders/list.html", {"orders": orders})
+
+
+@login_required
+def order_detail(request, session_id):
+    order = ShoppingListSession.objects.get(id=session_id)
+    items = order.items.all()
+
+    profile = getattr(request.user, "profile", None)
+
+    address = "N/A"
+    if profile and profile.street_address:
+        address = f"{profile.street_address}, {profile.city}, {profile.state} {profile.zip_code}"
+
+    estimated_delivery = None
+    if order.created_at:
+        estimated_delivery = order.created_at + timedelta(days=3)
+
+    return render(
+        request,
+        "main/orders/detail.html",
+        {
+            "order": order,
+            "items": items,
+            "address": address,
+            "estimated_delivery": estimated_delivery,
+        },
+    )
