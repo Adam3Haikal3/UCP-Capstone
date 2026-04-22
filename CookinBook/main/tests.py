@@ -342,7 +342,9 @@ class ProtectedPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_history_shows_authenticated_order_details(self):
-        convo = ChatConversation.objects.create(user=self.user, title="show me easy pasta")
+        convo = ChatConversation.objects.create(
+            user=self.user, title="show me easy pasta"
+        )
         order = ShoppingListSession.objects.create(
             user=self.user,
             conversation=convo,
@@ -449,7 +451,9 @@ class ProtectedPageTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_order_detail_shows_recipe_instructions(self):
-        convo = ChatConversation.objects.create(user=self.user, title="fried rice request")
+        convo = ChatConversation.objects.create(
+            user=self.user, title="fried rice request"
+        )
         order = ShoppingListSession.objects.create(
             user=self.user,
             conversation=convo,
@@ -889,7 +893,9 @@ class CookinBookBotTests(TestCase):
         mock_chat = MagicMock()
         MockGenaiClient.return_value.chats.create.return_value = mock_chat
         mock_tools = MockUCPTools.return_value
-        mock_tools.search_inventory.return_value = [{"name": "flour", "measure": "2 cups"}]
+        mock_tools.search_inventory.return_value = [
+            {"name": "flour", "measure": "2 cups"}
+        ]
         mock_tools.complete_purchase.return_value = {"status": "success"}
 
         from gemini_wrapper.client import CookinBookBot
@@ -907,7 +913,9 @@ class CookinBookBotTests(TestCase):
 
     @patch("gemini_wrapper.client.UCPClientTools")
     @patch("gemini_wrapper.client.genai.Client")
-    def test_handle_purchase_raises_on_error_response(self, MockGenaiClient, MockUCPTools):
+    def test_handle_purchase_raises_on_error_response(
+        self, MockGenaiClient, MockUCPTools
+    ):
         mock_chat = MagicMock()
         MockGenaiClient.return_value.chats.create.return_value = mock_chat
         mock_tools = MockUCPTools.return_value
@@ -955,7 +963,9 @@ class CookinBookBotTests(TestCase):
 class UCPClientToolsTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("ucpuser", "ucp@test.com", "pass1234")
-        self.convo = ChatConversation.objects.create(user=self.user, title="Chicken Fried Rice")
+        self.convo = ChatConversation.objects.create(
+            user=self.user, title="Chicken Fried Rice"
+        )
         self.session = ShoppingListSession.objects.create(
             user=self.user,
             conversation=self.convo,

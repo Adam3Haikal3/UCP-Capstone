@@ -51,7 +51,9 @@ def _decorate_order(order):
     order.prefetched_items = list(order.items.all())
     order.item_count = len(order.prefetched_items)
     order.prefetched_recipes = list(order.recipes.all())
-    order.primary_recipe = order.prefetched_recipes[0] if order.prefetched_recipes else None
+    order.primary_recipe = (
+        order.prefetched_recipes[0] if order.prefetched_recipes else None
+    )
     order.display_title = (
         order.primary_recipe.title
         if order.primary_recipe
@@ -112,9 +114,7 @@ def _extract_recipe_steps(instructions):
         return []
 
     lines = [
-        line.strip(" \t\r\n-•")
-        for line in re.split(r"\r?\n+", text)
-        if line.strip()
+        line.strip(" \t\r\n-•") for line in re.split(r"\r?\n+", text) if line.strip()
     ]
 
     if len(lines) > 1:

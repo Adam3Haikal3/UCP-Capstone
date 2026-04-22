@@ -128,7 +128,9 @@ class CookinBookBot:
             updated_items = self.ucp_tools.search_inventory(items)
 
             if not updated_items:
-                raise ValueError("No requested ingredients are available from the merchant")
+                raise ValueError(
+                    "No requested ingredients are available from the merchant"
+                )
 
             self.ucp_tools.create_cart(updated_items, sls_id)
             self.ucp_tools.set_fulfillment_method("shipping")

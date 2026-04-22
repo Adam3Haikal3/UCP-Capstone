@@ -30,7 +30,9 @@ class UCPClientTools:
         total_entry = None
         for entry in totals:
             entry_type = (
-                entry.get("type") if isinstance(entry, dict) else getattr(entry, "type", "")
+                entry.get("type")
+                if isinstance(entry, dict)
+                else getattr(entry, "type", "")
             )
             if entry_type == "total":
                 total_entry = entry
