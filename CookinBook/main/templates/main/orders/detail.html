@@ -1,41 +1,189 @@
-<h1>Order #{{ order.id }}</h1>
+{% extends 'main/base/base.html' %}
+{% load static %}
 
-<p><strong>Date:</strong>
-{% if order.created_at %}
-  {{ order.created_at|date:"M d, Y" }}
-{% else %}
-  N/A
-{% endif %}
-</p>
+{% block title %}Order {{ order.id }}{% endblock %}
 
-<p><strong>Total:</strong> ${{ order.total_cost }}</p>
+{% block content %}
+<link rel="stylesheet" href="{% static 'history.css' %}">
 
-<p><strong>Status:</strong> {{ order.get_order_status_display }}</p>
+<div class="history-page order-detail-page">
+  <div class="history-shell">
+    <div class="order-detail-topbar">
+      <a class="history-back-link" href="{% url 'history' %}">
+        <i class="bi bi-arrow-left"></i>
+        Back to History
+      </a>
+    </div>
 
-<p><strong>Items:</strong></p>
-<ul>
-  {% for item in items %}
-    <li>
-      {{ item.quantity }} {{ item.unit }} {{ item.ingredient_name }}
-      {% if item.retailer %} ({{ item.retailer }}){% endif %}
-      {% if item.price %} - ${{ item.price }}{% endif %}
-    </li>
-  {% empty %}
-    <li>No items found</li>
-  {% endfor %}
-</ul>
+    <section class="order-hero-card">
+      <div class="order-hero-copy">
+        <p class="history-kicker">Order {{ order.id }}</p>
+        <h1 class="history-title">{{ order.display_title }}</h1>
+        <p class="history-subtitle">
+          Review the ingredients, delivery details, and purchase information saved from this checkout session.
+        </p>
+      </div>
 
-<hr>
+      <div class="order-hero-status">
+        <span class="history-status-badge {% if order.order_status == 'D' %}history-status-badge-delivered{% elif order.order_status == 'OF' %}history-status-badge-finalized{% else %}history-status-badge-pending{% endif %}">
+          {{ order.get_order_status_display }}
+        </span>
+        <p class="order-hero-status-note">
+          {% if order.completed_at %}
+            Completed {{ order.completed_at|date:"M d, Y" }}
+          {% else %}
+            Created {{ order.created_at|date:"M d, Y" }}
+          {% endif %}
+        </p>
+      </div>
+    </section>
 
-<p><strong>Shipping to:</strong> {{ address|default:"N/A" }}</p>
+    <div class="order-detail-grid">
+      <section class="detail-card detail-items-card">
+        <div class="detail-card-header">
+          <div>
+            <p class="history-card-label">Ingredient list</p>
+            <h2 class="detail-card-title">Items in this order</h2>
+          </div>
+          <p class="detail-card-caption">{{ items|length }} saved line item{{ items|length|pluralize }}</p>
+        </div>
 
-<p><strong>Placed on:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+        {% if items %}
+          <div class="detail-item-list">
+            {% for item in items %}
+              <article class="detail-item-row">
+                <div class="detail-item-main">
+                  <p class="detail-item-name">{{ item.ingredient_name }}</p>
+                  <p class="detail-item-meta">
+                    {{ item.quantity|floatformat:"-2" }} {{ item.unit }}
+                    {% if item.retailer %}
+                      <span class="detail-dot"></span>
+                      {{ item.retailer }}
+                    {% endif %}
+                  </p>
+                </div>
 
-<p><strong>Estimated Delivery:</strong> 
-  {% if estimated_delivery %}
-  {{ estimated_delivery|date:"M d, Y" }}
-{% else %}
-  N/A
-{% endif %}</p>
+                <div class="detail-item-side">
+                  <span class="detail-item-badge {% if item.is_available %}detail-item-badge-available{% else %}detail-item-badge-unavailable{% endif %}">
+                    {% if item.is_available %}Available{% else %}Unavailable{% endif %}
+                  </span>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="history-muted">No items were stored with this order.</p>
+        {% endif %}
+      </section>
 
-<a href="/history/">← Back to History</a>
+      <aside class="detail-sidebar">
+        <section class="detail-card">
+          <div class="detail-card-header">
+            <div>
+              <p class="history-card-label">Order summary</p>
+              <h2 class="detail-card-title">Checkout details</h2>
+            </div>
+          </div>
+
+          <dl class="detail-summary-list">
+            <div class="detail-summary-row">
+              <dt>Total</dt>
+              <dd>${{ order.total_cost }}</dd>
+            </div>
+            <div class="detail-summary-row">
+              <dt>Status</dt>
+              <dd>{{ order.get_order_status_display }}</dd>
+            </div>
+            <div class="detail-summary-row">
+              <dt>Fulfillment</dt>
+              <dd>
+                {% if order.delivery_method %}
+                  {{ order.get_delivery_method_display }}
+                {% else %}
+                  Processing
+                {% endif %}
+              </dd>
+            </div>
+            <div class="detail-summary-row">
+              <dt>Placed on</dt>
+              <dd>{{ order.created_at|date:"M d, Y" }}</dd>
+            </div>
+            <div class="detail-summary-row">
+              <dt>Transaction</dt>
+              <dd>
+                {% if order.ucp_transaction_id %}
+                  {{ order.ucp_transaction_id }}
+                {% else %}
+                  Pending assignment
+                {% endif %}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="detail-card">
+          <div class="detail-card-header">
+            <div>
+              <p class="history-card-label">Delivery</p>
+              <h2 class="detail-card-title">Destination</h2>
+            </div>
+          </div>
+
+          <div class="detail-delivery-block">
+            <p class="detail-delivery-address">{{ address }}</p>
+            <div class="detail-delivery-meta">
+              <p>
+                <span class="detail-meta-label">Placed</span>
+                <span class="detail-meta-value">{{ order.created_at|date:"M d, Y" }}</span>
+              </p>
+              <p>
+                <span class="detail-meta-label">
+                  {% if order.order_status == 'D' %}Delivered{% else %}Estimated arrival{% endif %}
+                </span>
+                <span class="detail-meta-value">
+                  {% if order.order_status == 'D' and order.completed_at %}
+                    {{ order.completed_at|date:"M d, Y" }}
+                  {% elif estimated_delivery %}
+                    {{ estimated_delivery|date:"M d, Y" }}
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </span>
+              </p>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="detail-card order-recipe-card">
+      <div class="detail-card-header">
+        <div>
+          <p class="history-card-label">Recipe guide</p>
+          <h2 class="detail-card-title">Overview and instructions</h2>
+        </div>
+      </div>
+
+      {% if order.recipe_overview %}
+        <p class="history-overview-text">{{ order.recipe_overview }}</p>
+      {% else %}
+        <p class="history-muted">No recipe overview was saved for this order.</p>
+      {% endif %}
+
+      <div class="history-instructions-block">
+        <h3 class="history-subsection-title">How to make it</h3>
+
+        {% if order.recipe_steps %}
+          <ol class="history-step-list">
+            {% for step in order.recipe_steps %}
+              <li class="history-step-item">{{ step }}</li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p class="history-muted">No cooking instructions were saved for this order.</p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

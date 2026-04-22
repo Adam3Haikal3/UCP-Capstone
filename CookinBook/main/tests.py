@@ -341,6 +341,46 @@ class ProtectedPageTests(TestCase):
         response = self.client.get("/history/")
         self.assertEqual(response.status_code, 200)
 
+    def test_history_shows_authenticated_order_details(self):
+        convo = ChatConversation.objects.create(user=self.user, title="show me easy pasta")
+        order = ShoppingListSession.objects.create(
+            user=self.user,
+            conversation=convo,
+            order_status="OF",
+            total_cost=Decimal("42.50"),
+            delivery_method="D",
+            ucp_transaction_id="order_123",
+        )
+        recipe = Recipe.objects.create(
+            elasticsearch_id="meal_1",
+            title="Creamy Pasta",
+            ingredients=[
+                {"name": "Garlic"},
+                {"name": "Cream"},
+                {"name": "Parmesan"},
+            ],
+            instructions="Boil the pasta. Saute the garlic. Stir in cream and parmesan.",
+        )
+        order.recipes.add(recipe)
+        ShoppingListItem.objects.create(
+            session=order,
+            ingredient_name="Garlic",
+            quantity=2,
+            unit="cloves",
+            price=Decimal("1.99"),
+        )
+
+        self.client.login(username="prot", password="pass1234")
+        response = self.client.get("/history/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Creamy Pasta")
+        self.assertContains(response, "order_123")
+        self.assertContains(response, "Garlic")
+        self.assertContains(response, "Built around Garlic, Cream, and Parmesan.")
+        self.assertNotContains(response, "Boil the pasta.")
+        self.assertNotContains(response, "show me easy pasta")
+
     def test_profile_redirects_anonymous(self):
         response = self.client.get("/profile/")
         self.assertEqual(response.status_code, 302)
@@ -397,6 +437,42 @@ class ProtectedPageTests(TestCase):
         self.client.login(username="prot", password="pass1234")
         response = self.client.post(f"/api/conversations/{convo.pk}/delete/")
         self.assertEqual(response.status_code, 404)
+
+    def test_order_detail_404_for_other_users_order(self):
+        other = User.objects.create_user("other3", "o3@t.com", "pass1234")
+        convo = ChatConversation.objects.create(user=other, title="Other Order")
+        order = ShoppingListSession.objects.create(user=other, conversation=convo)
+
+        self.client.login(username="prot", password="pass1234")
+        response = self.client.get(f"/orders/{order.pk}/")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_order_detail_shows_recipe_instructions(self):
+        convo = ChatConversation.objects.create(user=self.user, title="fried rice request")
+        order = ShoppingListSession.objects.create(
+            user=self.user,
+            conversation=convo,
+            order_status="OF",
+        )
+        recipe = Recipe.objects.create(
+            elasticsearch_id="meal_2",
+            title="Chicken Fried Rice",
+            ingredients=[
+                {"name": "Chicken"},
+                {"name": "Rice"},
+                {"name": "Soy Sauce"},
+            ],
+            instructions="Cook the rice. Saute the chicken. Toss everything together.",
+        )
+        order.recipes.add(recipe)
+
+        self.client.login(username="prot", password="pass1234")
+        response = self.client.get(f"/orders/{order.pk}/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Built around Chicken, Rice, and Soy Sauce.")
+        self.assertContains(response, "Cook the rice.")
 
 
 # ---------------------------------------------------------------------------
@@ -631,6 +707,7 @@ class AddToCartAPITests(TestCase):
             json.dumps(
                 {
                     "items": [{"name": "flour", "measure": "1 cup"}],
+                    "recipe": {"id": "meal_42", "title": "Fresh Bread"},
                     "conversation_id": convo.pk,
                 }
             ),
@@ -640,6 +717,13 @@ class AddToCartAPITests(TestCase):
         data = response.json()
         self.assertEqual(data["status"], "success")
         self.assertEqual(ShoppingListSession.objects.count(), 1)
+        self.assertEqual(ShoppingListItem.objects.count(), 1)
+        saved_item = ShoppingListItem.objects.get()
+        self.assertEqual(saved_item.ingredient_name, "flour")
+        self.assertEqual(saved_item.unit, "cup")
+        saved_session = ShoppingListSession.objects.get()
+        self.assertEqual(saved_session.recipes.count(), 1)
+        self.assertEqual(saved_session.recipes.first().title, "Fresh Bread")
 
     def test_empty_items(self):
         self.client.login(username="shopper", password="pass1234")
@@ -801,36 +885,44 @@ class CookinBookBotTests(TestCase):
 
     @patch("gemini_wrapper.client.UCPClientTools")
     @patch("gemini_wrapper.client.genai.Client")
-    def test_handle_purchase_calls_send_message(self, MockGenaiClient, MockUCPTools):
+    def test_handle_purchase_runs_direct_ucp_flow(self, MockGenaiClient, MockUCPTools):
         mock_chat = MagicMock()
-        mock_response = MagicMock()
-        mock_response.text = "Order placed!"
-        mock_chat.send_message.return_value = mock_response
         MockGenaiClient.return_value.chats.create.return_value = mock_chat
+        mock_tools = MockUCPTools.return_value
+        mock_tools.search_inventory.return_value = [{"name": "flour", "measure": "2 cups"}]
+        mock_tools.complete_purchase.return_value = {"status": "success"}
 
         from gemini_wrapper.client import CookinBookBot
 
         bot = CookinBookBot()
         items = [{"name": "flour", "measure": "2 cups"}]
         bot.handle_purchase(items, sls_id=999)
-        mock_chat.send_message.assert_called_once()
+        mock_tools.discover_merchant.assert_called_once_with()
+        mock_tools.search_inventory.assert_called_once_with(items)
+        mock_tools.create_cart.assert_called_once_with(
+            [{"name": "flour", "measure": "2 cups"}], 999
+        )
+        mock_tools.set_fulfillment_method.assert_called_once_with("shipping")
+        mock_tools.complete_purchase.assert_called_once_with(999)
 
     @patch("gemini_wrapper.client.UCPClientTools")
     @patch("gemini_wrapper.client.genai.Client")
-    def test_handle_purchase_raises_on_error_response(
-        self, MockGenaiClient, MockUCPTools
-    ):
+    def test_handle_purchase_raises_on_error_response(self, MockGenaiClient, MockUCPTools):
         mock_chat = MagicMock()
-        mock_response = MagicMock()
-        mock_response.text = "ERROR: create_cart - failed"
-        mock_chat.send_message.return_value = mock_response
         MockGenaiClient.return_value.chats.create.return_value = mock_chat
+        mock_tools = MockUCPTools.return_value
+        mock_tools.search_inventory.return_value = [{"name": "egg"}]
+        mock_tools.complete_purchase.return_value = {
+            "status": "failure",
+            "message": "Failed to create checkout",
+        }
 
         from gemini_wrapper.client import CookinBookBot
 
         bot = CookinBookBot()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as ctx:
             bot.handle_purchase([{"name": "egg"}], sls_id=1)
+        self.assertIn("Failed to create checkout", str(ctx.exception))
 
     @patch("gemini_wrapper.client.genai.Client")
     def test_missing_api_key_raises(self, MockGenaiClient):
@@ -858,3 +950,43 @@ class CookinBookBotTests(TestCase):
 
         call_args = mock_chat.send_message.call_args[0][0]
         self.assertIn("Current Cart: Empty", call_args)
+
+
+class UCPClientToolsTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("ucpuser", "ucp@test.com", "pass1234")
+        self.convo = ChatConversation.objects.create(user=self.user, title="Chicken Fried Rice")
+        self.session = ShoppingListSession.objects.create(
+            user=self.user,
+            conversation=self.convo,
+            status="IP",
+        )
+
+    @patch("gemini_wrapper.tools.requests.request")
+    def test_complete_purchase_converts_cents_to_dollars(self, mock_request):
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "order": {"id": "order_789"},
+            "totals": [
+                {"type": "subtotal", "amount": 1834},
+                {"type": "total", "amount": 2099},
+            ],
+        }
+        mock_request.return_value = mock_response
+
+        from gemini_wrapper.tools import UCPClientTools
+
+        tools = UCPClientTools()
+        tools.shopping_cart_id = "checkout_123"
+        tools.rest_endpoint = "http://mock-server"
+        tools.get_path = MagicMock(
+            return_value={"path": "/checkouts/{id}/complete", "method": "POST"}
+        )
+        tools.get_headers = MagicMock(return_value={})
+
+        result = tools.complete_purchase(self.session.pk)
+        self.session.refresh_from_db()
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(self.session.total_cost, Decimal("20.99"))
+        self.assertEqual(self.session.ucp_transaction_id, "order_789")
