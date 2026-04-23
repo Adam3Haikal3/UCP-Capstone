@@ -1,26 +1,171 @@
-<h1>Order History</h1>
+{% extends 'main/base/base.html' %}
+{% load static %}
 
-{% if orders %}
-  <ul>
-    {% for order in orders %}
-      <li>
-        <a href="/orders/{{ order.id }}/">Order #{{ order.id }}</a>
+{% block title %}Order History{% endblock %}
 
-        | Date:
-        {% if order.created_at %}
-          {{ order.created_at|date:"M d, Y" }}
-        {% else %}
-          N/A
-        {% endif %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'history.css' %}">
 
-        | Total: ${{ order.total_cost }}
+<div class="history-page">
+  <div class="history-shell">
+    <section class="history-hero">
+      <div class="history-hero-copy">
+        <p class="history-kicker">Cookin' Book History</p>
+        <h1 class="history-title">Revisit your orders, recipe runs, and ingredient carts.</h1>
+        <p class="history-subtitle">
+          Track what you checked out, when it was placed, and the ingredients tied to each session.
+        </p>
+      </div>
 
-        | Status: {{ order.get_order_status_display }}
+      {% if user.is_authenticated %}
+        <div class="history-overview-card">
+          <p class="overview-label">Completed orders</p>
+          <p class="overview-value">{{ orders|length }}</p>
+          <p class="overview-meta">
+            {% if orders %}
+              Latest order placed {{ orders.0.created_at|date:"M d, Y" }}.
+            {% else %}
+              Your future checkouts will show up here.
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
+    </section>
 
-        | Items: {{ order.items.count }}
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>No orders yet.</p>
-{% endif %}
+    {% if not user.is_authenticated %}
+      <section class="history-empty-state">
+        <div class="history-empty-icon">
+          <i class="bi bi-box-seam"></i>
+        </div>
+        <h2 class="history-empty-title">Sign in to see your cooking history.</h2>
+        <p class="history-empty-text">
+          Once you create orders through Cookin' Book, this page will keep a clean record of each checkout.
+        </p>
+        <div class="history-empty-actions">
+          <a class="history-button" href="{% url 'login' %}">Log In</a>
+          <a class="history-button history-button-secondary" href="{% url 'signup' %}">Create Account</a>
+        </div>
+      </section>
+    {% elif orders %}
+      <section class="history-grid" aria-label="Order history">
+        {% for order in orders %}
+          <article class="history-card">
+            <div class="history-card-header">
+              <div>
+                <p class="history-card-label">Order {{ order.id }}</p>
+                <h2 class="history-card-title">{{ order.display_title }}</h2>
+              </div>
+
+              <span class="history-status-badge {% if order.order_status == 'D' %}history-status-badge-delivered{% elif order.order_status == 'OF' %}history-status-badge-finalized{% else %}history-status-badge-pending{% endif %}">
+                {{ order.get_order_status_display }}
+              </span>
+            </div>
+
+            <div class="history-meta-grid">
+              <div class="history-meta-item">
+                <span class="history-meta-label">Placed</span>
+                <span class="history-meta-value">{{ order.created_at|date:"M d, Y" }}</span>
+              </div>
+              <div class="history-meta-item">
+                <span class="history-meta-label">Items</span>
+                <span class="history-meta-value">{{ order.item_count }} ingredient{{ order.item_count|pluralize }}</span>
+              </div>
+              <div class="history-meta-item">
+                <span class="history-meta-label">Total</span>
+                <span class="history-meta-value">${{ order.total_cost }}</span>
+              </div>
+              <div class="history-meta-item">
+                <span class="history-meta-label">Fulfillment</span>
+                <span class="history-meta-value">
+                  {% if order.delivery_method %}
+                    {{ order.get_delivery_method_display }}
+                  {% else %}
+                    Processing
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+
+            <div class="history-card-section">
+              <div class="history-section-heading-row">
+                <h3 class="history-section-title">Ingredient snapshot</h3>
+                {% if order.completed_at %}
+                  <span class="history-section-note">Completed {{ order.completed_at|date:"M d, Y" }}</span>
+                {% endif %}
+              </div>
+
+              {% with item_list=order.prefetched_items %}
+                {% if item_list %}
+                  <div class="history-chip-list">
+                    {% for item in item_list|slice:":6" %}
+                      <span class="history-chip">
+                        {{ item.quantity|floatformat:"-2" }} {{ item.unit }} {{ item.ingredient_name }}
+                      </span>
+                    {% endfor %}
+                  </div>
+
+                  <div class="history-ingredient-list" aria-label="Saved ingredients">
+                    {% for item in item_list|slice:":4" %}
+                      <div class="history-ingredient-row">
+                        <span class="history-ingredient-name">{{ item.ingredient_name }}</span>
+                        <span class="history-ingredient-measure">
+                          {{ item.quantity|floatformat:"-2" }} {{ item.unit }}
+                        </span>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <p class="history-muted">
+                    No ingredient line items were saved for this order.
+                  </p>
+                {% endif %}
+              {% endwith %}
+            </div>
+
+            <div class="history-card-section">
+              <div class="history-section-heading-row">
+                <h3 class="history-section-title">Dish overview</h3>
+              </div>
+
+              {% if order.recipe_overview %}
+                <p class="history-overview-text">{{ order.recipe_overview }}</p>
+              {% else %}
+                <p class="history-muted">
+                  No recipe overview was saved for this order.
+                </p>
+              {% endif %}
+            </div>
+
+            <div class="history-card-footer">
+              <div class="history-card-footer-copy">
+                <p class="history-footer-line">
+                  Transaction:
+                  <strong>{% if order.ucp_transaction_id %}{{ order.ucp_transaction_id }}{% else %}Pending assignment{% endif %}</strong>
+                </p>
+                <p class="history-footer-line">
+                  Ordered through your Cookin' Book chat session.
+                </p>
+              </div>
+
+              <a class="history-button" href="{% url 'order_detail' order.id %}">View Details</a>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <section class="history-empty-state">
+        <div class="history-empty-icon">
+          <i class="bi bi-journal-check"></i>
+        </div>
+        <h2 class="history-empty-title">No orders yet.</h2>
+        <p class="history-empty-text">
+          Start a chat, choose a recipe, and send ingredients to checkout to build your order history.
+        </p>
+        <div class="history-empty-actions">
+          <a class="history-button" href="{% url 'chat' %}">Start Cooking</a>
+        </div>
+      </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -12,7 +12,7 @@
   font-family: 'Playfair Display', serif;
   font-size: clamp(32px, 5vw, 52px);
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-heading);
   text-align: center;
   margin-bottom: 12px;
 }
@@ -20,7 +20,7 @@
 .section-subtitle {
   font-family: 'Quicksand', sans-serif;
   font-size: clamp(16px, 2.5vw, 20px);
-  color: #555;
+  color: var(--color-text);
   text-align: center;
   max-width: 600px;
   margin: 0 auto 48px;
@@ -32,7 +32,7 @@
    ══════════════════════════════ */
 .features-section {
   padding: 120px 8% 120px;
-  background-color: #fafafa;
+  background: var(--color-background);
 }
 
 .features-grid {
@@ -44,22 +44,24 @@
 }
 
 .feature-card {
-  background: #fff;
-  border-radius: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
   padding: 36px 28px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .feature-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border-color: rgba(94, 124, 79, 0.25);
+  box-shadow: var(--shadow-card);
 }
 
 .feature-icon {
   font-size: 38px;
-  color: #ff8644;
+  color: var(--color-primary);
   margin-bottom: 18px;
 }
 
@@ -67,14 +69,14 @@
   font-family: 'Playfair Display', serif;
   font-size: 22px;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin-bottom: 10px;
 }
 
 .feature-text {
   font-family: 'Quicksand', sans-serif;
   font-size: 15px;
-  color: #666;
+  color: var(--color-text);
   line-height: 1.65;
   margin: 0;
 }
@@ -84,7 +86,7 @@
    ══════════════════════════════ */
 .steps-section {
   padding: 120px 8% 100px;
-  background-color: #fff;
+  background: var(--color-surface);
 }
 
 .steps-container {
@@ -109,8 +111,8 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #101010;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-text-light);
   font-family: 'Playfair Display', serif;
   font-size: 24px;
   font-weight: 700;
@@ -128,14 +130,14 @@
   font-family: 'Playfair Display', serif;
   font-size: 22px;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin-bottom: 6px;
 }
 
 .step-text {
   font-family: 'Quicksand', sans-serif;
   font-size: 15px;
-  color: #666;
+  color: var(--color-text);
   line-height: 1.65;
   margin: 0;
 }
@@ -144,9 +146,9 @@
   background-color: var(--color-primary);
   color: var(--color-text-light);
   padding: 20px 0;
-  font-size: 15px;;
+  font-size: 15px;
   font-family: var(--font-family);
-  border-top: 1px solid var(--color-text-light);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .footer-content {

@@ -287,10 +287,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (recipe.instructions) {
-      const shortInstructions = recipe.instructions.length > 400
-        ? recipe.instructions.substring(0, 400) + "..."
-        : recipe.instructions;
-      html += `<div class="recipe-instructions">${escHtml(shortInstructions)}</div>`;
+      const instructionSteps = splitInstructionSteps(recipe.instructions);
+      html += '<div class="recipe-instructions">';
+      html += '<div class="recipe-instructions-title">How to make it</div>';
+      if (instructionSteps.length) {
+        html += '<ol class="recipe-step-list">';
+        instructionSteps.forEach((step) => {
+          html += `<li class="recipe-step-item">${escHtml(step)}</li>`;
+        });
+        html += '</ol>';
+      } else {
+        html += `<div class="artifact-text">${escHtml(recipe.instructions)}</div>`;
+      }
+      html += '</div>';
     }
 
     html += '<button class="artifact-continue-btn">Continue to Ingredients <i class="bi bi-arrow-right"></i></button>';
@@ -380,6 +389,28 @@ document.addEventListener("DOMContentLoaded", () => {
     return scaled + (unit ? " " + unit : "");
   }
 
+  function splitInstructionSteps(text) {
+    const normalized = (text || "").trim();
+    if (!normalized) return [];
+
+    const numberedLines = normalized
+      .split(/\r?\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.replace(/^\d+[\).\s-]*/, "").trim())
+      .filter(Boolean);
+
+    if (numberedLines.length > 1) {
+      return numberedLines;
+    }
+
+    return normalized
+      .replace(/\s+/g, " ")
+      .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
+      .map((step) => step.trim())
+      .filter(Boolean);
+  }
+
   async function handleAddToCart(recipe) {
     const checks = artifactBody.querySelectorAll(".ingredient-check:checked");
     const multiplier = artifactServings / artifactBaseServings;
@@ -411,7 +442,16 @@ document.addEventListener("DOMContentLoaded", () => {
           "Accept": "application/json"
         },
         credentials: "same-origin",
-        body: JSON.stringify({ items, conversation_id: currentConvoId })
+        body: JSON.stringify({
+          items,
+          conversation_id: currentConvoId,
+          recipe: {
+            id: recipe.id,
+            title: recipe.title,
+            ingredients: recipe.ingredients || [],
+            instructions: recipe.instructions || ""
+          }
+        })
       });
 
       const data = await res.json();

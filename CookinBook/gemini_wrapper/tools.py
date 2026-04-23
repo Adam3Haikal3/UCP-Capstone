@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal, InvalidOperation
 from django.conf import settings
 import requests
 import uuid
@@ -21,6 +22,38 @@ class UCPClientTools:
         self.shopping_cart_id = []
         self.payment_handlers = []
         self.checkout_payload = None
+
+    def _extract_total_cost(self, totals):
+        if not totals:
+            return Decimal("0.00")
+
+        total_entry = None
+        for entry in totals:
+            entry_type = (
+                entry.get("type")
+                if isinstance(entry, dict)
+                else getattr(entry, "type", "")
+            )
+            if entry_type == "total":
+                total_entry = entry
+                break
+
+        if total_entry is None:
+            total_entry = totals[-1]
+
+        raw_amount = (
+            total_entry.get("amount", 0)
+            if isinstance(total_entry, dict)
+            else getattr(total_entry, "amount", 0)
+        )
+
+        try:
+            amount = Decimal(str(raw_amount))
+        except (InvalidOperation, TypeError, ValueError):
+            return Decimal("0.00")
+
+        # UCP checkout totals are returned in minor currency units (cents).
+        return (amount / Decimal("100")).quantize(Decimal("0.01"))
 
     def discover_merchant(self):
         if self.server_url is None:
@@ -465,13 +498,7 @@ class UCPClientTools:
             sls.delivery_method = "D"  # Mock server only allows delivery
             sls.completed_at = timezone.now()
             sls.ucp_transaction_id = data["order"]["id"]
-            sls.total_cost = data[
-                "totals"
-            ][
-                2
-            ][
-                "amount"
-            ]  # First two options in total are the subtotal and fulfillment costs respectively
+            sls.total_cost = self._extract_total_cost(data.get("totals", []))
             sls.save()
 
             return {

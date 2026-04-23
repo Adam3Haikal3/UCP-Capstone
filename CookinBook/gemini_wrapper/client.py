@@ -77,7 +77,7 @@ class CookinBookBot:
         except AttributeError:
             raise ValueError("GEMINI_API_KEY is missing from settings.py!")
 
-        ucp_tools = UCPClientTools()
+        self.ucp_tools = UCPClientTools()
 
         # gemini-3.1-flash-lite-preview
         # gemini-3-flash-lite
@@ -87,11 +87,11 @@ class CookinBookBot:
             config=types.GenerateContentConfig(
                 tools=[
                     search_recipes,
-                    ucp_tools.discover_merchant,
-                    ucp_tools.create_cart,
-                    ucp_tools.search_inventory,
-                    ucp_tools.complete_purchase,
-                    ucp_tools.set_fulfillment_method,
+                    self.ucp_tools.discover_merchant,
+                    self.ucp_tools.create_cart,
+                    self.ucp_tools.search_inventory,
+                    self.ucp_tools.complete_purchase,
+                    self.ucp_tools.set_fulfillment_method,
                 ],
                 system_instruction=self.system_prompt,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
@@ -123,29 +123,23 @@ class CookinBookBot:
             raise RuntimeError("Error communicating with Gemini")
 
     def handle_purchase(self, items: list[dict[str, str]], sls_id: int):
+        try:
+            self.ucp_tools.discover_merchant()
+            updated_items = self.ucp_tools.search_inventory(items)
 
-        prompt = f"""
-        A user just created their cart
+            if not updated_items:
+                raise ValueError(
+                    "No requested ingredients are available from the merchant"
+                )
 
-        You have access to UCP shopping tools:
-        - discover_merchant() - Get merchant info
-        - search_inventory() - returns ONLY available items
-        - create_cart() - Create a shopping cart
-        - set_fulfillment_method() - Set address and shipping method for checkout
-        - complete_purchase() - Completes a created shopping cart
+            self.ucp_tools.create_cart(updated_items, sls_id)
+            self.ucp_tools.set_fulfillment_method("shipping")
+            result = self.ucp_tools.complete_purchase(sls_id)
+        except Exception as exc:
+            logger.exception("Error during direct UCP purchase flow")
+            raise ValueError(str(exc)) from exc
 
-        You must use tools to:
-        1. Discover merchant
-        2. Search the merchant inventory with search_inventory({items}) to get new item list: updated_items
-        3. Create a cart using the new item list with create_cart(updated_items, {sls_id})
-        4. Set the shipping address and shipping method with set_fulfillment_method()
-        7. Finalize cart by calling complete_purchase({sls_id})
+        if result.get("status") != "success":
+            raise ValueError(result.get("message", "Failed to complete purchase"))
 
-        If any tools throw an error, stop immediately and respond with the follow message:
-        ERROR: (tool name) - (error caused)
-        """
-        response = self.chat.send_message(prompt)
-
-        if response.text.startswith("ERROR:"):
-            print(f"[UCP] Problem Occured During Bot Tool Calling: {response.text}")
-            raise ValueError(response.text)
+        return {"purchase": result, "items": updated_items}
